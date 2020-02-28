@@ -6,4 +6,12 @@
 //  Copyright © 2020 t19960804. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+class TestViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .red
+    }
+}
+
