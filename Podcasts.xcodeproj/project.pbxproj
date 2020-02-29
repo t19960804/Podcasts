@@ -13,7 +13,7 @@
 		0BC9DF562408BECC00142424 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BC9DF552408BECC00142424 /* Assets.xcassets */; };
 		0BC9DF592408BECC00142424 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BC9DF582408BECC00142424 /* Preview Assets.xcassets */; };
 		0BC9DF5C2408BECC00142424 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BC9DF5A2408BECC00142424 /* LaunchScreen.storyboard */; };
-		0BC9DF642408BF2E00142424 /* TestViewControlerl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF632408BF2E00142424 /* TestViewControlerl.swift */; };
+		0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF65240A0DD400142424 /* MainTabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +25,7 @@
 		0BC9DF582408BECC00142424 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0BC9DF5B2408BECC00142424 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0BC9DF5D2408BECC00142424 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0BC9DF632408BF2E00142424 /* TestViewControlerl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewControlerl.swift; sourceTree = "<group>"; };
+		0BC9DF65240A0DD400142424 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 		0BC9DF4E2408BECB00142424 /* Podcasts */ = {
 			isa = PBXGroup;
 			children = (
-				0BC9DF632408BF2E00142424 /* TestViewControlerl.swift */,
+				0BC9DF65240A0DD400142424 /* MainTabBarController.swift */,
 				0BC9DF552408BECC00142424 /* Assets.xcassets */,
 				0BC9DF5A2408BECC00142424 /* LaunchScreen.storyboard */,
 				0BC9DF5D2408BECC00142424 /* Info.plist */,
@@ -151,7 +151,7 @@
 			files = (
 				0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */,
 				0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */,
-				0BC9DF642408BF2E00142424 /* TestViewControlerl.swift in Sources */,
+				0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */,
 				0BC9DF542408BECB00142424 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -293,6 +293,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -313,6 +314,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
