@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0B5BE49924135FAF00AFABD1 /* Alamofire */; };
 		0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF4F2408BECB00142424 /* AppDelegate.swift */; };
 		0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF512408BECB00142424 /* SceneDelegate.swift */; };
 		0BC9DF542408BECB00142424 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF532408BECB00142424 /* ContentView.swift */; };
@@ -37,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,6 +126,9 @@
 			dependencies = (
 			);
 			name = Podcasts;
+			packageProductDependencies = (
+				0B5BE49924135FAF00AFABD1 /* Alamofire */,
+			);
 			productName = Podcasts;
 			productReference = 0BC9DF4C2408BECB00142424 /* Podcasts.app */;
 			productType = "com.apple.product-type.application";
@@ -152,6 +157,9 @@
 				Base,
 			);
 			mainGroup = 0BC9DF432408BECB00142424;
+			packageReferences = (
+				0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 0BC9DF4D2408BECB00142424 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -325,7 +333,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -346,7 +354,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -380,6 +388,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0B5BE49924135FAF00AFABD1 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0BC9DF442408BECB00142424 /* Project object */;
 }

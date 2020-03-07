@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
@@ -45,6 +46,19 @@ class SearchPodcastsController: UITableViewController {
 extension SearchPodcastsController: UISearchBarDelegate {
     //於SearchBar輸入時觸發
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print(searchText)
+        let url = "https://itunes.apple.com/search?term=\(searchText)&entity=podcast"
+
+        AF.request(url).response { (response) in
+            if let error = response.error {
+                print("Request failed:\(error)")
+                return
+            }
+            guard let data = response.data else {
+                print("Request successly,but data has some problem")
+                return
+            }
+            let dataString = String(decoding: data, as: UTF8.self)
+            print(dataString)
+        }
     }
 }
