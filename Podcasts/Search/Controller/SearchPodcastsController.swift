@@ -17,9 +17,6 @@ class SearchPodcastsController: UITableViewController {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
         setUpSearchController()
-
-        podcasts.append(Podcast(name: "Let's build that app", artistName: "Brian Voong"))
-        podcasts.append(Podcast(name: "Test Podcast", artistName: "Tony Lee"))
     }
     fileprivate func setUpSearchController(){
         let searchController = UISearchController(searchResultsController: nil)
@@ -36,7 +33,7 @@ class SearchPodcastsController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         let podcast = podcasts[indexPath.row]
-        cell.textLabel?.text = "\(podcast.name)\n\(podcast.artistName)"
+        cell.textLabel?.text = "\(podcast.trackName ?? "Unknow")\n\(podcast.artistName)"
         cell.textLabel?.numberOfLines = 0
         cell.imageView?.image = #imageLiteral(resourceName: "appicon")
         return cell
@@ -44,11 +41,14 @@ class SearchPodcastsController: UITableViewController {
     
 }
 extension SearchPodcastsController: UISearchBarDelegate {
-    //於SearchBar輸入時觸發
+    //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let url = "https://itunes.apple.com/search?term=\(searchText)&entity=podcast"
-
-        AF.request(url).response { (response) in
+        let url = "https://itunes.apple.com/search"
+        let extraParameters = ["term" : searchText,
+                          "media" : "podcast"]
+        //若輸入帶有空格的字串,會導致request失敗,須透過url encoding將"空格"轉換成"+"
+        //例如: Brian Voong > Brian+Voong
+        AF.request(url, method: .get, parameters: extraParameters, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (response) in
             if let error = response.error {
                 print("Request failed:\(error)")
                 return
@@ -57,8 +57,14 @@ extension SearchPodcastsController: UISearchBarDelegate {
                 print("Request successly,but data has some problem")
                 return
             }
-            let dataString = String(decoding: data, as: UTF8.self)
-            print(dataString)
+            do {
+                //將json data轉換成自訂類別
+                let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
+                self.podcasts = searchResult.results
+                self.tableView.reloadData()
+            } catch {
+                print("Decode json failed:\(error)")
+            }
         }
     }
 }

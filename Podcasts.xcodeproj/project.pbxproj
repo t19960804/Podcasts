@@ -16,7 +16,7 @@
 		0BC9DF5C2408BECC00142424 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BC9DF5A2408BECC00142424 /* LaunchScreen.storyboard */; };
 		0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF65240A0DD400142424 /* MainTabBarController.swift */; };
 		0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */; };
-		0BC9DF6D240A3BCC00142424 /* Podcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF6C240A3BCC00142424 /* Podcast.swift */; };
+		0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF6C240A3BCC00142424 /* SearchResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,7 +30,7 @@
 		0BC9DF5D2408BECC00142424 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BC9DF65240A0DD400142424 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPodcastsController.swift; sourceTree = "<group>"; };
-		0BC9DF6C240A3BCC00142424 /* Podcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Podcast.swift; sourceTree = "<group>"; };
+		0BC9DF6C240A3BCC00142424 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 		0BC9DF6B240A3BBA00142424 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				0BC9DF6C240A3BCC00142424 /* Podcast.swift */,
+				0BC9DF6C240A3BCC00142424 /* SearchResult.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -191,7 +191,7 @@
 				0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */,
 				0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */,
 				0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */,
-				0BC9DF6D240A3BCC00142424 /* Podcast.swift in Sources */,
+				0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */,
 				0BC9DF542408BECB00142424 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
