@@ -41,30 +41,10 @@ class SearchPodcastsController: UITableViewController {
     
 }
 extension SearchPodcastsController: UISearchBarDelegate {
-    //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let url = "https://itunes.apple.com/search"
-        let extraParameters = ["term" : searchText,
-                          "media" : "podcast"]
-        //若輸入帶有空格的字串,會導致request失敗,須透過url encoding將"空格"轉換成"+"
-        //例如: Brian Voong > Brian+Voong
-        AF.request(url, method: .get, parameters: extraParameters, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (response) in
-            if let error = response.error {
-                print("Request failed:\(error)")
-                return
-            }
-            guard let data = response.data else {
-                print("Request successly,but data has some problem")
-                return
-            }
-            do {
-                //將json data轉換成自訂類別
-                let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
-                self.podcasts = searchResult.results
-                self.tableView.reloadData()
-            } catch {
-                print("Decode json failed:\(error)")
-            }
+        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (podcasts) in
+            self.podcasts = podcasts
+            self.tableView.reloadData()
         }
     }
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0B5BE49924135FAF00AFABD1 /* Alamofire */; };
+		0B9934BE2425C692005C148D /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9934BD2425C692005C148D /* NetworkService.swift */; };
 		0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF4F2408BECB00142424 /* AppDelegate.swift */; };
 		0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF512408BECB00142424 /* SceneDelegate.swift */; };
 		0BC9DF542408BECB00142424 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF532408BECB00142424 /* ContentView.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B9934BD2425C692005C148D /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		0BC9DF4C2408BECB00142424 /* Podcasts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Podcasts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BC9DF4F2408BECB00142424 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0BC9DF512408BECB00142424 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -45,6 +47,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B9934BC2425C641005C148D /* NetworkService */ = {
+			isa = PBXGroup;
+			children = (
+				0B9934BD2425C692005C148D /* NetworkService.swift */,
+			);
+			path = NetworkService;
+			sourceTree = "<group>";
+		};
 		0BC9DF432408BECB00142424 = {
 			isa = PBXGroup;
 			children = (
@@ -64,6 +74,7 @@
 		0BC9DF4E2408BECB00142424 /* Podcasts */ = {
 			isa = PBXGroup;
 			children = (
+				0B9934BC2425C641005C148D /* NetworkService */,
 				0BC9DF67240A3B1700142424 /* Search */,
 				0BC9DF65240A0DD400142424 /* MainTabBarController.swift */,
 				0BC9DF552408BECC00142424 /* Assets.xcassets */,
@@ -193,6 +204,7 @@
 				0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */,
 				0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */,
 				0BC9DF542408BECB00142424 /* ContentView.swift in Sources */,
+				0B9934BE2425C692005C148D /* NetworkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
