@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0B5BE49924135FAF00AFABD1 /* Alamofire */; };
+		0B9934BE2425C692005C148D /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9934BD2425C692005C148D /* NetworkService.swift */; };
 		0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF4F2408BECB00142424 /* AppDelegate.swift */; };
 		0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF512408BECB00142424 /* SceneDelegate.swift */; };
 		0BC9DF542408BECB00142424 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF532408BECB00142424 /* ContentView.swift */; };
@@ -15,10 +17,11 @@
 		0BC9DF5C2408BECC00142424 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BC9DF5A2408BECC00142424 /* LaunchScreen.storyboard */; };
 		0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF65240A0DD400142424 /* MainTabBarController.swift */; };
 		0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */; };
-		0BC9DF6D240A3BCC00142424 /* Podcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF6C240A3BCC00142424 /* Podcast.swift */; };
+		0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF6C240A3BCC00142424 /* SearchResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B9934BD2425C692005C148D /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		0BC9DF4C2408BECB00142424 /* Podcasts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Podcasts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BC9DF4F2408BECB00142424 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0BC9DF512408BECB00142424 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -29,7 +32,7 @@
 		0BC9DF5D2408BECC00142424 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BC9DF65240A0DD400142424 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPodcastsController.swift; sourceTree = "<group>"; };
-		0BC9DF6C240A3BCC00142424 /* Podcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Podcast.swift; sourceTree = "<group>"; };
+		0BC9DF6C240A3BCC00142424 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,12 +40,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B9934BC2425C641005C148D /* NetworkService */ = {
+			isa = PBXGroup;
+			children = (
+				0B9934BD2425C692005C148D /* NetworkService.swift */,
+			);
+			path = NetworkService;
+			sourceTree = "<group>";
+		};
 		0BC9DF432408BECB00142424 = {
 			isa = PBXGroup;
 			children = (
@@ -62,6 +74,7 @@
 		0BC9DF4E2408BECB00142424 /* Podcasts */ = {
 			isa = PBXGroup;
 			children = (
+				0B9934BC2425C641005C148D /* NetworkService */,
 				0BC9DF67240A3B1700142424 /* Search */,
 				0BC9DF65240A0DD400142424 /* MainTabBarController.swift */,
 				0BC9DF552408BECC00142424 /* Assets.xcassets */,
@@ -103,7 +116,7 @@
 		0BC9DF6B240A3BBA00142424 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				0BC9DF6C240A3BCC00142424 /* Podcast.swift */,
+				0BC9DF6C240A3BCC00142424 /* SearchResult.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -124,6 +137,9 @@
 			dependencies = (
 			);
 			name = Podcasts;
+			packageProductDependencies = (
+				0B5BE49924135FAF00AFABD1 /* Alamofire */,
+			);
 			productName = Podcasts;
 			productReference = 0BC9DF4C2408BECB00142424 /* Podcasts.app */;
 			productType = "com.apple.product-type.application";
@@ -152,6 +168,9 @@
 				Base,
 			);
 			mainGroup = 0BC9DF432408BECB00142424;
+			packageReferences = (
+				0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 0BC9DF4D2408BECB00142424 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -183,8 +202,9 @@
 				0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */,
 				0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */,
 				0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */,
-				0BC9DF6D240A3BCC00142424 /* Podcast.swift in Sources */,
+				0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */,
 				0BC9DF542408BECB00142424 /* ContentView.swift in Sources */,
+				0B9934BE2425C692005C148D /* NetworkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,7 +345,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -346,7 +366,7 @@
 				DEVELOPMENT_TEAM = CH2Q45S7FJ;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Podcasts/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -380,6 +400,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0B5BE49924135FAF00AFABD1 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0BC9DF442408BECB00142424 /* Project object */;
 }
