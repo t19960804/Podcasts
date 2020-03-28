@@ -47,3 +47,6 @@ class NetworkService {
 //1.有無名字 > Closure沒有,Function有
 //2.能否獨立存在 > Closure需要被指派到變數或常數,或直接傳入Function,但Function可獨立存在
 //備註:兩個都能被指派到變/常數中
+
+
+//@escaping > 讓 closure 在 function 外繼續使用 (將傳進的closure指派給外部的變數供呼叫)
