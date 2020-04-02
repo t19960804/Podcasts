@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class PodcastCell: UITableViewCell {
     
@@ -14,11 +15,21 @@ class PodcastCell: UITableViewCell {
         didSet {
             trackNameLabel.text = podcast.trackName
             artitstNameLabel.text = podcast.artistName
+            episodeCountLabel.text = "\(podcast.trackCount ?? 0) Episodes"
+            let url = URL(string: podcast.artworkUrl600 ?? "")
+            podcastImageView.sd_setImage(with: url)
+            //傳統做法,沒有Cache(網路耗量大),而且針對http也需要設定Info.plist(因為較https不安全)
+//            guard let url = URL(string: podcast.artworkUrl600 ?? "") else { return }
+//            URLSession.shared.dataTask(with: url) { (data, response, error) in
+//                guard let data = data else { return }
+//                DispatchQueue.main.async {
+//                    self.podcastImageView.image = UIImage(data: data)
+//                }
+//            }.resume()
         }
     }
     let podcastImageView: UIImageView = {
         let iv = UIImageView()
-        iv.backgroundColor = .green
         iv.image = #imageLiteral(resourceName: "appicon")
         return iv
     }()
@@ -69,7 +80,6 @@ class PodcastCell: UITableViewCell {
         podcastImageView.heightAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
         podcastImageView.widthAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

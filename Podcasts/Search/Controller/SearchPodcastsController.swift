@@ -16,6 +16,9 @@ class SearchPodcastsController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
+        //清除tableView多餘的分隔線(若設定.separatorStyle = .none會導致cell之間的分隔線完全消失)
+        //https://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview
+        tableView.tableFooterView = UIView()
         setUpSearchController()
     }
     fileprivate func setUpSearchController(){
@@ -38,6 +41,17 @@ class SearchPodcastsController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
+    }
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let label = UILabel()
+        label.text = "No results, please enter a search query"
+        label.textAlignment = .center
+        label.textColor = .purple
+        label.font = .boldSystemFont(ofSize: 20)
+        return label
+    }
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 250
     }
 }
 extension SearchPodcastsController: UISearchBarDelegate {
