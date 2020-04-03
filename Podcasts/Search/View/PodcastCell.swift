@@ -18,7 +18,7 @@ class PodcastCell: UITableViewCell {
             episodeCountLabel.text = "\(podcast.trackCount ?? 0) Episodes"
             let url = URL(string: podcast.artworkUrl600 ?? "")
             podcastImageView.sd_setImage(with: url)
-            //傳統做法,沒有Cache(網路耗量大),而且針對http也需要設定Info.plist(因為較https不安全)
+            //傳統做法,沒有Cache(網路耗量大)
 //            guard let url = URL(string: podcast.artworkUrl600 ?? "") else { return }
 //            URLSession.shared.dataTask(with: url) { (data, response, error) in
 //                guard let data = data else { return }

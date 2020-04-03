@@ -51,14 +51,28 @@ class SearchPodcastsController: UITableViewController {
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 250
+        return podcasts.isEmpty ? 250 : 0
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let controller = EpisodesController()
+        let podcast = podcasts[indexPath.row]
+        controller.podcast = podcast
+        navigationController?.pushViewController(controller, animated: true)
     }
 }
 extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        //以下兩個等價
         NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (podcasts) in
             self.podcasts = podcasts
             self.tableView.reloadData()
         }
+//        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText, completion: handlePodcastsResponse(podcasts:))
     }
+    func handlePodcastsResponse(podcasts: [Podcast]) -> Void {
+        self.podcasts = podcasts
+        tableView.reloadData()
+    }
+    //function的型別 > 參數型別 + 回傳型別
+    //可將function當成參數傳入另一個function
 }
