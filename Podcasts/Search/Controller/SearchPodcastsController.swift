@@ -16,9 +16,7 @@ class SearchPodcastsController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
-        //清除tableView多餘的分隔線(若設定.separatorStyle = .none會導致cell之間的分隔線完全消失)
-        //https://stackoverflow.com/questions/1369831/eliminate-extra-separators-below-uitableview
-        tableView.tableFooterView = UIView()
+        tableView.eliminateExtraSeparators()
         setUpSearchController()
     }
     fileprivate func setUpSearchController(){

@@ -7,11 +7,17 @@
 //
 
 import UIKit
+import FeedKit
 
 class EpisodesController: UITableViewController {
     var podcast: Podcast! {
         didSet {
             navigationItem.title = podcast.trackName
+            guard let url = podcast.feedUrl else {
+                print("Error - feedUrl is nil")
+                return
+            }
+            parseXMLFromURL(with: url)
         }
     }
     let cellID = "EpisodeCell"
@@ -21,10 +27,32 @@ class EpisodesController: UITableViewController {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
-        tableView.tableFooterView = UIView()
-        episodes.append(Episode(title: "終極一班"))
-        episodes.append(Episode(title: "終極一家"))
-        episodes.append(Episode(title: "終極三國"))
+        tableView.eliminateExtraSeparators()
+    }
+    fileprivate func parseXMLFromURL(with url: String){
+        guard let feedURL = URL(string: url) else { return }
+        let xmlParser = FeedParser(URL: feedURL)
+        xmlParser.parseAsync { (result) in
+            //Associated Value > 把值夾帶在enum case中
+            //https://hugolu.gitbooks.io/learn-swift/content/Advanced/Enum.html#associated_value
+            switch result {
+            case .success(let feed):
+                guard let rssFeed = feed.rssFeed else {
+                    print("Error - rssFeed is nil")
+                    return
+                }
+                rssFeed.items?.forEach {
+                    let episode = Episode(title: $0.title ?? "")
+                    self.episodes.append(episode)
+                }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            case .failure(let error):
+                print("Error - Parse XML failed:\(error)")
+            }
+        }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return episodes.count

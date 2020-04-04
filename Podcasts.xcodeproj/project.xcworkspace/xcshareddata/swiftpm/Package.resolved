@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "FeedKit",
+        "repositoryURL": "https://github.com/nmdias/FeedKit",
+        "state": {
+          "branch": null,
+          "revision": "7dcec40f4f48ed08de4b8455a29bf5d22bdf4cfb",
+          "version": "9.1.0"
+        }
+      },
+      {
         "package": "SDWebImage",
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage",
         "state": {
