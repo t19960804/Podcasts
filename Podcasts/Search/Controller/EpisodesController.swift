@@ -37,6 +37,8 @@ class EpisodesController: UITableViewController {
             //https://hugolu.gitbooks.io/learn-swift/content/Advanced/Enum.html#associated_value
             switch result {
             case .success(let feed):
+                //RSS > 以XML為基礎的內容傳送機制
+                //Feed > 資料來源
                 guard let rssFeed = feed.rssFeed else {
                     print("Error - rssFeed is nil")
                     return
