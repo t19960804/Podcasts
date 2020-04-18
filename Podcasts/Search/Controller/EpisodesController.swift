@@ -26,7 +26,7 @@ class EpisodesController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
+        tableView.register(EpisodeCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
     }
     fileprivate func parseXMLFromURL(with url: String){
@@ -44,7 +44,7 @@ class EpisodesController: UITableViewController {
                     return
                 }
                 rssFeed.items?.forEach {
-                    let episode = Episode(title: $0.title ?? "")
+                    let episode = Episode(item: $0)
                     self.episodes.append(episode)
                 }
                 DispatchQueue.main.async {
@@ -60,9 +60,12 @@ class EpisodesController: UITableViewController {
         return episodes.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! EpisodeCell
         let episode = episodes[indexPath.row]
-        cell.textLabel?.text = episode.title
+        cell.episode = episode
         return cell
+    }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
     }
 }
