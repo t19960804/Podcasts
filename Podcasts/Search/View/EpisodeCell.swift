@@ -18,6 +18,10 @@ class EpisodeCell: UITableViewCell {
             
             titleLabel.text = episode.title
             descriptionLabel.text = episode.description
+            
+            if let urlString = episode.imageURL {
+                episodeImageView.sd_setImage(with: URL(string: urlString))
+            }
         }
     }
     let episodeImageView: UIImageView = {

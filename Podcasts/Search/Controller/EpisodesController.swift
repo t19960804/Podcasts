@@ -31,28 +31,11 @@ class EpisodesController: UITableViewController {
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
-        let xmlParser = FeedParser(URL: feedURL)
-        xmlParser.parseAsync { (result) in
-            //Associated Value > 把值夾帶在enum case中
-            //https://hugolu.gitbooks.io/learn-swift/content/Advanced/Enum.html#associated_value
-            switch result {
-            case .success(let feed):
-                //RSS > 以XML為基礎的內容傳送機制
-                //Feed > 資料來源
-                guard let rssFeed = feed.rssFeed else {
-                    print("Error - rssFeed is nil")
-                    return
-                }
-                rssFeed.items?.forEach {
-                    let episode = Episode(item: $0)
-                    self.episodes.append(episode)
-                }
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-                
-            case .failure(let error):
-                print("Error - Parse XML failed:\(error)")
+        //不要將Network相關的code放在Controller
+        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (episodes) in
+            self.episodes = episodes
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
         }
     }

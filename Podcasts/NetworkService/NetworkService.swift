@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import FeedKit
 
 class NetworkService {
     static let sharedInstance = NetworkService()
@@ -33,11 +34,30 @@ class NetworkService {
                 return
             }
             do {
-                //將json data轉換成自訂類別
                 let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
                 completion(searchResult.results)
             } catch {
                 print("Decode json failed:\(error)")
+            }
+        }
+    }
+    func fetchEpisodes(url: URL, completion: @escaping ([Episode]) -> Void){
+        let xmlParser = FeedParser(URL: url)
+        xmlParser.parseAsync { (result) in
+            //Associated Value > 把值夾帶在enum case中
+            //https://hugolu.gitbooks.io/learn-swift/content/Advanced/Enum.html#associated_value
+            switch result {
+            case .success(let feed):
+                //RSS > 以XML為基礎的內容傳送機制
+                //Feed > 資料來源
+                guard let rssFeed = feed.rssFeed else {
+                    print("Error - rssFeed is nil")
+                    return
+                }
+                let episodes = rssFeed.getEpisodes()
+                completion(episodes)
+            case .failure(let error):
+                print("Error - Parse XML failed:\(error)")
             }
         }
     }
