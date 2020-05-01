@@ -19,8 +19,9 @@ extension UITableView {
 
 extension String {
     func turnHTTPToHTTPS() -> String {
-        if self.contains("http") {
-            return self.replacingOccurrences(of: "http", with: "https")
+        let unsecureString = "http:"
+        if self.contains(unsecureString) {
+            return self.replacingOccurrences(of: unsecureString, with: "https:")
         }
         return self
     }

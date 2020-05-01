@@ -51,4 +51,10 @@ class EpisodesController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let episodePlayerController = EpisodePlayerController()
+        let episode = episodes[indexPath.row]
+        episodePlayerController.episode = episode 
+        self.present(episodePlayerController, animated: true, completion: nil)
+    }
 }
