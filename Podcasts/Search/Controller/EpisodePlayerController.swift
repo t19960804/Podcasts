@@ -7,15 +7,21 @@
 //
 
 import UIKit
+import AVKit
 
 class EpisodePlayerController: UIViewController {
     var episode: Episode! {
         didSet {
-            let urlString = episode.imageURL
-            let url = URL(string: urlString ?? "")
-            episodeImageView.sd_setImage(with: url)
+            let imageUrlString = episode.imageURL
+            let imageUrl = URL(string: imageUrlString ?? "")
+            episodeImageView.sd_setImage(with: imageUrl)
             titleLabel.text = episode.title
             authorLabel.text = episode.author
+            
+            let audioUtlString = episode.audioURL
+            if let audioUrl = URL(string: audioUtlString ?? "") {
+                playAudio(with: audioUrl)
+            }
         }
     }
     lazy var dismissButton: UIButton = {
@@ -78,10 +84,11 @@ class EpisodePlayerController: UIViewController {
         btn.tintColor = .black
         return btn
     }()
-    let playButton: UIButton = {
+    lazy var playButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setImage(UIImage(named: "play"), for: .normal)
+        btn.setImage(#imageLiteral(resourceName: "play"), for: .normal)
         btn.tintColor = .black
+        btn.addTarget(self, action: #selector(handlePlayAndPause), for: .touchUpInside)
         return btn
     }()
     let fastForwardButton: UIButton = {
@@ -136,6 +143,13 @@ class EpisodePlayerController: UIViewController {
         sv.spacing = 8
         return sv
     }()
+    let avPlayer: AVPlayer = {
+        let player = AVPlayer()
+        //設為true時player會延遲載入,讓緩衝區可以裝下更多資料,初始播放速度慢,但播放過程中比較不會Lag
+        player.automaticallyWaitsToMinimizeStalling = false
+        return player
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -159,7 +173,22 @@ class EpisodePlayerController: UIViewController {
         hStackView_OperationButton.heightAnchor.constraint(equalToConstant: 170).isActive = true
         hStackView_Sound.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
+    func playAudio(with url: URL) {
+        let item = AVPlayerItem(url: url)
+        avPlayer.replaceCurrentItem(with: item)
+        playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
+        avPlayer.play()
+    }
     @objc fileprivate func handleDismiss(){
         self.dismiss(animated: true, completion: nil)
+    }
+    @objc fileprivate func handlePlayAndPause(){
+        if avPlayer.timeControlStatus == .playing {
+            avPlayer.pause()
+            playButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+        } else {
+            avPlayer.play()
+            playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
+        }
     }
 }
