@@ -35,6 +35,8 @@ class EpisodePlayerController: UIViewController {
     let episodeImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = #imageLiteral(resourceName: "appicon")
+        iv.layer.cornerRadius = 5
+        iv.clipsToBounds = true
         return iv
     }()
     //MARK: - StackView_Time
@@ -155,6 +157,18 @@ class EpisodePlayerController: UIViewController {
         view.backgroundColor = .white
         setUpConstraints()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        scaleDownEpisodeImageView()
+        //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
+        //https://blog.csdn.net/caiwenyu9999/article/details/51518960        
+        let time = CMTime(value: 1, timescale: 3)
+        let times = [NSValue(time: time)]
+        //在播放期間,若跨過指定的時間,就執行closure
+        avPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
+            self.scaleUpEpisodeImageView()
+        }
+    }
     func setUpConstraints(){
         view.addSubview(vStackView)
         vStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
@@ -184,11 +198,24 @@ class EpisodePlayerController: UIViewController {
     }
     @objc fileprivate func handlePlayAndPause(){
         if avPlayer.timeControlStatus == .playing {
+            scaleDownEpisodeImageView()
             avPlayer.pause()
             playButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
         } else {
+            scaleUpEpisodeImageView()
             avPlayer.play()
             playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
         }
+    }
+    
+    fileprivate func scaleDownEpisodeImageView(completion: ((Bool) -> Void)? = nil){
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
+            self.episodeImageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        }, completion: completion)
+    }
+    fileprivate func scaleUpEpisodeImageView(completion: ((Bool) -> Void)? = nil){
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
+                self.episodeImageView.transform = CGAffineTransform.identity
+        }, completion: completion)
     }
 }

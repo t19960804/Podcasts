@@ -27,6 +27,8 @@ class SearchPodcastsController: UITableViewController {
         navigationItem.hidesSearchBarWhenScrolling = false //固定searchBar
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
+        
+        searchBar(searchController.searchBar, textDidChange: "Voong")
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return podcasts.count
