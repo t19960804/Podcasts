@@ -46,13 +46,13 @@ class EpisodePlayerController: UIViewController {
     }()
     let timeLabel_LowerBound: UILabel = {
         let lb = UILabel()
-        lb.text = "00:00:00"
+        lb.text = "--:--:--"
         lb.textColor = .darkGray
         return lb
     }()
     let timeLabel_UpperBound: UILabel = {
         let lb = UILabel()
-        lb.text = "99:99:99"
+        lb.text = "--:--:--"
         lb.textColor = .darkGray
         return lb
     }()
@@ -145,7 +145,7 @@ class EpisodePlayerController: UIViewController {
         sv.spacing = 8
         return sv
     }()
-    let avPlayer: AVPlayer = {
+    let podcastPlayer: AVPlayer = {
         let player = AVPlayer()
         //設為true時player會延遲載入,讓緩衝區可以裝下更多資料,初始播放速度慢,但播放過程中比較不會Lag
         player.automaticallyWaitsToMinimizeStalling = false
@@ -165,9 +165,24 @@ class EpisodePlayerController: UIViewController {
         let time = CMTime(value: 1, timescale: 3)
         let times = [NSValue(time: time)]
         //在播放期間,若跨過指定的時間,就執行closure
-        avPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
+        podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
             self.scaleUpEpisodeImageView()
+            let duration = self.podcastPlayer.currentItem?.asset.duration
+            self.timeLabel_UpperBound.text = duration?.getFormattedString()
         }
+        //週期性的更新當前播放時間
+        let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
+        podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { (currentTime) in
+            self.timeLabel_LowerBound.text = currentTime.getFormattedString()
+            self.updateTimeSlider()
+        }
+    }
+    fileprivate func updateTimeSlider(){
+        let currentSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
+        let duration = podcastPlayer.currentItem?.asset.duration
+        let totalSeconds = CMTimeGetSeconds(duration ?? CMTime(value: 1, timescale: 1))
+        let progressPercent = currentSeconds / totalSeconds
+        timeSlider.value = Float(progressPercent)
     }
     func setUpConstraints(){
         view.addSubview(vStackView)
@@ -189,21 +204,21 @@ class EpisodePlayerController: UIViewController {
     }
     func playAudio(with url: URL) {
         let item = AVPlayerItem(url: url)
-        avPlayer.replaceCurrentItem(with: item)
+        podcastPlayer.replaceCurrentItem(with: item)
         playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
-        avPlayer.play()
+        podcastPlayer.play()
     }
     @objc fileprivate func handleDismiss(){
         self.dismiss(animated: true, completion: nil)
     }
     @objc fileprivate func handlePlayAndPause(){
-        if avPlayer.timeControlStatus == .playing {
+        if podcastPlayer.timeControlStatus == .playing {
             scaleDownEpisodeImageView()
-            avPlayer.pause()
+            podcastPlayer.pause()
             playButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
         } else {
             scaleUpEpisodeImageView()
-            avPlayer.play()
+            podcastPlayer.play()
             playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
         }
     }
