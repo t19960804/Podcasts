@@ -42,6 +42,7 @@ class EpisodePlayerController: UIViewController {
     //MARK: - StackView_Time
     let timeSlider: UISlider = {
         let sd = UISlider()
+        sd.addTarget(self, action: #selector(handleTimeSliderValueChanged(slider:)), for: .valueChanged)
         return sd
     }()
     let timeLabel_LowerBound: UILabel = {
@@ -84,6 +85,7 @@ class EpisodePlayerController: UIViewController {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(named: "rewind15"), for: .normal)
         btn.tintColor = .black
+        btn.addTarget(self, action: #selector(handleRewindAndForward(button:)), for: .touchUpInside)
         return btn
     }()
     lazy var playButton: UIButton = {
@@ -97,6 +99,7 @@ class EpisodePlayerController: UIViewController {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(named: "fastforward15"), for: .normal)
         btn.tintColor = .black
+        btn.addTarget(self, action: #selector(handleRewindAndForward(button:)), for: .touchUpInside)
         return btn
     }()
     lazy var hStackView_OperationButton: UIStackView = {
@@ -115,6 +118,8 @@ class EpisodePlayerController: UIViewController {
     }()
     let soundSlider: UISlider = {
         let sd = UISlider()
+        sd.addTarget(self, action: #selector(handleSoundSliderValueChanged(slider:)), for: .valueChanged)
+        sd.value = 1 //因為podcastPlayer.volume預設值為1
         return sd
     }()
     let soundLouderImageView: UIImageView = {
@@ -160,8 +165,12 @@ class EpisodePlayerController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         scaleDownEpisodeImageView()
+        updateUIWhenPoadcastStartPlaying()
+        updateCurrentPlayingTimePeriodically()
+    }
+    fileprivate func updateUIWhenPoadcastStartPlaying(){
         //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
-        //https://blog.csdn.net/caiwenyu9999/article/details/51518960        
+        //https://blog.csdn.net/caiwenyu9999/article/details/51518960
         let time = CMTime(value: 1, timescale: 3)
         let times = [NSValue(time: time)]
         //在播放期間,若跨過指定的時間,就執行closure
@@ -170,7 +179,8 @@ class EpisodePlayerController: UIViewController {
             let duration = self.podcastPlayer.currentItem?.asset.duration
             self.timeLabel_UpperBound.text = duration?.getFormattedString()
         }
-        //週期性的更新當前播放時間
+    }
+    fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { (currentTime) in
             self.timeLabel_LowerBound.text = currentTime.getFormattedString()
@@ -208,6 +218,27 @@ class EpisodePlayerController: UIViewController {
         playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
         podcastPlayer.play()
     }
+    @objc fileprivate func handleTimeSliderValueChanged(slider: UISlider){
+        guard let duration = podcastPlayer.currentItem?.duration else {
+            print("Error - currentItem is nil")
+            return
+        }
+        let durationInSeconds = CMTimeGetSeconds(duration)
+         //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
+        let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
+        let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1)
+        podcastPlayer.seek(to: seekTime)
+    }
+    @objc fileprivate func handleRewindAndForward(button: UIButton){
+        let currentTime = podcastPlayer.currentTime()
+        let deltaSeconds: Int64 = button == rewindButton ? -15 : 15
+        let deltaTime = CMTime(value: deltaSeconds, timescale: 1)
+        let seekTime = CMTimeAdd(currentTime, deltaTime)//也可以像上面的method,將currentTime轉秒數在做加減
+        podcastPlayer.seek(to: seekTime)
+    }
+    @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){
+        podcastPlayer.volume = slider.value
+    }
     @objc fileprivate func handleDismiss(){
         self.dismiss(animated: true, completion: nil)
     }
@@ -233,4 +264,5 @@ class EpisodePlayerController: UIViewController {
                 self.episodeImageView.transform = CGAffineTransform.identity
         }, completion: completion)
     }
+    
 }
