@@ -175,16 +175,17 @@ class EpisodePlayerController: UIViewController {
         let times = [NSValue(time: time)]
         //在播放期間,若跨過指定的時間,就執行closure
         podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
-            self.scaleUpEpisodeImageView()
-            let duration = self.podcastPlayer.currentItem?.asset.duration
-            self.timeLabel_UpperBound.text = duration?.getFormattedString()
+            [weak self] in //避免Retain Cycle
+            self?.scaleUpEpisodeImageView()
+            let duration = self?.podcastPlayer.currentItem?.asset.duration
+            self?.timeLabel_UpperBound.text = duration?.getFormattedString()
         }
     }
     fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
-        podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { (currentTime) in
-            self.timeLabel_LowerBound.text = currentTime.getFormattedString()
-            self.updateTimeSlider()
+        podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
+            self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
+            self?.updateTimeSlider()
         }
     }
     fileprivate func updateTimeSlider(){

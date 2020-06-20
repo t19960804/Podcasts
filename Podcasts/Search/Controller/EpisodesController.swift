@@ -40,6 +40,7 @@ class EpisodesController: UITableViewController {
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        activityIndicatorView.isHidden = !episodes.isEmpty
         return episodes.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -56,5 +57,13 @@ class EpisodesController: UITableViewController {
         let episode = episodes[indexPath.row]
         episodePlayerController.episode = episode 
         self.present(episodePlayerController, animated: true, completion: nil)
+    }
+    let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        activityIndicatorView.color = .gray
+        return activityIndicatorView
+    }
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 200
     }
 }

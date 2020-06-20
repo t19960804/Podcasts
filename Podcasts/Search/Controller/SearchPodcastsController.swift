@@ -12,6 +12,7 @@ import Alamofire
 class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
     var podcasts = [Podcast]()
+    var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,11 +63,16 @@ class SearchPodcastsController: UITableViewController {
 }
 extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        //以下兩個等價
-        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (podcasts) in
-            self.podcasts = podcasts
-            self.tableView.reloadData()
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
+            //以下兩個等價
+            NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) {
+                (podcasts) in
+                self.podcasts = podcasts
+                self.tableView.reloadData()
+            }
         }
+        
 //        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText, completion: handlePodcastsResponse(podcasts:))
     }
     func handlePodcastsResponse(podcasts: [Podcast]) -> Void {
