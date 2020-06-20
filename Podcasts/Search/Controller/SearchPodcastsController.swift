@@ -13,12 +13,21 @@ class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
     var podcasts = [Podcast]()
     var timer: Timer?
+    let searchingView = SearchingView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
         setUpSearchController()
+        setupConstraints()
+    }
+    fileprivate func setupConstraints(){
+        view.addSubview(searchingView)
+        searchingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        searchingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
+        searchingView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     }
     fileprivate func setUpSearchController(){
         let searchController = UISearchController(searchResultsController: nil)
@@ -28,8 +37,6 @@ class SearchPodcastsController: UITableViewController {
         navigationItem.hidesSearchBarWhenScrolling = false //固定searchBar
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
-        
-        searchBar(searchController.searchBar, textDidChange: "Voong")
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return podcasts.count
@@ -45,14 +52,15 @@ class SearchPodcastsController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let label = UILabel()
-        label.text = "No results, please enter a search query"
+        label.text = "Please enter a search query"
         label.textAlignment = .center
         label.textColor = .purple
         label.font = .boldSystemFont(ofSize: 20)
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return podcasts.isEmpty ? 250 : 0
+        let searchBarIsEmpty = navigationItem.searchController!.searchBar.text!.isEmpty
+        return podcasts.isEmpty && searchBarIsEmpty ? 250 : 0
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()
@@ -63,11 +71,16 @@ class SearchPodcastsController: UITableViewController {
 }
 extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print(searchText)
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
-            //以下兩個等價
+            self.searchingView.isHidden = false
+            self.podcasts = []
+            self.tableView.reloadData()
+            
             NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) {
                 (podcasts) in
+                self.searchingView.isHidden = true
                 self.podcasts = podcasts
                 self.tableView.reloadData()
             }

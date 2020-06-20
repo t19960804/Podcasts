@@ -60,7 +60,7 @@ class EpisodesController: UITableViewController {
     }
     let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        activityIndicatorView.color = .gray
+        activityIndicatorView.color = .purple
         return activityIndicatorView
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
