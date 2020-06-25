@@ -9,6 +9,16 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
+    var topAnchor: NSLayoutConstraint?
+    
+    let miniPlayerView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor = .red
+        return v
+    }()
+    let miniPlayerViewHeight: CGFloat = 80
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,6 +32,7 @@ class MainTabBarController: UITabBarController {
                            generateNavController(rootController: downloadsController, tabBarTitle: "Downloads", tabBarImage: #imageLiteral(resourceName: "downloads"))]
         //被點選的 tab 的文字和圖案顏色
         tabBar.tintColor = .purple
+        setupConstraints()
     }
     
     fileprivate func generateNavController(rootController: UIViewController, tabBarTitle: String, tabBarImage: UIImage) -> UINavigationController {
@@ -32,6 +43,32 @@ class MainTabBarController: UITabBarController {
         rootController.tabBarItem.title = tabBarTitle
         rootController.tabBarItem.image = tabBarImage
         return navController
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        perform(#selector(showMiniPodcastPlayerView), with: nil, afterDelay: 1)
+    }
+    func setupConstraints(){
+        //.addSubview > 將View往上疊 ; .insertSubview > 將View插入至某個View之下
+        view.insertSubview(miniPlayerView, belowSubview: tabBar)
+        miniPlayerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        topAnchor = miniPlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor, constant: miniPlayerViewHeight)
+        topAnchor?.isActive = true
+        miniPlayerView.heightAnchor.constraint(equalToConstant: miniPlayerViewHeight).isActive = true
+        miniPlayerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+    }
+    
+    @objc func showMiniPodcastPlayerView(){
+        topAnchor?.constant = -miniPlayerViewHeight
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+    @objc func hideMiniPodcastPlayerView(){
+        topAnchor?.constant = miniPlayerViewHeight
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: nil)
     }
 
 }

@@ -85,12 +85,6 @@ extension SearchPodcastsController: UISearchBarDelegate {
                 self.tableView.reloadData()
             }
         }
-        
-//        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText, completion: handlePodcastsResponse(podcasts:))
-    }
-    func handlePodcastsResponse(podcasts: [Podcast]) -> Void {
-        self.podcasts = podcasts
-        tableView.reloadData()
     }
     //function的型別 > 參數型別 + 回傳型別
     //可將function當成參數傳入另一個function
