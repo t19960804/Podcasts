@@ -10,8 +10,9 @@ import UIKit
 import AVKit
 
 class EpisodePlayerView: UIView {
-    var episode: Episode! {
+    var episode: Episode? {
         didSet {
+            guard let episode = episode else { return }//mini > fullScrren不需要重新播放
             let imageUrlString = episode.imageURL
             let imageUrl = URL(string: imageUrlString ?? "")
             episodeImageView.sd_setImage(with: imageUrl)
@@ -158,11 +159,18 @@ class EpisodePlayerView: UIView {
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .white
         setUpConstraints()
         scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShowFullScreenPlayerView))
+        addGestureRecognizer(tapGesture)
+    }
+    @objc func handleShowFullScreenPlayerView(){
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        tabBarController?.showFullScreenPodcastPlayerView(episode: nil)
     }
     func setUpConstraints(){
         addSubview(vStackView)
@@ -237,7 +245,8 @@ class EpisodePlayerView: UIView {
         podcastPlayer.volume = slider.value
     }
     @objc fileprivate func handleDismiss(){
-        removeFromSuperview()
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        tabBarController?.showMiniPodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
         if podcastPlayer.timeControlStatus == .playing {

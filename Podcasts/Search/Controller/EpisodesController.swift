@@ -54,13 +54,8 @@ class EpisodesController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let episode = episodes[indexPath.row]
-        
-        let window = UIApplication.shared.keyWindow
-        let playerDetailsView = EpisodePlayerView()
-        playerDetailsView.episode = episode
-        
-        playerDetailsView.frame = self.view.frame
-        window?.addSubview(playerDetailsView)//用Controller.view會有問題,應該是生命週期
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        tabBarController?.showFullScreenPodcastPlayerView(episode: episode)
     }
     let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
