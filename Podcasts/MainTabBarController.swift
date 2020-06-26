@@ -9,14 +9,10 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
-    var topAnchor: NSLayoutConstraint?
+    var topAnchorForFullScreenPlayer: NSLayoutConstraint?
+    var topAnchorForMiniPlayer: NSLayoutConstraint?
     
-    let miniPlayerView: UIView = {
-        let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
-        v.backgroundColor = .red
-        return v
-    }()
+    let miniPlayerView = EpisodePlayerView()
     let miniPlayerViewHeight: CGFloat = 80
     
     override func viewDidLoad() {
@@ -45,26 +41,48 @@ class MainTabBarController: UITabBarController {
         return navController
     }
     func setupConstraints(){
+        miniPlayerView.translatesAutoresizingMaskIntoConstraints = false
+        miniPlayerView.backgroundColor = .red
+        //miniPlayerView為全屏,縮小時會蓋住tabbar
         //.addSubview > 將View往上疊 ; .insertSubview > 將View插入至某個View之下
         view.insertSubview(miniPlayerView, belowSubview: tabBar)
-        miniPlayerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        topAnchor = miniPlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor, constant: miniPlayerViewHeight) //hide mini player when init
-        topAnchor?.isActive = true
-        miniPlayerView.heightAnchor.constraint(equalToConstant: miniPlayerViewHeight).isActive = true
-        miniPlayerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        
+        topAnchorForFullScreenPlayer = miniPlayerView.topAnchor.constraint(equalTo: view.topAnchor,constant: 0)
+        //topAnchorForFullScreenPlayer?.isActive = true
+
+        topAnchorForMiniPlayer = miniPlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor,constant: -miniPlayerViewHeight)
+        topAnchorForMiniPlayer?.isActive = true
+        
+        miniPlayerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        miniPlayerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        miniPlayerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
-    
+    @objc func showFullScreenPodcastPlayerView(){
+        topAnchorForMiniPlayer?.isActive = false
+        topAnchorForFullScreenPlayer?.isActive = true
+        
+        topAnchorForFullScreenPlayer?.constant = 0
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+    @objc func hidePodcastPlayerView(){
+        topAnchorForMiniPlayer?.isActive = false
+        topAnchorForFullScreenPlayer?.isActive = true
+        
+        topAnchorForFullScreenPlayer?.constant = view.frame.height
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.view.layoutIfNeeded()
+        }, completion: nil)
+    }
     @objc func showMiniPodcastPlayerView(){
-        topAnchor?.constant = -miniPlayerViewHeight
+        topAnchorForFullScreenPlayer?.isActive = false
+        topAnchorForMiniPlayer?.isActive = true
+        
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
-    @objc func hideMiniPodcastPlayerView(){
-        topAnchor?.constant = miniPlayerViewHeight
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.view.layoutIfNeeded()
-        }, completion: nil)
-    }
+
 
 }
