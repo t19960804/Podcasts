@@ -44,15 +44,11 @@ class MainTabBarController: UITabBarController {
         rootController.tabBarItem.image = tabBarImage
         return navController
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        perform(#selector(showMiniPodcastPlayerView), with: nil, afterDelay: 1)
-    }
     func setupConstraints(){
         //.addSubview > 將View往上疊 ; .insertSubview > 將View插入至某個View之下
         view.insertSubview(miniPlayerView, belowSubview: tabBar)
         miniPlayerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        topAnchor = miniPlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor, constant: miniPlayerViewHeight)
+        topAnchor = miniPlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor, constant: miniPlayerViewHeight) //hide mini player when init
         topAnchor?.isActive = true
         miniPlayerView.heightAnchor.constraint(equalToConstant: miniPlayerViewHeight).isActive = true
         miniPlayerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true

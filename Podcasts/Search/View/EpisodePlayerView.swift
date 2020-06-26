@@ -1,15 +1,15 @@
 //
-//  EpisodePlayerController.swift
+//  EpisodePlayerView.swift
 //  Podcasts
 //
-//  Created by t19960804 on 5/1/20.
+//  Created by t19960804 on 6/26/20.
 //  Copyright © 2020 t19960804. All rights reserved.
 //
 
 import UIKit
 import AVKit
 
-class EpisodePlayerController: UIViewController {
+class EpisodePlayerView: UIView {
     var episode: Episode! {
         didSet {
             let imageUrlString = episode.imageURL
@@ -47,7 +47,7 @@ class EpisodePlayerController: UIViewController {
     }()
     let timeLabel_LowerBound: UILabel = {
         let lb = UILabel()
-        lb.text = "--:--:--"
+        lb.text = "00:00:00"
         lb.textColor = .darkGray
         return lb
     }()
@@ -156,31 +156,45 @@ class EpisodePlayerController: UIViewController {
         player.automaticallyWaitsToMinimizeStalling = false
         return player
     }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .white
         setUpConstraints()
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
     }
-    fileprivate func updateUIWhenPoadcastStartPlaying(){
-        //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
-        //https://blog.csdn.net/caiwenyu9999/article/details/51518960
-        let time = CMTime(value: 1, timescale: 3)
-        let times = [NSValue(time: time)]
-        //在播放期間,若跨過指定的時間,就執行closure
-        podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
-            [weak self] in //避免Retain Cycle
-            self?.scaleUpEpisodeImageView()
-            let duration = self?.podcastPlayer.currentItem?.asset.duration
-            self?.timeLabel_UpperBound.text = duration?.getFormattedString()
-        }
+    func setUpConstraints(){
+        addSubview(vStackView)
+        vStackView.topAnchor.constraint(equalTo: topAnchor, constant: 40).isActive = true
+        vStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 24).isActive = true
+        vStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -24).isActive = true
+        vStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -24).isActive = true
+        
+        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        episodeImageView.heightAnchor.constraint(equalTo: episodeImageView.widthAnchor, multiplier: 1).isActive = true
+        timeSlider.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        hStackView_Time.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30).isActive = true
+        authorLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        hStackView_OperationButton.heightAnchor.constraint(equalToConstant: 170).isActive = true
+        hStackView_Sound.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
+    fileprivate func updateUIWhenPoadcastStartPlaying(){
+           //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
+           //https://blog.csdn.net/caiwenyu9999/article/details/51518960
+           let time = CMTime(value: 1, timescale: 3)
+           let times = [NSValue(time: time)]
+           //在播放期間,若跨過指定的時間,就執行closure
+           podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
+               [weak self] in //避免Retain Cycle
+               self?.scaleUpEpisodeImageView()
+               let duration = self?.podcastPlayer.currentItem?.asset.duration
+               self?.timeLabel_UpperBound.text = duration?.getFormattedString()
+           }
+       }
     fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
@@ -194,24 +208,6 @@ class EpisodePlayerController: UIViewController {
         let totalSeconds = CMTimeGetSeconds(duration ?? CMTime(value: 1, timescale: 1))
         let progressPercent = currentSeconds / totalSeconds
         timeSlider.value = Float(progressPercent)
-    }
-    func setUpConstraints(){
-        view.addSubview(vStackView)
-        vStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
-        vStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 24).isActive = true
-        vStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -24).isActive = true
-        vStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24).isActive = true
-        
-        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
-        episodeImageView.heightAnchor.constraint(equalTo: episodeImageView.widthAnchor, multiplier: 1).isActive = true
-        timeSlider.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        hStackView_Time.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30).isActive = true
-        authorLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        hStackView_OperationButton.heightAnchor.constraint(equalToConstant: 170).isActive = true
-        hStackView_Sound.heightAnchor.constraint(equalToConstant: 30).isActive = true
     }
     func playAudio(with url: URL) {
         let item = AVPlayerItem(url: url)
@@ -241,7 +237,7 @@ class EpisodePlayerController: UIViewController {
         podcastPlayer.volume = slider.value
     }
     @objc fileprivate func handleDismiss(){
-        self.dismiss(animated: true, completion: nil)
+        removeFromSuperview()
     }
     @objc fileprivate func handlePlayAndPause(){
         if podcastPlayer.timeControlStatus == .playing {
@@ -265,5 +261,7 @@ class EpisodePlayerController: UIViewController {
                 self.episodeImageView.transform = CGAffineTransform.identity
         }, completion: completion)
     }
-    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
