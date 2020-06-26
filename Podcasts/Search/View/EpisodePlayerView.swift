@@ -170,7 +170,7 @@ class EpisodePlayerView: UIView {
     }
     @objc func handleShowFullScreenPlayerView(){
         let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
-        tabBarController?.showFullScreenPodcastPlayerView(episode: nil)
+        tabBarController?.maximizePodcastPlayerView(episode: nil)
     }
     func setUpConstraints(){
         addSubview(vStackView)
@@ -246,7 +246,7 @@ class EpisodePlayerView: UIView {
     }
     @objc fileprivate func handleDismiss(){
         let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
-        tabBarController?.showMiniPodcastPlayerView()
+        tabBarController?.minimizePodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
         if podcastPlayer.timeControlStatus == .playing {

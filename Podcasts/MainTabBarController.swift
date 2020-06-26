@@ -54,7 +54,7 @@ class MainTabBarController: UITabBarController {
         episodePlayerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         episodePlayerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
-    func showFullScreenPodcastPlayerView(episode: Episode?){
+    func maximizePodcastPlayerView(episode: Episode?){
         episodePlayerView.episode = episode
         
         topAnchorForMiniPlayer?.isActive = false
@@ -67,7 +67,7 @@ class MainTabBarController: UITabBarController {
             self.tabBar.transform = CGAffineTransform(translationX: 0, y: 100)
         })
     }
-    @objc func showMiniPodcastPlayerView(){
+    func minimizePodcastPlayerView(){
         topAnchorForFullScreenPlayer?.isActive = false
         topAnchorForMiniPlayer?.isActive = true
         
