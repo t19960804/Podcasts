@@ -47,8 +47,8 @@ class MainTabBarController: UITabBarController {
         topAnchorForFullScreenPlayer = episodePlayerView.topAnchor.constraint(equalTo: view.topAnchor,constant: view.frame.height)//hide player when initialize
         topAnchorForFullScreenPlayer?.isActive = true
         
-        let miniPlayerViewHeight: CGFloat = 80
-        topAnchorForMiniPlayer = episodePlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor,constant: -miniPlayerViewHeight)
+        
+        topAnchorForMiniPlayer = episodePlayerView.topAnchor.constraint(equalTo: tabBar.topAnchor,constant: -EpisodeMiniPlayerView.height)
         
         episodePlayerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         episodePlayerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -65,6 +65,8 @@ class MainTabBarController: UITabBarController {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
             self.tabBar.transform = CGAffineTransform(translationX: 0, y: 100)
+            self.episodePlayerView.miniPlayerView.isHidden = true
+            self.episodePlayerView.vStackView.isHidden = false
         })
     }
     func minimizePodcastPlayerView(){
@@ -75,6 +77,8 @@ class MainTabBarController: UITabBarController {
 
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
+            self.episodePlayerView.miniPlayerView.isHidden = false
+            self.episodePlayerView.vStackView.isHidden = true
         })
     }
 

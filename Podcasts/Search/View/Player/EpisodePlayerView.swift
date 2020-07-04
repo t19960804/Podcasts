@@ -18,7 +18,7 @@ class EpisodePlayerView: UIView {
             episodeImageView.sd_setImage(with: imageUrl)
             titleLabel.text = episode.title
             authorLabel.text = episode.author
-            
+            miniPlayerView.episode = episode
             let audioUtlString = episode.audioURL
             if let audioUrl = URL(string: audioUtlString ?? "") {
                 playAudio(with: audioUrl)
@@ -28,7 +28,7 @@ class EpisodePlayerView: UIView {
     lazy var dismissButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Dismiss", for: .normal)
-        btn.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(handleDismissPlayerView), for: .touchUpInside)
         btn.titleLabel?.font = .boldSystemFont(ofSize: 16)
         btn.setTitleColor(.black, for: .normal)
         return btn
@@ -89,7 +89,7 @@ class EpisodePlayerView: UIView {
         btn.addTarget(self, action: #selector(handleRewindAndForward(button:)), for: .touchUpInside)
         return btn
     }()
-    lazy var playButton: UIButton = {
+    lazy var playerControlButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(#imageLiteral(resourceName: "play"), for: .normal)
         btn.tintColor = .black
@@ -105,7 +105,7 @@ class EpisodePlayerView: UIView {
     }()
     lazy var hStackView_OperationButton: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [rewindButton,
-                                                playButton,
+                                                playerControlButton,
                                                 fastForwardButton])
         sv.axis = .horizontal
         sv.distribution = .fillEqually
@@ -157,6 +157,9 @@ class EpisodePlayerView: UIView {
         player.automaticallyWaitsToMinimizeStalling = false
         return player
     }()
+    //Mini Player View
+    let miniPlayerView = EpisodeMiniPlayerView()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
@@ -165,6 +168,10 @@ class EpisodePlayerView: UIView {
         scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
+        setupGesture()
+        miniPlayerView.delegate = self
+    }
+    fileprivate func setupGesture(){
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShowFullScreenPlayerView))
         addGestureRecognizer(tapGesture)
     }
@@ -173,7 +180,14 @@ class EpisodePlayerView: UIView {
         tabBarController?.maximizePodcastPlayerView(episode: nil)
     }
     func setUpConstraints(){
+        miniPlayerView.isHidden = true
         addSubview(vStackView)
+        addSubview(miniPlayerView)
+        miniPlayerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        miniPlayerView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        miniPlayerView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        miniPlayerView.heightAnchor.constraint(equalToConstant: EpisodeMiniPlayerView.height).isActive = true
+        
         vStackView.topAnchor.constraint(equalTo: topAnchor, constant: 40).isActive = true
         vStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 24).isActive = true
         vStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -24).isActive = true
@@ -220,8 +234,7 @@ class EpisodePlayerView: UIView {
     func playAudio(with url: URL) {
         let item = AVPlayerItem(url: url)
         podcastPlayer.replaceCurrentItem(with: item)
-        playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
-        podcastPlayer.play()
+        playPodcats()
     }
     @objc fileprivate func handleTimeSliderValueChanged(slider: UISlider){
         guard let duration = podcastPlayer.currentItem?.duration else {
@@ -244,22 +257,30 @@ class EpisodePlayerView: UIView {
     @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){
         podcastPlayer.volume = slider.value
     }
-    @objc fileprivate func handleDismiss(){
+    @objc fileprivate func handleDismissPlayerView(){
         let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
         tabBarController?.minimizePodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
         if podcastPlayer.timeControlStatus == .playing {
             scaleDownEpisodeImageView()
-            podcastPlayer.pause()
-            playButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+            pausePodcats()
         } else {
             scaleUpEpisodeImageView()
-            podcastPlayer.play()
-            playButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
+            playPodcats()
         }
     }
-    
+    fileprivate func playPodcats(){
+        podcastPlayer.play()
+        playerControlButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
+        miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
+    }
+    fileprivate func pausePodcats(){
+        podcastPlayer.pause()
+        playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+        miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+    }
+    //MARK: - Image Scale up / down
     fileprivate func scaleDownEpisodeImageView(completion: ((Bool) -> Void)? = nil){
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
             self.episodeImageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
@@ -272,5 +293,17 @@ class EpisodePlayerView: UIView {
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
+    func handlePlayerControl() {
+        handlePlayAndPause()
+    }
+    
+    func cancelMiniPlayerView() {
+        scaleDownEpisodeImageView()
+        pausePodcats()
+        miniPlayerView.isHidden = true
     }
 }
