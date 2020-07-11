@@ -73,6 +73,11 @@ class EpisodeMiniPlayerView: UIView {
         backgroundColor = .white
         translatesAutoresizingMaskIntoConstraints = false
         layer.shadowOpacity = 0.1
+        setupConstraints()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShowFullScreenPlayerView))
+        addGestureRecognizer(tapGesture)
+    }
+    fileprivate func setupConstraints(){
         addSubview(hStackView)
         hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 7).isActive = true
         hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
@@ -86,7 +91,10 @@ class EpisodeMiniPlayerView: UIView {
         cancelButton.widthAnchor.constraint(equalTo: playerControlButton.widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 45).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: 45).isActive = true
-        
+    }
+    @objc func handleShowFullScreenPlayerView(){
+        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        tabBarController?.maximizePodcastPlayerView(episode: nil)
     }
     @objc fileprivate func handlePlayerControl(){
         delegate?.handlePlayerControl()

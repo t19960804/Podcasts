@@ -168,16 +168,29 @@ class EpisodePlayerView: UIView {
         scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
-        setupGesture()
         miniPlayerView.delegate = self
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        addGestureRecognizer(panGesture)
     }
-    fileprivate func setupGesture(){
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShowFullScreenPlayerView))
-        addGestureRecognizer(tapGesture)
-    }
-    @objc func handleShowFullScreenPlayerView(){
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episode: nil)
+    @objc fileprivate func handlePan(gesture: UIPanGestureRecognizer){
+        if gesture.state == .began {
+            
+        } else if gesture.state == .changed {
+            //手勢位移量,上負下正
+            let translation = gesture.translation(in: self.superview)
+            transform = CGAffineTransform(translationX: 0, y: translation.y)
+            //Hide miniPlayer
+            miniPlayerView.alpha = 1 + translation.y / 200
+            //Show fullScreenPlayer
+            vStackView.alpha = -translation.y / 300
+        } else {
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.transform = .identity
+                self.miniPlayerView.alpha = 1
+                self.vStackView.alpha = 0
+            })
+        }
     }
     func setUpConstraints(){
         miniPlayerView.isHidden = true

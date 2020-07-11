@@ -52,7 +52,7 @@ class MainTabBarController: UITabBarController {
         
         episodePlayerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         episodePlayerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        episodePlayerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        episodePlayerView.heightAnchor.constraint(equalToConstant: view.frame.height).isActive = true
     }
     func maximizePodcastPlayerView(episode: Episode?){
         episodePlayerView.episode = episode
@@ -66,7 +66,7 @@ class MainTabBarController: UITabBarController {
             self.view.layoutIfNeeded()
             self.tabBar.transform = CGAffineTransform(translationX: 0, y: 100)
             self.episodePlayerView.miniPlayerView.isHidden = true
-            self.episodePlayerView.vStackView.isHidden = false
+            self.episodePlayerView.vStackView.alpha = 1
         })
     }
     func minimizePodcastPlayerView(){
@@ -78,7 +78,7 @@ class MainTabBarController: UITabBarController {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
             self.episodePlayerView.miniPlayerView.isHidden = false
-            self.episodePlayerView.vStackView.isHidden = true
+            self.episodePlayerView.vStackView.alpha = 0
         })
     }
 
