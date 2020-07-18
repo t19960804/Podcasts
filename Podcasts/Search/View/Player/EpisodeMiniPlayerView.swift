@@ -11,6 +11,7 @@ import UIKit
 protocol EpisodeMiniPlayerViewDelegate: class {
     func handlePlayerControl()
     func cancelMiniPlayerView()
+    func handleMiniPlayerTapped()
 }
 class EpisodeMiniPlayerView: UIView {
     static let height: CGFloat = 70
@@ -93,8 +94,7 @@ class EpisodeMiniPlayerView: UIView {
         imageView.widthAnchor.constraint(equalToConstant: 45).isActive = true
     }
     @objc func handleShowFullScreenPlayerView(){
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episode: nil)
+        delegate?.handleMiniPlayerTapped()
     }
     @objc fileprivate func handlePlayerControl(){
         delegate?.handlePlayerControl()
