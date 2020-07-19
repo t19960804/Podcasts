@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
+		0B46133824C402F30071DC80 /* LBTATools in Frameworks */ = {isa = PBXBuildFile; productRef = 0B46133724C402F30071DC80 /* LBTATools */; };
 		0B4BC69D24386F7000912277 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0B4BC69C24386F7000912277 /* FeedKit */; };
 		0B4BC6A0243873FF00912277 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4BC69F243873FF00912277 /* Extension.swift */; };
 		0B5086B924B03FE800AD3E39 /* EpisodeMiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5086B824B03FE800AD3E39 /* EpisodeMiniPlayerView.swift */; };
@@ -59,6 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B4BC69D24386F7000912277 /* FeedKit in Frameworks */,
+				0B46133824C402F30071DC80 /* LBTATools in Frameworks */,
 				0BBD6A1B24359F0B000FB9CB /* SDWebImage in Frameworks */,
 				0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */,
 			);
@@ -193,6 +195,7 @@
 				0B5BE49924135FAF00AFABD1 /* Alamofire */,
 				0BBD6A1A24359F0B000FB9CB /* SDWebImage */,
 				0B4BC69C24386F7000912277 /* FeedKit */,
+				0B46133724C402F30071DC80 /* LBTATools */,
 			);
 			productName = Podcasts;
 			productReference = 0BC9DF4C2408BECB00142424 /* Podcasts.app */;
@@ -226,6 +229,7 @@
 				0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				0BBD6A1924359F0B000FB9CB /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				0B4BC69B24386F7000912277 /* XCRemoteSwiftPackageReference "FeedKit" */,
+				0B46133624C402F30071DC80 /* XCRemoteSwiftPackageReference "LBTATools" */,
 			);
 			productRefGroup = 0BC9DF4D2408BECB00142424 /* Products */;
 			projectDirPath = "";
@@ -466,6 +470,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0B46133624C402F30071DC80 /* XCRemoteSwiftPackageReference "LBTATools" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bhlvoong/LBTATools";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.17;
+			};
+		};
 		0B4BC69B24386F7000912277 /* XCRemoteSwiftPackageReference "FeedKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nmdias/FeedKit";
@@ -493,6 +505,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0B46133724C402F30071DC80 /* LBTATools */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B46133624C402F30071DC80 /* XCRemoteSwiftPackageReference "LBTATools" */;
+			productName = LBTATools;
+		};
 		0B4BC69C24386F7000912277 /* FeedKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0B4BC69B24386F7000912277 /* XCRemoteSwiftPackageReference "FeedKit" */;

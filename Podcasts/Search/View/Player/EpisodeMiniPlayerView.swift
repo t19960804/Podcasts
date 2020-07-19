@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import LBTATools
 
 protocol EpisodeMiniPlayerViewDelegate: class {
-    func handlePlayerControl()
+    func handlePlayerPauseAndPlay()
     func cancelMiniPlayerView()
     func handleMiniPlayerTapped()
 }
@@ -25,79 +26,49 @@ class EpisodeMiniPlayerView: UIView {
     }
     weak var delegate: EpisodeMiniPlayerViewDelegate?
     
-    let imageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "appicon")
-        iv.contentMode = .scaleAspectFill
-        return iv
-    }()
-    let titleLabel: UILabel = {
-        let lb = UILabel()
-        lb.text = "This is just for a test, don't worry, Mother Fucker"
-        lb.numberOfLines = 1
-        lb.font = .systemFont(ofSize: 18)
-        return lb
-    }()
-    let playerControlButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(#imageLiteral(resourceName: "play"), for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFit
-        btn.tintColor = .black
-        btn.addTarget(self, action: #selector(handlePlayerControl), for: .touchUpInside)
-        return btn
-    }()
-    let cancelButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(#imageLiteral(resourceName: "close"), for: .normal)
-        btn.tintColor = .black
-        btn.imageView?.contentMode = .scaleAspectFit
-        btn.addTarget(self, action: #selector(handleCancelMiniPlayerView), for: .touchUpInside)
-        return btn
-    }()
-    lazy var hStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [imageView,
-                                                titleLabel,
-                                                playerControlButton,
-                                                UIView(),
-                                                UIView(),
-                                                UIView(),
-                                                cancelButton])
-        sv.axis = .horizontal
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        sv.alignment = .center
-        sv.spacing = 7
-        return sv
-    }()
-
+    let imageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), contentMode: .scaleAspectFill)
+    let titleLabel = UILabel(text: nil, font: .systemFont(ofSize: 18), textColor: .black, textAlignment: .left, numberOfLines: 1)
+    let playerControlButton = UIButton(image: #imageLiteral(resourceName: "play"), tintColor: .black, target: self, action: #selector(handlePlayerPauseAndPlay))
+    let cancelButton = UIButton(image: #imageLiteral(resourceName: "close"), tintColor: .black, target: self, action: #selector(handleCancelMiniPlayerView))
+    lazy var hStackView = UIStackView(subViews: [imageView,
+                                                 titleLabel,
+                                                 playerControlButton,
+                                                 UIView(),
+                                                 UIView(),
+                                                 UIView(),
+                                                 cancelButton],
+                                      axis: .horizontal,
+                                      alignment: .center,
+                                      spacing: 7)
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
         translatesAutoresizingMaskIntoConstraints = false
         layer.shadowOpacity = 0.1
+        cancelButton.imageView?.contentMode = .scaleAspectFit
+
         setupConstraints()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShowFullScreenPlayerView))
+        addGesture()
+    }
+    fileprivate func addGesture(){
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMiniPlayerTapped))
         addGestureRecognizer(tapGesture)
     }
     fileprivate func setupConstraints(){
         addSubview(hStackView)
-        hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 7).isActive = true
-        hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 15).isActive = true
-        hStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
-        hStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7).isActive = true
+        hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 7, left: 15, bottom: 7, right: 15))
         
-        
-        playerControlButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
-        playerControlButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
-        cancelButton.heightAnchor.constraint(equalTo: playerControlButton.heightAnchor).isActive = true
-        cancelButton.widthAnchor.constraint(equalTo: playerControlButton.widthAnchor).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 32, height: 32))
+
+        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 32, height: 32))
+
+        imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 45, height: 45))
     }
-    @objc func handleShowFullScreenPlayerView(){
+    @objc func handleMiniPlayerTapped(){
         delegate?.handleMiniPlayerTapped()
     }
-    @objc fileprivate func handlePlayerControl(){
-        delegate?.handlePlayerControl()
+    @objc fileprivate func handlePlayerPauseAndPlay(){
+        delegate?.handlePlayerPauseAndPlay()
     }
     @objc fileprivate func handleCancelMiniPlayerView(){
         delegate?.cancelMiniPlayerView()

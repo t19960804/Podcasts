@@ -334,7 +334,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
         panGesture.isEnabled = false
     }
     
-    func handlePlayerControl() {
+    func handlePlayerPauseAndPlay() {
         handlePlayAndPause()
     }
     

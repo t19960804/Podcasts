@@ -57,3 +57,17 @@ extension CMTime {
         return formattedString
     }
 }
+
+extension UIStackView {
+    //A convenience initializer must call another initializer from the same class.
+    convenience init(subViews: [UIView], axis: NSLayoutConstraint.Axis, alignment: UIStackView.Alignment = .fill, distribution: UIStackView.Distribution = .fill, spacing: CGFloat = 0){
+        self.init(arrangedSubviews: subViews)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.axis = axis
+        self.alignment = alignment
+        self.distribution = distribution
+        self.spacing = spacing
+    }
+    //https://medium.com/%E5%BD%BC%E5%BE%97%E6%BD%98%E7%9A%84-swift-ios-app-%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E8%A7%A3%E7%AD%94%E9%9B%86/swift-%E7%9A%84%E5%8F%83%E6%95%B8%E9%A0%90%E8%A8%AD%E5%80%BC-default-parameter-values-fe08042d2d66
+    //http://jason9075.logdown.com/posts/285685-swift-note-initialization-rules-convenience-and-designated-initializer-usage
+}
