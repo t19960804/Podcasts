@@ -11,9 +11,9 @@ import Alamofire
 import FeedKit
 
 class NetworkService {
-    static let sharedInstance = NetworkService()
+    static let sharedInstance = NetworkService() //static > 由於其他類別沒辦法初始化NetworkService,所以讓其他類別不需要初始化即可使用屬性
     
-    private init(){
+    private init(){//private > 防範其他的類別來初始化
         
     }
     
