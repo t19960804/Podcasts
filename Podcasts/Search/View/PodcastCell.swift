@@ -18,67 +18,34 @@ class PodcastCell: UITableViewCell {
             episodeCountLabel.text = "\(podcast.trackCount ?? 0) Episodes"
             let url = URL(string: podcast.artworkUrl600 ?? "")
             podcastImageView.sd_setImage(with: url)
-            //傳統做法,沒有Cache(網路耗量大)
-//            guard let url = URL(string: podcast.artworkUrl600 ?? "") else { return }
-//            URLSession.shared.dataTask(with: url) { (data, response, error) in
-//                guard let data = data else { return }
-//                DispatchQueue.main.async {
-//                    self.podcastImageView.image = UIImage(data: data)
-//                }
-//            }.resume()
         }
     }
-    let podcastImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "appicon")
-        return iv
-    }()
-    let trackNameLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = .boldSystemFont(ofSize: 20)
-        lb.numberOfLines = 2
-        return lb
-    }()
-    let artitstNameLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = .systemFont(ofSize: 18)
-        return lb
-    }()
-    let episodeCountLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = .systemFont(ofSize: 16)
-        lb.textColor = .gray
-        lb.text = "Episode Count"
-        return lb
-    }()
-    lazy var vStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [trackNameLabel,
-                                                artitstNameLabel,
-                                                episodeCountLabel])
-        sv.spacing = 6
-        sv.axis = .vertical
-        return sv
-    }()
-    lazy var hStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [podcastImageView,
-                                                vStackView])
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        sv.spacing = 12
-        //使用alignment時,沒有圖片的imageView會被壓縮到消失,記得放圖片
-        //並且指定尺寸,避免被壓縮
-        sv.alignment = .center
-        return sv
-    }()
+    let podcastImageView = UIImageView(image: #imageLiteral(resourceName: "appicon"))
+    let trackNameLabel = UILabel(font: .boldSystemFont(ofSize: 20), numberOfLines: 2)
+    let artitstNameLabel = UILabel(font: .systemFont(ofSize: 18))
+    let episodeCountLabel = UILabel(font: .systemFont(ofSize: 16), textColor: .gray)
+    lazy var vStackView = UIStackView(subViews: [trackNameLabel,
+                                                 artitstNameLabel,
+                                                 episodeCountLabel],
+                                      axis: .vertical,
+                                      spacing: 6)
+    
+    lazy var hStackView = UIStackView(subViews: [podcastImageView,
+                                                 vStackView],
+                                      axis: .horizontal,
+                                      alignment: .center,
+                                      spacing: 12)
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(hStackView)
-        hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 12).isActive = true
-        hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 12).isActive = true
-        hStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
-        hStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -12).isActive = true
-        
-        podcastImageView.heightAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
-        podcastImageView.widthAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
+        hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 12, left: 12, bottom: 12, right: 12))
+    }
+    override func layoutSubviews() {
+        //當layoutSubviews()執行時，它會依據 auto layout 的 constraint 排版 subviews
+        super.layoutSubviews()
+        //在super.layoutSubviews()執行後元件都依auto layout 的 constraint 得到位置大小
+        podcastImageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, size: .init(width: hStackView.frame.size.height, height: hStackView.frame.size.height))
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
