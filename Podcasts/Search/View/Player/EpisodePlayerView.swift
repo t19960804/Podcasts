@@ -168,8 +168,30 @@ class EpisodePlayerView: UIView {
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
         miniPlayerView.delegate = self
+        setupGesture()
     }
-    
+    func setupGesture(){
+        let panGrsture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
+        addGestureRecognizer(panGrsture)
+    }
+    @objc fileprivate func handlePan(gesture: UIPanGestureRecognizer){
+        let translation = gesture.translation(in: superview)
+        
+        if gesture.state == .began {
+            
+        } else if gesture.state == .changed {
+            transform = CGAffineTransform(translationX: 0, y: max(0,translation.y))
+        } else if gesture.state == .ended {
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.transform = .identity
+                
+                if translation.y > 100 {
+                    let tabBarController = UIApplication.mainTabBarController
+                    tabBarController?.minimizePodcastPlayerView()
+                }
+            })
+        }
+    }
     func setUpConstraints(){
         miniPlayerView.isHidden = true
         addSubview(vStackView)
@@ -249,7 +271,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.volume = slider.value
     }
     @objc fileprivate func handleDismissPlayerView(){
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        let tabBarController = UIApplication.mainTabBarController
         tabBarController?.minimizePodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
@@ -298,8 +320,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
         }
     }
     func handlePanChanged(gesture: UIPanGestureRecognizer){
-        //手勢位移量,上負下正
-        let translation = gesture.translation(in: self.superview)
+        let translation = gesture.translation(in: superview)//與手勢原點的位移量,有正有負
         transform = CGAffineTransform(translationX: 0, y: translation.y)
         //Hide miniPlayer
         miniPlayerView.alpha = 1 + translation.y / 200
@@ -309,10 +330,10 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     func handlePanEnded(gesture: UIPanGestureRecognizer){
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.transform = .identity
-            let location = gesture.location(in: self.superview)
+            let translation = gesture.translation(in: self.superview)
             let velocity = gesture.velocity(in: self.superview)//點擊拖曳到放下點擊的速度
-            if location.y < 300 || velocity.y < -500{
-                let tabbarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+            if translation.y < -200 || velocity.y < -500{
+                let tabbarController = UIApplication.mainTabBarController
                 tabbarController?.maximizePodcastPlayerView(episode: nil)
             } else {
                 //Minimize
@@ -323,7 +344,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
         })
     }
     func handleMiniPlayerTapped() {
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episode: nil)
     }
     

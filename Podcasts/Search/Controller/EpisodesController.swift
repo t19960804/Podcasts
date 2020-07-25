@@ -54,7 +54,7 @@ class EpisodesController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let episode = episodes[indexPath.row]
-        let tabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController
+        let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episode: episode)
     }
     let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
