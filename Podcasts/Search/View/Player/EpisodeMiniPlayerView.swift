@@ -13,6 +13,7 @@ protocol EpisodeMiniPlayerViewDelegate: class {
     func handlePlayerPauseAndPlay()
     func cancelMiniPlayerView()
     func handleMiniPlayerTapped()
+    func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer)
 }
 class EpisodeMiniPlayerView: UIView {
     static let height: CGFloat = 70
@@ -53,6 +54,8 @@ class EpisodeMiniPlayerView: UIView {
     fileprivate func addGesture(){
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMiniPlayerTapped))
         addGestureRecognizer(tapGesture)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleMiniPlayerViewPanned(gesture:)))
+        addGestureRecognizer(panGesture)
     }
     fileprivate func setupConstraints(){
         addSubview(hStackView)
@@ -63,6 +66,9 @@ class EpisodeMiniPlayerView: UIView {
         cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 32, height: 32))
 
         imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 45, height: 45))
+    }
+    @objc func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer){
+        delegate?.handleMiniPlayerViewPanned(gesture: gesture)
     }
     @objc func handleMiniPlayerTapped(){
         delegate?.handleMiniPlayerTapped()
