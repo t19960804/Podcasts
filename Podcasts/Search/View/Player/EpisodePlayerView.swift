@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import MediaPlayer
 
 class EpisodePlayerView: UIView {
     var episode: Episode? {
@@ -93,7 +94,41 @@ class EpisodePlayerView: UIView {
         updateCurrentPlayingTimePeriodically()
         miniPlayerView.delegate = self
         setupGesture()
+        setupAudioSession()
+        setupRemoteControl()
     }
+    //MARK: - Command Center
+    fileprivate func setupRemoteControl(){
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
+            self.handlePlayAndPause()
+            return .success
+        }
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
+            self.handlePlayAndPause()
+            return .success
+        }
+        //耳機上的暫停 / 播放鈕
+        commandCenter.togglePlayPauseCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
+            self.handlePlayAndPause()
+            return .success
+        }
+    }
+    //若沒有加入此Function,有時背景播放會無效
+    fileprivate func setupAudioSession(){
+        do {
+            //https://ithelp.ithome.com.tw/articles/10195770?sc=iThelpR
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch let sessionError{
+            //https://stackoverflow.com/questions/31352593/how-to-print-details-of-a-catch-all-exception-in-swift
+            print("Set up session failed:\(sessionError)")
+        }
+    }
+    //MARk: - Gesture
     func setupGesture(){
         let panGrsture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
         addGestureRecognizer(panGrsture)
@@ -117,6 +152,7 @@ class EpisodePlayerView: UIView {
             })
         }
     }
+    //MARK: - Constraints
     func setUpConstraints(){
         miniPlayerView.isHidden = true
         addSubview(vStackView)
@@ -162,7 +198,7 @@ class EpisodePlayerView: UIView {
         let progressPercent = currentSeconds / totalSeconds
         timeSlider.value = Float(progressPercent)
     }
-    func playAudio(with url: URL) {
+    fileprivate func playAudio(with url: URL) {
         let item = AVPlayerItem(url: url)
         podcastPlayer.replaceCurrentItem(with: item)
         playPodcats()
