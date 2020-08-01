@@ -17,12 +17,10 @@ protocol EpisodeMiniPlayerViewDelegate: class {
 }
 class EpisodeMiniPlayerView: UIView {
     static let height: CGFloat = 70
-    var episode: Episode! {
+    var episodeViewModel: EpisodeViewModel! {
         didSet {
-            if let url = URL(string: episode.imageURL ?? "") {
-                imageView.sd_setImage(with: url)
-            }
-            titleLabel.text = episode.title
+            imageView.sd_setImage(with: episodeViewModel.imageUrl)
+            titleLabel.text = episodeViewModel.title
         }
     }
     weak var delegate: EpisodeMiniPlayerViewDelegate?

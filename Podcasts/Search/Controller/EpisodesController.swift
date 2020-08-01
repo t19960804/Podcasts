@@ -21,7 +21,7 @@ class EpisodesController: UITableViewController {
         }
     }
     let cellID = "EpisodeCell"
-    var episodes = [Episode]()
+    var episodeViewModels = [EpisodeViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,29 +33,31 @@ class EpisodesController: UITableViewController {
         guard let feedURL = URL(string: url) else { return }
         //不要將Network相關的code放在Controller
         NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (episodes) in
-            self.episodes = episodes
+            self.episodeViewModels = episodes.map({
+                return EpisodeViewModel(episode: $0)
+            })
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        activityIndicatorView.isHidden = !episodes.isEmpty
-        return episodes.count
+        activityIndicatorView.isHidden = !episodeViewModels.isEmpty
+        return episodeViewModels.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! EpisodeCell
-        let episode = episodes[indexPath.row]
-        cell.episode = episode
+        let episodeViewModel = episodeViewModels[indexPath.row]
+        cell.episodeViewModel = episodeViewModel
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let episode = episodes[indexPath.row]
+        let episodeViewModel = episodeViewModels[indexPath.row]
         let tabBarController = UIApplication.mainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episode: episode)
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel)
     }
     let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

@@ -9,19 +9,12 @@
 import UIKit
 
 class EpisodeCell: UITableViewCell {
-    var episode: Episode! {
+    var episodeViewModel: EpisodeViewModel! {
         didSet {
-            //Date to Custom String
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM dd,yyyy"
-            pubDateLabel.text = formatter.string(from: episode.pubDate)
-            
-            titleLabel.text = episode.title
-            descriptionLabel.text = episode.description
-            
-            if let urlString = episode.imageURL {
-                episodeImageView.sd_setImage(with: URL(string: urlString))
-            }
+            pubDateLabel.text = episodeViewModel.publishDateString
+            titleLabel.text = episodeViewModel.title
+            descriptionLabel.text = episodeViewModel.description
+            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
         }
     }
     let episodeImageView: UIImageView = {

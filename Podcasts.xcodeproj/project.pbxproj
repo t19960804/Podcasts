@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
 		0B46133824C402F30071DC80 /* LBTATools in Frameworks */ = {isa = PBXBuildFile; productRef = 0B46133724C402F30071DC80 /* LBTATools */; };
+		0B4ABC7F24D56DA200410ADA /* EpisodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */; };
 		0B4BC69D24386F7000912277 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0B4BC69C24386F7000912277 /* FeedKit */; };
 		0B4BC6A0243873FF00912277 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4BC69F243873FF00912277 /* Extension.swift */; };
 		0B5086B924B03FE800AD3E39 /* EpisodeMiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5086B824B03FE800AD3E39 /* EpisodeMiniPlayerView.swift */; };
@@ -33,6 +34,7 @@
 
 /* Begin PBXFileReference section */
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
+		0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeViewModel.swift; sourceTree = "<group>"; };
 		0B4BC69F243873FF00912277 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		0B5086B824B03FE800AD3E39 /* EpisodeMiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeMiniPlayerView.swift; sourceTree = "<group>"; };
 		0B5E922B244AD5DA00448003 /* EpisodeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeCell.swift; sourceTree = "<group>"; };
@@ -69,6 +71,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B4ABC7D24D56D4800410ADA /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		0B4BC69E243873F000912277 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,6 +160,7 @@
 		0BC9DF67240A3B1700142424 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				0B4ABC7D24D56D4800410ADA /* ViewModel */,
 				0BBD6A16242F0C90000FB9CB /* View */,
 				0BC9DF6B240A3BBA00142424 /* Model */,
 				0BC9DF6A240A3BB100142424 /* Controller */,
@@ -264,6 +275,7 @@
 				0BBD6A18242F0CA8000FB9CB /* PodcastCell.swift in Sources */,
 				0B9CF1202437228900D2F864 /* Episode.swift in Sources */,
 				0BD1EFB1249E09060020E5CF /* SearchingVIew.swift in Sources */,
+				0B4ABC7F24D56DA200410ADA /* EpisodeViewModel.swift in Sources */,
 				0B4BC6A0243873FF00912277 /* Extension.swift in Sources */,
 				0B5E922C244AD5DA00448003 /* EpisodeCell.swift in Sources */,
 				0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */,

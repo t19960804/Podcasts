@@ -11,19 +11,14 @@ import AVKit
 import MediaPlayer
 
 class EpisodePlayerView: UIView {
-    var episode: Episode? {
+    var episodeViewModel: EpisodeViewModel? {
         didSet {
-            guard let episode = episode else { return }//mini > fullScrren不需要重新播放
-            let imageUrlString = episode.imageURL
-            let imageUrl = URL(string: imageUrlString ?? "")
-            episodeImageView.sd_setImage(with: imageUrl)
-            titleLabel.text = episode.title
-            authorLabel.text = episode.author
-            miniPlayerView.episode = episode
-            let audioUtlString = episode.audioURL
-            if let audioUrl = URL(string: audioUtlString ?? "") {
-                playAudio(with: audioUrl)
-            }
+            guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
+            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
+            titleLabel.text = episodeViewModel.title
+            authorLabel.text = episodeViewModel.author
+            miniPlayerView.episodeViewModel = episodeViewModel
+            playAudio(with: episodeViewModel.audioUrl)
         }
     }
     let dismissButton = UIButton(title: "Dismiss", titleColor: .black, font: .boldSystemFont(ofSize: 16), target: self, action: #selector(handleDismissPlayerView))
@@ -198,7 +193,8 @@ class EpisodePlayerView: UIView {
         let progressPercent = currentSeconds / totalSeconds
         timeSlider.value = Float(progressPercent)
     }
-    fileprivate func playAudio(with url: URL) {
+    fileprivate func playAudio(with url: URL?) {
+        guard let url = url else { return }
         let item = AVPlayerItem(url: url)
         podcastPlayer.replaceCurrentItem(with: item)
         playPodcats()
@@ -290,7 +286,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
             
             if translation.y < -200 || velocity.y < -500{
                 let tabbarController = UIApplication.mainTabBarController
-                tabbarController?.maximizePodcastPlayerView(episode: nil)
+                tabbarController?.maximizePodcastPlayerView(episodeViewModel: nil)
             } else {
                 //Minimize
                 self.miniPlayerView.alpha = 1
@@ -301,7 +297,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     }
     func handleMiniPlayerTapped() {
         let tabBarController = UIApplication.mainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episode: nil)
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: nil)
     }
     
     func handlePlayerPauseAndPlay() {
