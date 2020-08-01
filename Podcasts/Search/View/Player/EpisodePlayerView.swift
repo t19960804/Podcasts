@@ -125,16 +125,15 @@ class EpisodePlayerView: UIView {
         
         vStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 40, left: 24, bottom: 24, right: 24))
         
-        dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
+        dismissButton.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.033).isActive = true
         episodeImageView.heightAnchor.constraint(equalTo: episodeImageView.widthAnchor, multiplier: 1).isActive = true
-        timeSlider.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        hStackView_Time.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30).isActive = true
-        authorLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
-        hStackView_OperationButton.heightAnchor.constraint(equalToConstant: 170).isActive = true
-        hStackView_Sound.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        timeSlider.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.041).isActive = true
+        hStackView_Time.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.027).isActive = true
+        titleLabel.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.06).isActive = true
+        authorLabel.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.027).isActive = true
+        hStackView_OperationButton.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.19).isActive = true
+
+        hStackView_Sound.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.041).isActive = true
     }
     fileprivate func updateUIWhenPoadcastStartPlaying(){
            //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
