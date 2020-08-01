@@ -25,132 +25,56 @@ class EpisodePlayerView: UIView {
             }
         }
     }
-    lazy var dismissButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setTitle("Dismiss", for: .normal)
-        btn.addTarget(self, action: #selector(handleDismissPlayerView), for: .touchUpInside)
-        btn.titleLabel?.font = .boldSystemFont(ofSize: 16)
-        btn.setTitleColor(.black, for: .normal)
-        return btn
-    }()
-    let episodeImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "appicon")
-        iv.layer.cornerRadius = 5
-        iv.clipsToBounds = true
-        return iv
-    }()
+    let dismissButton = UIButton(title: "Dismiss", titleColor: .black, font: .boldSystemFont(ofSize: 16), target: self, action: #selector(handleDismissPlayerView))
+    let episodeImageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), cornerRadius: 5, clipsToBounds: true)
     //MARK: - StackView_Time
     let timeSlider: UISlider = {
         let sd = UISlider()
         sd.addTarget(self, action: #selector(handleTimeSliderValueChanged(slider:)), for: .valueChanged)
         return sd
     }()
-    let timeLabel_LowerBound: UILabel = {
-        let lb = UILabel()
-        lb.text = "00:00:00"
-        lb.textColor = .darkGray
-        return lb
-    }()
-    let timeLabel_UpperBound: UILabel = {
-        let lb = UILabel()
-        lb.text = "--:--:--"
-        lb.textColor = .darkGray
-        return lb
-    }()
-    lazy var hStackView_Time: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [timeLabel_LowerBound,
-                                                UIView(),
-                                                timeLabel_UpperBound])
-        sv.axis = .horizontal
-        return sv
-    }()
-    let titleLabel: UILabel = {
-        let lb = UILabel()
-        lb.text = "Title"
-        lb.textAlignment = .center
-        lb.numberOfLines = 2
-        lb.font = .boldSystemFont(ofSize: 18)
-        return lb
-    }()
-    let authorLabel: UILabel = {
-        let lb = UILabel()
-        lb.text = "Author Name"
-        lb.textAlignment = .center
-        lb.font = .boldSystemFont(ofSize: 18)
-        lb.textColor = .purple
-        return lb
-    }()
+    let timeLabel_LowerBound = UILabel(text: "00:00:00", textColor: .darkGray)
+    let timeLabel_UpperBound = UILabel(text: "--:--:--", textColor: .darkGray)
+    lazy var hStackView_Time = UIStackView(subViews: [timeLabel_LowerBound,
+                                                      UIView(),
+                                                      timeLabel_UpperBound],
+                                           axis: .horizontal)
+    let titleLabel = UILabel(text: "Title", font: .boldSystemFont(ofSize: 18), textAlignment: .center, numberOfLines: 2)
+    let authorLabel = UILabel(text: "Author Name", font: .boldSystemFont(ofSize: 18), textColor: .purple, textAlignment: .center)
     //MARK: - StackView_OperationBtn
-    let rewindButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(named: "rewind15"), for: .normal)
-        btn.tintColor = .black
-        btn.addTarget(self, action: #selector(handleRewindAndForward(button:)), for: .touchUpInside)
-        return btn
-    }()
-    lazy var playerControlButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(#imageLiteral(resourceName: "play"), for: .normal)
-        btn.tintColor = .black
-        btn.addTarget(self, action: #selector(handlePlayAndPause), for: .touchUpInside)
-        return btn
-    }()
-    let fastForwardButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(named: "fastforward15"), for: .normal)
-        btn.tintColor = .black
-        btn.addTarget(self, action: #selector(handleRewindAndForward(button:)), for: .touchUpInside)
-        return btn
-    }()
-    lazy var hStackView_OperationButton: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [rewindButton,
-                                                playerControlButton,
-                                                fastForwardButton])
-        sv.axis = .horizontal
-        sv.distribution = .fillEqually
-        return sv
-    }()
+    let rewindButton = UIButton(image: #imageLiteral(resourceName: "rewind15"), tintColor: .black, target: self, action: #selector(handleRewindAndForward(button:)))
+    let playerControlButton = UIButton(image: #imageLiteral(resourceName: "play"), tintColor: .black, target: self, action: #selector(handlePlayAndPause))
+    let fastForwardButton = UIButton(image: #imageLiteral(resourceName: "fastforward15"), tintColor: .black, target: self, action: #selector(handleRewindAndForward(button:)))
+    lazy var hStackView_OperationButton = UIStackView(subViews: [rewindButton,
+                                                                 playerControlButton,
+                                                                 fastForwardButton],
+                                                      axis: .horizontal,
+                                                      distribution: .fillEqually)
     //MARK: - StackView_Sound
-    let soundLowerImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "muted_volume")
-        return iv
-    }()
+    let soundLowerImageView = UIImageView(image: #imageLiteral(resourceName: "muted_volume"))
+    let soundLouderImageView = UIImageView(image: #imageLiteral(resourceName: "max_volume"))
     let soundSlider: UISlider = {
         let sd = UISlider()
         sd.addTarget(self, action: #selector(handleSoundSliderValueChanged(slider:)), for: .valueChanged)
         sd.value = 1 //因為podcastPlayer.volume預設值為1
         return sd
     }()
-    let soundLouderImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "max_volume")
-        return iv
-    }()
-    lazy var hStackView_Sound: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [soundLowerImageView,
-                                                soundSlider,
-                                                soundLouderImageView])
-        sv.axis = .horizontal
-        return sv
-    }()
+    lazy var hStackView_Sound = UIStackView(subViews: [soundLowerImageView,
+                                                       soundSlider,
+                                                       soundLouderImageView],
+                                            axis: .horizontal)
     //MARK: - StackView_Whole
-    lazy var vStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [dismissButton,
-                                                episodeImageView,
-                                                timeSlider,
-                                                hStackView_Time,
-                                                titleLabel,
-                                                authorLabel,
-                                                hStackView_OperationButton,
-                                                hStackView_Sound,
-                                                UIView()])
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        sv.axis = .vertical
-        sv.spacing = 8
-        return sv
-    }()
+    lazy var vStackView = UIStackView(subViews: [dismissButton,
+                                                 episodeImageView,
+                                                 timeSlider,
+                                                 hStackView_Time,
+                                                 titleLabel,
+                                                 authorLabel,
+                                                 hStackView_OperationButton,
+                                                 hStackView_Sound,
+                                                 UIView()],
+                                      axis: .vertical,
+                                      spacing: 8)
     let podcastPlayer: AVPlayer = {
         let player = AVPlayer()
         //設為true時player會延遲載入,讓緩衝區可以裝下更多資料,初始播放速度慢,但播放過程中比較不會Lag
@@ -197,15 +121,9 @@ class EpisodePlayerView: UIView {
         miniPlayerView.isHidden = true
         addSubview(vStackView)
         addSubview(miniPlayerView)
-        miniPlayerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        miniPlayerView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-        miniPlayerView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
-        miniPlayerView.heightAnchor.constraint(equalToConstant: EpisodeMiniPlayerView.height).isActive = true
+        miniPlayerView.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, size: .init(width: 0, height: EpisodeMiniPlayerView.height))
         
-        vStackView.topAnchor.constraint(equalTo: topAnchor, constant: 40).isActive = true
-        vStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 24).isActive = true
-        vStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -24).isActive = true
-        vStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -24).isActive = true
+        vStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 40, left: 24, bottom: 24, right: 24))
         
         dismissButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         

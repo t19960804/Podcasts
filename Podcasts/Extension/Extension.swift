@@ -77,3 +77,12 @@ extension UIApplication {
         return shared.keyWindow?.rootViewController as? MainTabBarController
     }
 }
+
+extension UIImageView {
+    convenience init(image: UIImage = UIImage(), cornerRadius: CGFloat = 0, clipsToBounds: Bool = false){
+        self.init()
+        self.image = image
+        self.layer.cornerRadius = cornerRadius
+        self.clipsToBounds = clipsToBounds
+    }
+}
