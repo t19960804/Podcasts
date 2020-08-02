@@ -32,15 +32,14 @@ struct EpisodeViewModel {
     }
 }
 
-//ViewModel用意:
-//當很多個View需要來自Model的資料時
-//我們需要在每個View對資料做處理(Optional binding / 邏輯判斷)
-//現在將這些處理資料的邏輯全部移到ViewModel
-//這樣一來View只要使用來自ViewModel的資料即可
-//Model -> ViewModel -> View
+//ViewModel好處:
+//1.當很多個View需要來自Model的資料時
+//  我們需要在每個View對資料做處理(Optional binding / 邏輯判斷)
+//  現在將這些處理資料的邏輯全部移到ViewModel
+//  這樣一來View只要使用來自ViewModel的資料即可
+//  Model -> ViewModel -> View
 
-
-//MVC架構的測試困難點:
-//https://stackoverflow.com/questions/56686819/why-is-unit-testing-harder-in-mvc-than-in-mvp-and-mvvm
-//MVC的架構下,資料呈現的邏輯都放在View中
-//單元測試時需要連同View也一起創建,造成測試困難
+//2.MVC的架構下,資料呈現的邏輯都放在View中
+//  所以單元測試中測試那些邏輯時需要連同View也一起創建,造成測試困難
+//  MVVM中,呈現的邏輯都放在ViewModel中,所以不再需要另外創建View物件,可以專注在測試邏輯
+//  https://stackoverflow.com/questions/56686819/why-is-unit-testing-harder-in-mvc-than-in-mvp-and-mvvm
