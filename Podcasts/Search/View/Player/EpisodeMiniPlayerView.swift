@@ -8,6 +8,7 @@
 
 import UIKit
 import LBTATools
+import MarqueeLabel
 
 protocol EpisodeMiniPlayerViewDelegate: class {
     func handlePlayerPauseAndPlay()
@@ -26,7 +27,7 @@ class EpisodeMiniPlayerView: UIView {
     weak var delegate: EpisodeMiniPlayerViewDelegate?
     
     let imageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), contentMode: .scaleAspectFill)
-    let titleLabel = UILabel(text: nil, font: .systemFont(ofSize: 18), textColor: .black, textAlignment: .left, numberOfLines: 1)
+    let titleLabel = MarqueeLabel(text: nil, font: .systemFont(ofSize: 18), textColor: .black, textAlignment: .left, numberOfLines: 1)
     let playerControlButton = UIButton(image: #imageLiteral(resourceName: "play"), tintColor: .black, target: self, action: #selector(handlePlayerPauseAndPlay))
     let cancelButton = UIButton(image: #imageLiteral(resourceName: "close"), tintColor: .black, target: self, action: #selector(handleCancelMiniPlayerView))
     lazy var hStackView = UIStackView(subViews: [imageView,
@@ -45,7 +46,7 @@ class EpisodeMiniPlayerView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         layer.shadowOpacity = 0.1
         cancelButton.imageView?.contentMode = .scaleAspectFit
-
+        setupMarqueeLabel()
         setupConstraints()
         addGesture()
     }
@@ -55,15 +56,27 @@ class EpisodeMiniPlayerView: UIView {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleMiniPlayerViewPanned(gesture:)))
         addGestureRecognizer(panGesture)
     }
+    fileprivate func setupMarqueeLabel(){
+        titleLabel.type = .continuous
+        titleLabel.speed = .rate(20) //points per second
+        titleLabel.animationCurve = .linear
+        titleLabel.fadeLength = 10.0
+        titleLabel.trailingBuffer = 30.0
+    }
     fileprivate func setupConstraints(){
         addSubview(hStackView)
         hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 7, left: 15, bottom: 7, right: 15))
         
-        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 32, height: 32))
-
-        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 32, height: 32))
+        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 16, height: 16))
+        
+        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 16, height: 16))
 
         imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 45, height: 45))
+    }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        //固定Label,避免title文字太少,造成label寬度自動減少,stackView的subViews排版會受影響
+        titleLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width - 45 - 16 - 16 - 7 - 7, height: 0))
     }
     @objc func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer){
         delegate?.handleMiniPlayerViewPanned(gesture: gesture)
