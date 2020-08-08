@@ -14,7 +14,11 @@ class EpisodePlayerView: UIView {
     var episodeViewModel: EpisodeViewModel? {
         didSet {
             guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
+            setupLockScreenPlayerInfo()
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
+            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
+                self.setupLockScreenPlayerImage(with: image)
+            }
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
             miniPlayerView.episodeViewModel = episodeViewModel
@@ -112,6 +116,33 @@ class EpisodePlayerView: UIView {
             return .success
         }
     }
+    //MARK: - Lock Screen Player
+    fileprivate func setupLockScreenPlayerInfo(){
+        var nowPlayingInfo = [String : Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = episodeViewModel?.title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = episodeViewModel?.author
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    fileprivate func setupLockScreenPlayerImage(with image: UIImage?){
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
+        guard let image = image else { return }
+        let artwork = MPMediaItemArtwork(boundsSize: image.size) { (_) -> UIImage in
+            return image
+        }
+        nowPlayingInfo?[MPMediaItemPropertyArtwork] = artwork
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    fileprivate func updateLockScreenPlayerTime(){
+        if let duration = podcastPlayer.currentItem?.asset.duration {
+            timeLabel_UpperBound.text = duration.getFormattedString()
+            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
+            let durationWithSeconds = CMTimeGetSeconds(duration)
+            let currentTimeWithSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
+            nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTimeWithSeconds
+            nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = durationWithSeconds
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        }
+    }
     //若沒有加入此Function,有時背景播放會無效
     fileprivate func setupAudioSession(){
         do {
@@ -184,6 +215,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
             self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
             self?.updateTimeSlider()
+            self?.updateLockScreenPlayerTime()
         }
     }
     fileprivate func updateTimeSlider(){
