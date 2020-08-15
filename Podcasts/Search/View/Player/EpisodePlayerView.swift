@@ -132,13 +132,16 @@ class EpisodePlayerView: UIView {
         nowPlayingInfo?[MPMediaItemPropertyArtwork] = artwork
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
-    fileprivate func updateLockScreenPlayerTime(){
-        if let duration = podcastPlayer.currentItem?.asset.duration {
-            timeLabel_UpperBound.text = duration.getFormattedString()
+    fileprivate func updateLockScreenElapsedTime(){
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
+        let currentTimeWithSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
+        nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTimeWithSeconds
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    fileprivate func updateLockScreenDuration(){
+      if let duration = podcastPlayer.currentItem?.asset.duration {
             var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
             let durationWithSeconds = CMTimeGetSeconds(duration)
-            let currentTimeWithSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
-            nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTimeWithSeconds
             nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = durationWithSeconds
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
@@ -208,6 +211,7 @@ class EpisodePlayerView: UIView {
                self?.scaleUpEpisodeImageView()
                let duration = self?.podcastPlayer.currentItem?.asset.duration
                self?.timeLabel_UpperBound.text = duration?.getFormattedString()
+               self?.updateLockScreenDuration()
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){
@@ -215,7 +219,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
             self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
             self?.updateTimeSlider()
-            self?.updateLockScreenPlayerTime()
+            self?.updateLockScreenElapsedTime()
         }
     }
     fileprivate func updateTimeSlider(){
