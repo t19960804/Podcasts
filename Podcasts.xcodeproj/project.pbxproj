@@ -30,6 +30,8 @@
 		0BC9DF66240A0DD400142424 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF65240A0DD400142424 /* MainTabBarController.swift */; };
 		0BC9DF69240A3B3500142424 /* SearchPodcastsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */; };
 		0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC9DF6C240A3BCC00142424 /* SearchResult.swift */; };
+		0BCACE7624E7BA63006C6799 /* MPNowPlayingInfoCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCACE7524E7BA63006C6799 /* MPNowPlayingInfoCenter.swift */; };
+		0BCACE7824E7BAB2006C6799 /* CMTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCACE7724E7BAB2006C6799 /* CMTime.swift */; };
 		0BD1EFB1249E09060020E5CF /* SearchingVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD1EFB0249E09060020E5CF /* SearchingVIew.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +56,8 @@
 		0BC9DF65240A0DD400142424 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		0BC9DF68240A3B3400142424 /* SearchPodcastsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPodcastsController.swift; sourceTree = "<group>"; };
 		0BC9DF6C240A3BCC00142424 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
+		0BCACE7524E7BA63006C6799 /* MPNowPlayingInfoCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPNowPlayingInfoCenter.swift; sourceTree = "<group>"; };
+		0BCACE7724E7BAB2006C6799 /* CMTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMTime.swift; sourceTree = "<group>"; };
 		0BD1EFB0249E09060020E5CF /* SearchingVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchingVIew.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,6 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				0B4BC69F243873FF00912277 /* Extension.swift */,
+				0BCACE7524E7BA63006C6799 /* MPNowPlayingInfoCenter.swift */,
+				0BCACE7724E7BAB2006C6799 /* CMTime.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -279,6 +285,7 @@
 				0BBD6A18242F0CA8000FB9CB /* PodcastCell.swift in Sources */,
 				0B9CF1202437228900D2F864 /* Episode.swift in Sources */,
 				0BD1EFB1249E09060020E5CF /* SearchingVIew.swift in Sources */,
+				0BCACE7624E7BA63006C6799 /* MPNowPlayingInfoCenter.swift in Sources */,
 				0B4ABC7F24D56DA200410ADA /* EpisodeViewModel.swift in Sources */,
 				0B4BC6A0243873FF00912277 /* Extension.swift in Sources */,
 				0B5E922C244AD5DA00448003 /* EpisodeCell.swift in Sources */,
@@ -288,6 +295,7 @@
 				0BC9DF6D240A3BCC00142424 /* SearchResult.swift in Sources */,
 				0BC9DF542408BECB00142424 /* ContentView.swift in Sources */,
 				0B9934BE2425C692005C148D /* NetworkService.swift in Sources */,
+				0BCACE7824E7BAB2006C6799 /* CMTime.swift in Sources */,
 				0B9CF11E24371E3200D2F864 /* EpisodesController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

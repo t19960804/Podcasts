@@ -118,33 +118,18 @@ class EpisodePlayerView: UIView {
     }
     //MARK: - Lock Screen Player
     fileprivate func setupLockScreenPlayerInfo(){
-        var nowPlayingInfo = [String : Any]()
-        nowPlayingInfo[MPMediaItemPropertyTitle] = episodeViewModel?.title
-        nowPlayingInfo[MPMediaItemPropertyArtist] = episodeViewModel?.author
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        MPNowPlayingInfoCenter.default().setTitle(with: episodeViewModel?.title)
+        MPNowPlayingInfoCenter.default().setArtist(with: episodeViewModel?.author)
     }
     fileprivate func setupLockScreenPlayerImage(with image: UIImage?){
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
-        guard let image = image else { return }
-        let artwork = MPMediaItemArtwork(boundsSize: image.size) { (_) -> UIImage in
-            return image
-        }
-        nowPlayingInfo?[MPMediaItemPropertyArtwork] = artwork
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        MPNowPlayingInfoCenter.default().setImage(with: image)
     }
     fileprivate func updateLockScreenElapsedTime(){
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
-        let currentTimeWithSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
-        nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTimeWithSeconds
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        MPNowPlayingInfoCenter.default().setElapsedTime(with: podcastPlayer.currentTime())
     }
     fileprivate func updateLockScreenDuration(){
-      if let duration = podcastPlayer.currentItem?.asset.duration {
-            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo
-            let durationWithSeconds = CMTimeGetSeconds(duration)
-            nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = durationWithSeconds
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-        }
+        let duration = podcastPlayer.currentItem?.asset.duration
+        MPNowPlayingInfoCenter.default().setDuration(with: duration)
     }
     //若沒有加入此Function,有時背景播放會無效
     fileprivate func setupAudioSession(){
@@ -219,13 +204,14 @@ class EpisodePlayerView: UIView {
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
             self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
             self?.updateTimeSlider()
+            //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
             self?.updateLockScreenElapsedTime()
         }
     }
     fileprivate func updateTimeSlider(){
-        let currentSeconds = CMTimeGetSeconds(podcastPlayer.currentTime())
-        let duration = podcastPlayer.currentItem?.asset.duration
-        let totalSeconds = CMTimeGetSeconds(duration ?? CMTime(value: 1, timescale: 1))
+        let currentSeconds = podcastPlayer.currentTime().toSeconds()
+        guard let duration = podcastPlayer.currentItem?.asset.duration else { return }
+        let totalSeconds = duration.toSeconds()
         let progressPercent = currentSeconds / totalSeconds
         timeSlider.value = Float(progressPercent)
     }
@@ -240,7 +226,7 @@ class EpisodePlayerView: UIView {
             print("Error - currentItem is nil")
             return
         }
-        let durationInSeconds = CMTimeGetSeconds(duration)
+        let durationInSeconds = duration.toSeconds()
          //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
         let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
         let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1)
