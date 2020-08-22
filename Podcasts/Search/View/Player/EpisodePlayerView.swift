@@ -82,7 +82,8 @@ class EpisodePlayerView: UIView {
         return player
     }()
     let miniPlayerView = EpisodeMiniPlayerView()
-    
+    var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
@@ -191,7 +192,7 @@ class EpisodePlayerView: UIView {
            let times = [NSValue(time: time)]
            //在播放期間,若跨過指定的時間,就執行closure
            podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
-               [weak self] in //避免Retain Cycle
+               [weak self] in
                self?.scaleUpEpisodeImageView()
                let duration = self?.podcastPlayer.currentItem?.asset.duration
                self?.timeLabel_UpperBound.text = duration?.getFormattedString()
@@ -200,11 +201,13 @@ class EpisodePlayerView: UIView {
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
-        podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in //避免Retain Cycle
-            self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
-            self?.updateTimeSlider()
-            //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
-            self?.updateLockScreenElapsedTime()
+        podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in
+            if self?.isSeekingTime == false {
+                self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
+                self?.updateTimeSlider()
+                //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
+                self?.updateLockScreenElapsedTime()
+            }
         }
     }
     fileprivate func updateTimeSlider(){
@@ -234,6 +237,7 @@ class EpisodePlayerView: UIView {
         //若要seek的秒數有小數點,則必須提高timeScale,才能seek到越精細的秒數
         //https://www.jianshu.com/p/f02aad2e7ff5
         let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
+        timeLabel_LowerBound.text = seekTime.getFormattedString()
 
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
@@ -241,12 +245,15 @@ class EpisodePlayerView: UIView {
                 print("tlee slider began")
             case .moved:
                 print("tlee slider moved")
+                isSeekingTime = true
             case .ended:
                 print("tlee slider ended")
                 //過多的seekRequest會導致seek出問題,只需要在ended做
                 //https://developer.apple.com/documentation/avfoundation/avplayer/1387018-seek
                 podcastPlayer.seek(to: seekTime) { (isFinished) in
-                    print("tlee isFinished:\(isFinished)")
+                    if isFinished {
+                        self.isSeekingTime = false
+                    }
                 }
             default:
                 break
