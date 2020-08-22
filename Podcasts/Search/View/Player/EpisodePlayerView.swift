@@ -231,11 +231,8 @@ class EpisodePlayerView: UIView {
         let durationInSeconds = duration.toSeconds()
         //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
         let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
-        //timescale > 每秒分割的“fraction”數量。CMTime的整体精度就是受到这个限制的。
-        //如果timescale是1，则不能有小於1秒的時間(一個fraction為一秒)，並且時間以1秒為增量
-        //如果timescale是1000，则每秒被分割成1000個fraction,一個fraction代表0.001秒
-        //若要seek的秒數有小數點,則必須提高timeScale,才能seek到越精細的秒數
-        //https://www.jianshu.com/p/f02aad2e7ff5
+        //一秒切成1000份(1份 = 0.001秒),假設我們想要123.45秒,由於0.45秒(450份)可以提供,故為238.87秒
+        //若preferredTimescale為1,將無法處理小數點的情況,因為小數點不滿一份(1秒)
         let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
         timeLabel_LowerBound.text = seekTime.getFormattedString()
 
