@@ -30,7 +30,7 @@ class EpisodePlayerView: UIView {
     //MARK: - StackView_Time
     let timeSlider: UISlider = {
         let sd = UISlider()
-        sd.addTarget(self, action: #selector(handleTimeSliderValueChanged(slider:)), for: .valueChanged)
+        sd.addTarget(self, action: #selector(handleTimeSliderValueChanged(slider:event:)), for: .valueChanged)
         return sd
     }()
     let timeLabel_LowerBound = UILabel(text: "00:00:00", textColor: .darkGray)
@@ -220,16 +220,39 @@ class EpisodePlayerView: UIView {
         podcastPlayer.replaceCurrentItem(with: item)
         playPodcats()
     }
-    @objc fileprivate func handleTimeSliderValueChanged(slider: UISlider){
+    @objc fileprivate func handleTimeSliderValueChanged(slider: UISlider, event: UIEvent){
         guard let duration = podcastPlayer.currentItem?.duration else {
             print("Error - currentItem is nil")
             return
         }
         let durationInSeconds = duration.toSeconds()
-         //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
+        //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
         let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
-        let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1)
-        podcastPlayer.seek(to: seekTime)
+        //timescale > 每秒分割的“fraction”數量。CMTime的整体精度就是受到这个限制的。
+        //如果timescale是1，则不能有小於1秒的時間(一個fraction為一秒)，並且時間以1秒為增量
+        //如果timescale是1000，则每秒被分割成1000個fraction,一個fraction代表0.001秒
+        //若seekTime有小數點,則必須提高timeScale,才有足夠小的fraction表示小數點
+        //https://blog.csdn.net/caiwenyu9999/article/details/51518960
+        //https://www.jianshu.com/p/f02aad2e7ff5
+        let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
+
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began:
+                print("tlee slider began")
+            case .moved:
+                print("tlee slider moved")
+            case .ended:
+                print("tlee slider ended")
+                //過多的seekRequest會導致seek出問題,只需要在ended做
+                //https://developer.apple.com/documentation/avfoundation/avplayer/1387018-seek
+                podcastPlayer.seek(to: seekTime) { (isFinished) in
+                    print("tlee isFinished:\(isFinished)")
+                }
+            default:
+                break
+            }
+        }
     }
     @objc fileprivate func handleRewindAndForward(button: UIButton){
         let currentTime = podcastPlayer.currentTime()
