@@ -231,8 +231,7 @@ class EpisodePlayerView: UIView {
         //timescale > 每秒分割的“fraction”數量。CMTime的整体精度就是受到这个限制的。
         //如果timescale是1，则不能有小於1秒的時間(一個fraction為一秒)，並且時間以1秒為增量
         //如果timescale是1000，则每秒被分割成1000個fraction,一個fraction代表0.001秒
-        //若seekTime有小數點,則必須提高timeScale,才有足夠小的fraction表示小數點
-        //https://blog.csdn.net/caiwenyu9999/article/details/51518960
+        //若要seek的秒數有小數點,則必須提高timeScale,才能seek到越精細的秒數
         //https://www.jianshu.com/p/f02aad2e7ff5
         let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
 
