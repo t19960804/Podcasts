@@ -65,18 +65,18 @@ class EpisodeMiniPlayerView: UIView {
     }
     fileprivate func setupConstraints(){
         addSubview(hStackView)
-        hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 7, left: 15, bottom: 7, right: 15))
-        
-        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 16, height: 16))
-        
-        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 16, height: 16))
-
-        imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: 45, height: 45))
     }
     override func layoutSubviews() {
         super.layoutSubviews()
         //固定Label,避免title文字太少,造成label寬度自動減少,stackView的subViews排版會受影響
-        titleLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width - 45 - 16 - 16 - 7 - 7, height: 0))
+        titleLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.64, height: 0))
+        hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: frame.width * 0.0169, left: frame.width * 0.0362, bottom: frame.width * 0.0169, right: frame.width * 0.0362))
+        
+        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.0386, height: frame.width * 0.0386))
+        
+        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.0386, height: frame.width * 0.0386))
+
+        imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.1087, height: frame.width * 0.1087))
     }
     @objc func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer){
         delegate?.handleMiniPlayerViewPanned(gesture: gesture)
