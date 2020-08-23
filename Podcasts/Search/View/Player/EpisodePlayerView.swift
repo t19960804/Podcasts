@@ -11,6 +11,7 @@ import AVKit
 import MediaPlayer
 
 class EpisodePlayerView: UIView {
+    var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
             guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
@@ -116,6 +117,39 @@ class EpisodePlayerView: UIView {
             self.handlePlayAndPause()
             return .success
         }
+        commandCenter.nextTrackCommand.isEnabled = true
+        commandCenter.nextTrackCommand.addTarget(self, action: #selector(handleNextTrack))
+        
+        commandCenter.previousTrackCommand.isEnabled = true
+        commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
+    }
+    @objc fileprivate func handleNextTrack(){
+        if episodesList.isEmpty {
+            print("Error - Can not get next episode because list is empty")
+            return
+        }
+        let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
+        guard let index = currentEpisodeIndex else {
+            print("Error - Can not get episode index from list")
+            return
+        }
+        let needTurnBackToFirstEpisode = index == episodesList.count - 1
+        let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
+        episodeViewModel = episode
+    }
+    @objc fileprivate func handlePreviousTrack(){
+        if episodesList.isEmpty {
+            print("Error - Can not get previous episode because list is empty")
+            return
+        }
+        let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
+        guard let index = currentEpisodeIndex else {
+            print("Error - Can not get episode index from list")
+            return
+        }
+        let needTurnBackToLastEpisode = index == 0
+        let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
+        episodeViewModel = episode
     }
     //MARK: - Lock Screen Player
     fileprivate func setupLockScreenPlayerInfo(){
@@ -333,7 +367,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
             
             if translation.y < -200 || velocity.y < -500{
                 let tabbarController = UIApplication.mainTabBarController
-                tabbarController?.maximizePodcastPlayerView(episodeViewModel: nil)
+                tabbarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: self.episodesList)
             } else {
                 //Minimize
                 self.miniPlayerView.alpha = 1
@@ -344,7 +378,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     }
     func handleMiniPlayerTapped() {
         let tabBarController = UIApplication.mainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episodeViewModel: nil)
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: self.episodesList)
     }
     
     func handlePlayerPauseAndPlay() {
