@@ -15,10 +15,8 @@ class EpisodePlayerView: UIView {
     var episodeViewModel: EpisodeViewModel? {
         didSet {
             guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
-            setupLockScreenPlayerInfo()
-            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
-                self.setupLockScreenPlayerImage(with: image)
+                MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
             }
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
@@ -158,13 +156,6 @@ class EpisodePlayerView: UIView {
         episodeViewModel = episode
     }
     //MARK: - Lock Screen Player
-    fileprivate func setupLockScreenPlayerInfo(){
-        MPNowPlayingInfoCenter.default().setTitle(with: episodeViewModel?.title)
-        MPNowPlayingInfoCenter.default().setArtist(with: episodeViewModel?.author)
-    }
-    fileprivate func setupLockScreenPlayerImage(with image: UIImage?){
-        MPNowPlayingInfoCenter.default().setImage(with: image)
-    }
     fileprivate func updateLockScreenElapsedTime(){
         MPNowPlayingInfoCenter.default().setElapsedTime(with: podcastPlayer.currentTime())
     }

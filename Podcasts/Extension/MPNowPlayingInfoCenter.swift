@@ -10,50 +10,16 @@ import Foundation
 import MediaPlayer
 
 extension MPNowPlayingInfoCenter {
-    func setTitle(with title: String?){
-        if var nowPlayingInfo = self.nowPlayingInfo {
-            nowPlayingInfo[MPMediaItemPropertyTitle] = title
-            self.nowPlayingInfo = nowPlayingInfo
-        } else {
-            var dictionary = [String : Any]()
-            dictionary[MPMediaItemPropertyTitle] = title
-            self.nowPlayingInfo = dictionary
-        }
-    }
-    func setArtist(with artist: String?){
-        if var nowPlayingInfo = self.nowPlayingInfo {
-            nowPlayingInfo[MPMediaItemPropertyArtist] = artist
-            self.nowPlayingInfo = nowPlayingInfo
-        } else {
-            var dictionary = [String : Any]()
-            dictionary[MPMediaItemPropertyArtist] = artist
-            self.nowPlayingInfo = dictionary
-        }
-    }
+
     func setElapsedTime(with elpasedTime: CMTime){
         let elpasedTimeWithSeconds = elpasedTime.toSeconds()
-        
+
         if var nowPlayingInfo = self.nowPlayingInfo {
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = elpasedTimeWithSeconds
             self.nowPlayingInfo = nowPlayingInfo
         } else {
             var dictionary = [String : Any]()
             dictionary[MPNowPlayingInfoPropertyElapsedPlaybackTime] = elpasedTimeWithSeconds
-            self.nowPlayingInfo = dictionary
-        }
-    }
-    func setImage(with image: UIImage?){
-        guard let image = image else { return }
-        let artwork = MPMediaItemArtwork(boundsSize: image.size) { (_) -> UIImage in
-            return image
-        }
-        
-        if var nowPlayingInfo = self.nowPlayingInfo {
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
-            self.nowPlayingInfo = nowPlayingInfo
-        } else {
-            var dictionary = [String : Any]()
-            dictionary[MPMediaItemPropertyArtwork] = artwork
             self.nowPlayingInfo = dictionary
         }
     }
@@ -67,6 +33,25 @@ extension MPNowPlayingInfoCenter {
         } else {
             var dictionary = [String : Any]()
             dictionary[MPMediaItemPropertyPlaybackDuration] = durationWithSeconds
+            self.nowPlayingInfo = dictionary
+        }
+    }
+    func setInfo(title: String?, artist: String?, image: UIImage?){
+        guard let image = image else { return }
+        let artwork = MPMediaItemArtwork(boundsSize: image.size) { (_) -> UIImage in
+            return image
+        }
+
+        if var nowPlayingInfo = self.nowPlayingInfo {
+            nowPlayingInfo[MPMediaItemPropertyTitle] = title
+            nowPlayingInfo[MPMediaItemPropertyArtist] = artist
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+            self.nowPlayingInfo = nowPlayingInfo
+        } else {
+            var dictionary = [String : Any]()
+            dictionary[MPMediaItemPropertyTitle] = title
+            dictionary[MPMediaItemPropertyArtist] = artist
+            dictionary[MPMediaItemPropertyArtwork] = artwork
             self.nowPlayingInfo = dictionary
         }
     }
