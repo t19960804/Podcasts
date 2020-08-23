@@ -84,6 +84,7 @@ class EpisodePlayerView: UIView {
     }()
     let miniPlayerView = EpisodeMiniPlayerView()
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
+    let commandCenter = MPRemoteCommandCenter.shared()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -101,7 +102,6 @@ class EpisodePlayerView: UIView {
     //MARK: - Command Center
     fileprivate func setupRemoteControl(){
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        let commandCenter = MPRemoteCommandCenter.shared()
         commandCenter.playCommand.isEnabled = true
         commandCenter.playCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
             self.handlePlayAndPause()
@@ -133,6 +133,9 @@ class EpisodePlayerView: UIView {
             print("Error - Can not get episode index from list")
             return
         }
+        commandCenter.nextTrackCommand.isEnabled = false
+        commandCenter.previousTrackCommand.isEnabled = false
+        
         let needTurnBackToFirstEpisode = index == episodesList.count - 1
         let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
         episodeViewModel = episode
@@ -147,6 +150,9 @@ class EpisodePlayerView: UIView {
             print("Error - Can not get episode index from list")
             return
         }
+        commandCenter.nextTrackCommand.isEnabled = false
+        commandCenter.previousTrackCommand.isEnabled = false
+        
         let needTurnBackToLastEpisode = index == 0
         let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
         episodeViewModel = episode
@@ -227,10 +233,12 @@ class EpisodePlayerView: UIView {
            //在播放期間,若跨過指定的時間,就執行closure
            podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
                [weak self] in
-               self?.scaleUpEpisodeImageView()
-               let duration = self?.podcastPlayer.currentItem?.asset.duration
-               self?.timeLabel_UpperBound.text = duration?.getFormattedString()
-               self?.updateLockScreenDuration()
+                self?.scaleUpEpisodeImageView()
+                let duration = self?.podcastPlayer.currentItem?.asset.duration
+                self?.timeLabel_UpperBound.text = duration?.getFormattedString()
+                self?.updateLockScreenDuration()
+                self?.commandCenter.nextTrackCommand.isEnabled = true
+                self?.commandCenter.previousTrackCommand.isEnabled = true
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){
