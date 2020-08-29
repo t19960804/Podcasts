@@ -21,6 +21,7 @@ class EpisodePlayerView: UIView {
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
             miniPlayerView.episodeViewModel = episodeViewModel
+            setupAudioSession()//播放時再取得Audio使用權
             playAudio(with: episodeViewModel.audioUrl)
         }
     }
@@ -94,19 +95,40 @@ class EpisodePlayerView: UIView {
         updateCurrentPlayingTimePeriodically()
         miniPlayerView.delegate = self
         setupGesture()
-        setupAudioSession()
         setupRemoteControl()
+        setupInterruptionNotification()
+    }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    //MARK: - Interruption handle
+    fileprivate func setupInterruptionNotification(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
+    }
+    @objc fileprivate func handleInterruption(notification: Notification){
+        let userInfo = notification.userInfo
+        guard let interruptionType = userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt else {
+            return
+        }
+        if interruptionType == AVAudioSession.InterruptionType.began.rawValue {
+            scaleDownEpisodeImageView()
+            //不用.pause,被干擾時player會自動pause
+            playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+            miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+        }
     }
     //MARK: - Command Center
     fileprivate func setupRemoteControl(){
         UIApplication.shared.beginReceivingRemoteControlEvents()
         commandCenter.playCommand.isEnabled = true
         commandCenter.playCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
+            self.updateLockScreenElapsedTime()
             self.handlePlayAndPause()
             return .success
         }
         commandCenter.pauseCommand.isEnabled = true
         commandCenter.pauseCommand.addTarget { (_) -> MPRemoteCommandHandlerStatus in
+            self.updateLockScreenElapsedTime()
             self.handlePlayAndPause()
             return .success
         }
@@ -167,7 +189,10 @@ class EpisodePlayerView: UIView {
     fileprivate func setupAudioSession(){
         do {
             //https://ithelp.ithome.com.tw/articles/10195770?sc=iThelpR
+            //App - AVAudioSession(中介) - OS
+            //使用AVAudioSession來告訴OS我們要在App中要如何使用Audio
             try AVAudioSession.sharedInstance().setCategory(.playback)
+            //向OS請求使用Audio,因為多個App中只能有一個使用Audio,比如一通電話打來,電話就有使用Audio的最高優先,低優先的會被暫停
             try AVAudioSession.sharedInstance().setActive(true)
         } catch let sessionError{
             //https://stackoverflow.com/questions/31352593/how-to-print-details-of-a-catch-all-exception-in-swift
@@ -224,22 +249,24 @@ class EpisodePlayerView: UIView {
            //在播放期間,若跨過指定的時間,就執行closure
            podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
                [weak self] in
-                self?.scaleUpEpisodeImageView()
-                let duration = self?.podcastPlayer.currentItem?.asset.duration
-                self?.timeLabel_UpperBound.text = duration?.getFormattedString()
-                self?.updateLockScreenDuration()
-                self?.commandCenter.nextTrackCommand.isEnabled = true
-                self?.commandCenter.previousTrackCommand.isEnabled = true
+                guard let self = self else { return }
+                self.scaleUpEpisodeImageView()
+                let duration = self.podcastPlayer.currentItem?.asset.duration
+                self.timeLabel_UpperBound.text = duration?.getFormattedString()
+                self.updateLockScreenDuration()
+                self.commandCenter.nextTrackCommand.isEnabled = true
+                self.commandCenter.previousTrackCommand.isEnabled = true
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in
-            if self?.isSeekingTime == false {
-                self?.timeLabel_LowerBound.text = currentTime.getFormattedString()
-                self?.updateTimeSlider()
+            guard let self = self else { return }
+            if self.isSeekingTime == false {
+                self.timeLabel_LowerBound.text = currentTime.getFormattedString()
+                self.updateTimeSlider()
                 //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
-                self?.updateLockScreenElapsedTime()
+                self.updateLockScreenElapsedTime()
             }
         }
     }
