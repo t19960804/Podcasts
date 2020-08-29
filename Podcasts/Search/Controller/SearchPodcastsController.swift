@@ -21,7 +21,7 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
         setUpSearchController()
         setupConstraints()
-        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
+        //searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
@@ -52,16 +52,21 @@ class SearchPodcastsController: UITableViewController {
         return 150
     }
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let label = UILabel()
-        label.text = "Please enter a search query"
-        label.textAlignment = .center
-        label.textColor = .purple
-        label.font = .boldSystemFont(ofSize: 20)
+        guard  let input = navigationItem.searchController?.searchBar.text else { return nil }
+        let label = UILabel(text: nil, font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
+
+        label.text = input.isEmpty ? "Please enter a search query" : "There is no podcast about:\(input)"
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let searchBarIsEmpty = navigationItem.searchController!.searchBar.text!.isEmpty
-        return podcasts.isEmpty && searchBarIsEmpty ? 250 : 0
+        //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
+        let isSearching = searchingView.isHidden == false
+        if isSearching {
+            return 0    //Searching中隱藏Header,高度為0時,viewForHeaderInSection不會觸發
+        } else if isSearching == false && podcasts.isEmpty {
+            return 250 //Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
+        }
+        return 0 //Searching完且有結果,隱藏Header
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()
@@ -72,7 +77,6 @@ class SearchPodcastsController: UITableViewController {
 }
 extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print(searchText)
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
             self.searchingView.isHidden = false
@@ -83,11 +87,12 @@ extension SearchPodcastsController: UISearchBarDelegate {
                 switch result {
                 case .failure(let error):
                     print("Request data failed:\(error)")
+                    self.podcasts = []
                 case .success(let podcasts):
-                    self.searchingView.isHidden = true
                     self.podcasts = podcasts
-                    self.tableView.reloadData()
                 }
+                self.searchingView.isHidden = true
+                self.tableView.reloadData()
             }
         }
     }
