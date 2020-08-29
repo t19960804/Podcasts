@@ -16,9 +16,14 @@ class NetworkService {
     private init(){//private > 防範其他的類別來初始化
         
     }
+    //@escaping > 讓closure在function執行完後可以呼叫(逃離function的生命週期)
+    //由於@escaping的closure被呼叫時需要存取到變數 / 常數 / 函式,所以需要加上self.xxx
+    //讓self的Reference count + 1,保證closure被呼叫前self不會被釋放掉
+    //https://www.jianshu.com/p/9fb444e88d26
+    //https://medium.com/%E5%BD%BC%E5%BE%97%E6%BD%98%E7%9A%84-swift-ios-app-%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E8%A7%A3%E7%AD%94%E9%9B%86/%E8%AE%93-closure-%E5%9C%A8-function-%E5%A4%96%E7%B9%BC%E7%BA%8C%E4%BD%BF%E7%94%A8%E7%9A%84-escaping-40d50b17f75b
     
-    //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
     func fetchPodcasts(searchText: String, completion: @escaping (Result<[Podcast],Error>) -> Void){
+        //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
         let url = "https://itunes.apple.com/search"
         let extraParameters = ["term" : searchText,
                                "media" : "podcast"]

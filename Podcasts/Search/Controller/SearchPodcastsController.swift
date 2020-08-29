@@ -52,7 +52,7 @@ class SearchPodcastsController: UITableViewController {
         return 150
     }
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard  let input = navigationItem.searchController?.searchBar.text else { return nil }
+        guard let input = navigationItem.searchController?.searchBar.text else { return nil }
         let label = UILabel(text: nil, font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
 
         label.text = input.isEmpty ? "Please enter a search query" : "There is no podcast about:\(input)"
