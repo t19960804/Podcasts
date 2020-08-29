@@ -79,11 +79,15 @@ extension SearchPodcastsController: UISearchBarDelegate {
             self.podcasts = []
             self.tableView.reloadData()
             
-            NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) {
-                (podcasts) in
-                self.searchingView.isHidden = true
-                self.podcasts = podcasts
-                self.tableView.reloadData()
+            NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
+                switch result {
+                case .failure(let error):
+                    print("Request data failed:\(error)")
+                case .success(let podcasts):
+                    self.searchingView.isHidden = true
+                    self.podcasts = podcasts
+                    self.tableView.reloadData()
+                }
             }
         }
     }

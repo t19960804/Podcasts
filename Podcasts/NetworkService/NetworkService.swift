@@ -18,7 +18,7 @@ class NetworkService {
     }
     
     //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
-    func fetchPodcasts(searchText: String, completion: @escaping ([Podcast]) -> Void){
+    func fetchPodcasts(searchText: String, completion: @escaping (Result<[Podcast],Error>) -> Void){
         let url = "https://itunes.apple.com/search"
         let extraParameters = ["term" : searchText,
                                "media" : "podcast"]
@@ -26,7 +26,7 @@ class NetworkService {
         //例如: Brian Voong > Brian+Voong
         AF.request(url, method: .get, parameters: extraParameters, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (response) in
             if let error = response.error {
-                print("Request failed:\(error)")
+                completion(.failure(error))
                 return
             }
             guard let data = response.data else {
@@ -35,9 +35,9 @@ class NetworkService {
             }
             do {
                 let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
-                completion(searchResult.results)
+                completion(.success(searchResult.results))
             } catch {
-                print("Decode json failed:\(error)")
+                completion(.failure(error))
             }
         }
     }
