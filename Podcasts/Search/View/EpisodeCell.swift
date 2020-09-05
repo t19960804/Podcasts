@@ -20,6 +20,7 @@ class EpisodeCell: UITableViewCell {
     let episodeImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = #imageLiteral(resourceName: "appicon")
+        iv.contentMode = .scaleAspectFill
         return iv
     }()
     let pubDateLabel: UILabel = {

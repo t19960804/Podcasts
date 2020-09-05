@@ -21,7 +21,7 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
         setUpSearchController()
         setupConstraints()
-        //searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
+        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
