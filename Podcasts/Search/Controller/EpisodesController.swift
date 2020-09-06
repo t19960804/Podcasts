@@ -40,8 +40,8 @@ class EpisodesController: UITableViewController {
 
         do {
             //Transform data to object
-            let podcast = try NSKeyedUnarchiver.unarchivedObject(ofClass: Podcast.self, from: data)
-            print("Success get podcast from UserDefaults:\(podcast?.artistName),\(podcast?.trackName)")
+            let podcast = try JSONDecoder().decode(Podcast.self, from: data)
+            print("Success get podcast from UserDefaults:\(podcast.artistName),\(podcast.trackName)")
         } catch {
             print("Error - Unarchive data to object failed:\(error)")
         }
@@ -51,7 +51,7 @@ class EpisodesController: UITableViewController {
 
         do {
             //Transform object to data
-            let data = try NSKeyedArchiver.archivedData(withRootObject: podcast, requiringSecureCoding: true)
+            let data = try JSONEncoder().encode(podcast)
             UserDefaults.standard.set(data, forKey: commonKey)
         } catch {
             print("Error - Archive object to data failed:\(error)")
