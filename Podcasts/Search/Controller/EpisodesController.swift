@@ -28,6 +28,35 @@ class EpisodesController: UITableViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
+        
+        
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite)),
+        UIBarButtonItem(title: "Fetch", style: .plain, target: self, action: #selector(handleFetch))]
+    }
+    let commonKey = "podcast"
+    //model object > data > UserDefaults > data > model object
+    @objc fileprivate func handleFetch(){
+        guard let data = UserDefaults.standard.data(forKey: commonKey) else { return }
+
+        do {
+            //Transform data to object
+            let podcast = try NSKeyedUnarchiver.unarchivedObject(ofClass: Podcast.self, from: data)
+            print("Success get podcast from UserDefaults:\(podcast?.artistName),\(podcast?.trackName)")
+        } catch {
+            print("Error - Unarchive data to object failed:\(error)")
+        }
+    }
+    @objc fileprivate func handleFavorite(){
+        guard let podcast = self.podcast else { return }
+
+        do {
+            //Transform object to data
+            let data = try NSKeyedArchiver.archivedData(withRootObject: podcast, requiringSecureCoding: true)
+            UserDefaults.standard.set(data, forKey: commonKey)
+        } catch {
+            print("Error - Archive object to data failed:\(error)")
+        }
+
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
