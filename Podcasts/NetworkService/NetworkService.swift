@@ -39,6 +39,7 @@ class NetworkService {
                 return
             }
             do {
+                //Transform JSON data to model object
                 let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
                 completion(.success(searchResult.results))
             } catch {
