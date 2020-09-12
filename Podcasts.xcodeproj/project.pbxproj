@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
+		0B3B0795250C9ACA0087D63D /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3B0794250C9ACA0087D63D /* UserDefaults.swift */; };
 		0B46133824C402F30071DC80 /* LBTATools in Frameworks */ = {isa = PBXBuildFile; productRef = 0B46133724C402F30071DC80 /* LBTATools */; };
 		0B4ABC7F24D56DA200410ADA /* EpisodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */; };
 		0B4BC69D24386F7000912277 /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0B4BC69C24386F7000912277 /* FeedKit */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
+		0B3B0794250C9ACA0087D63D /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeViewModel.swift; sourceTree = "<group>"; };
 		0B4BC69F243873FF00912277 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		0B5086B824B03FE800AD3E39 /* EpisodeMiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeMiniPlayerView.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				0B4BC69F243873FF00912277 /* Extension.swift */,
 				0BCACE7524E7BA63006C6799 /* MPNowPlayingInfoCenter.swift */,
 				0BCACE7724E7BAB2006C6799 /* CMTime.swift */,
+				0B3B0794250C9ACA0087D63D /* UserDefaults.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */,
 				0BBD6A18242F0CA8000FB9CB /* PodcastCell.swift in Sources */,
 				0B9CF1202437228900D2F864 /* Episode.swift in Sources */,
+				0B3B0795250C9ACA0087D63D /* UserDefaults.swift in Sources */,
 				0BD1EFB1249E09060020E5CF /* SearchingVIew.swift in Sources */,
 				0BCACE7624E7BA63006C6799 /* MPNowPlayingInfoCenter.swift in Sources */,
 				0B4ABC7F24D56DA200410ADA /* EpisodeViewModel.swift in Sources */,
