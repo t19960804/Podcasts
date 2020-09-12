@@ -33,30 +33,25 @@ class EpisodesController: UITableViewController {
         navigationItem.rightBarButtonItems = [UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite)),
         UIBarButtonItem(title: "Fetch", style: .plain, target: self, action: #selector(handleFetch))]
     }
-    let commonKey = "podcast"
     //model object > data > UserDefaults > data > model object
     @objc fileprivate func handleFetch(){
-        guard let data = UserDefaults.standard.data(forKey: commonKey) else { return }
-
-        do {
-            //Transform data to object
-            let podcast = try JSONDecoder().decode(Podcast.self, from: data)
-            print("Success get podcast from UserDefaults:\(podcast.artistName),\(podcast.trackName)")
-        } catch {
-            print("Error - Unarchive data to object failed:\(error)")
-        }
+        let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
+        favoritePodcasts?.forEach({
+            print($0.trackName ?? "N/A")
+        })
     }
+    
     @objc fileprivate func handleFavorite(){
         guard let podcast = self.podcast else { return }
-
-        do {
-            //Transform object to data
-            let data = try JSONEncoder().encode(podcast)
-            UserDefaults.standard.set(data, forKey: commonKey)
-        } catch {
-            print("Error - Archive object to data failed:\(error)")
+    
+        if var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() {
+            favoritePodcasts.append(podcast)
+            UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
+        } else {
+            var emptyFavoriteList = [Podcast]()
+            emptyFavoriteList.append(podcast)
+            UserDefaults.standard.saveFavoritePodcast(with: emptyFavoriteList)
         }
-
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
