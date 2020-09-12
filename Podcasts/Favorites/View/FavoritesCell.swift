@@ -8,6 +8,9 @@
 
 import UIKit
 
+protocol FavoritesCellDelegate {
+    func longPressOnFavoritesCell(cell: UICollectionViewCell)
+}
 class FavoritesCell: UICollectionViewCell {
     static let cellID = "Cell"
 
@@ -17,13 +20,26 @@ class FavoritesCell: UICollectionViewCell {
     lazy var vStackView = UIStackView(subViews: [imageView,
                                                  titleLabel,
                                                  artistNameLabel], axis: .vertical)
+    var delegate: FavoritesCellDelegate?
+    var podcast: Podcast? {
+        didSet {
+            imageView.sd_setImage(with: URL(string: podcast?.artworkUrl600 ?? ""))
+            titleLabel.text = podcast?.trackName
+            artistNameLabel.text = podcast?.artistName
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         imageView.heightAnchor.constraint(lessThanOrEqualTo: imageView.widthAnchor).isActive = true
         addSubview(vStackView)
         vStackView.fillSuperview()
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        self.addGestureRecognizer(longPress)
     }
-    
+    @objc func handleLongPress(){
+        delegate?.longPressOnFavoritesCell(cell: self)
+    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
