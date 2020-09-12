@@ -17,6 +17,8 @@ class SearchPodcastsController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
+        self.definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
         setUpSearchController()
