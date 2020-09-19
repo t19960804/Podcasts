@@ -99,7 +99,7 @@ class EpisodesController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         let isSearching = searchingView.isHidden == false
-        if isSearching == false && episodeViewModels.isEmpty {
+        if isSearching == false && episodeViewModels.isEmpty { //Searching完且沒有任何結果
             return 200
         }
         return 0

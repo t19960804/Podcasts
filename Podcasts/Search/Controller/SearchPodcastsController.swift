@@ -66,7 +66,7 @@ class SearchPodcastsController: UITableViewController {
         if isSearching == false && podcasts.isEmpty {
             return 250 //Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
         }
-        return 0 //Searching中隱藏Header / Searching完且有結果,隱藏Header
+        return 0
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()
