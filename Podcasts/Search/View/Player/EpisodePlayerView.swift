@@ -143,15 +143,15 @@ class EpisodePlayerView: UIView {
         commandCenter.previousTrackCommand.isEnabled = true
         commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
     }
-    @objc fileprivate func handleNextTrack(){
+    @objc fileprivate func handleNextTrack() -> MPRemoteCommandHandlerStatus {
         if episodesList.isEmpty {
             print("Error - Can not get next episode because list is empty")
-            return
+            return .commandFailed
         }
         let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
         guard let index = currentEpisodeIndex else {
             print("Error - Can not get episode index from list")
-            return
+            return .commandFailed
         }
         commandCenter.nextTrackCommand.isEnabled = false
         commandCenter.previousTrackCommand.isEnabled = false
@@ -159,16 +159,17 @@ class EpisodePlayerView: UIView {
         let needTurnBackToFirstEpisode = index == episodesList.count - 1
         let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
         episodeViewModel = episode
+        return .success
     }
-    @objc fileprivate func handlePreviousTrack(){
+    @objc fileprivate func handlePreviousTrack() -> MPRemoteCommandHandlerStatus {
         if episodesList.isEmpty {
             print("Error - Can not get previous episode because list is empty")
-            return
+            return .commandFailed
         }
         let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
         guard let index = currentEpisodeIndex else {
             print("Error - Can not get episode index from list")
-            return
+            return .commandFailed
         }
         commandCenter.nextTrackCommand.isEnabled = false
         commandCenter.previousTrackCommand.isEnabled = false
@@ -176,6 +177,7 @@ class EpisodePlayerView: UIView {
         let needTurnBackToLastEpisode = index == 0
         let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
         episodeViewModel = episode
+        return .success
     }
     //MARK: - Lock Screen Player
     fileprivate func updateLockScreenElapsedTime(){
