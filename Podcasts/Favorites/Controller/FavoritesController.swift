@@ -23,6 +23,7 @@ class FavoritesController: UICollectionViewController {
         super.viewWillAppear(animated)
         favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() ?? []
         collectionView.reloadData()
+        self.tabBarItem.badgeValue = nil
     }
     fileprivate func setupCollectionView(){
         collectionView.backgroundColor = .white

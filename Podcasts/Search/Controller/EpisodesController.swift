@@ -43,6 +43,10 @@ class EpisodesController: UITableViewController {
             emptyFavoriteList.append(podcast)
             UserDefaults.standard.saveFavoritePodcast(with: emptyFavoriteList)
         }
+        guard let favoritesController = UIApplication.mainTabBarController?.viewControllers?[TabBarControllerType.Favorites.rawValue] else {
+            return
+        }
+        favoritesController.tabBarItem.badgeValue = "New"
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }

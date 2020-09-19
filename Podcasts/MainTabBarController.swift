@@ -21,8 +21,8 @@ class MainTabBarController: UITabBarController {
         let searchController = SearchPodcastsController()
         let downloadsController = UIViewController()
 
-        viewControllers = [generateNavController(rootController: favoritesController, tabBarTitle: "Favorites", tabBarImage: #imageLiteral(resourceName: "favorites")),
-                           generateNavController(rootController: searchController, tabBarTitle: "Search", tabBarImage: #imageLiteral(resourceName: "search")),
+        viewControllers = [ generateNavController(rootController: searchController, tabBarTitle: "Search", tabBarImage: #imageLiteral(resourceName: "search")),
+                            generateNavController(rootController: favoritesController, tabBarTitle: "Favorites", tabBarImage: #imageLiteral(resourceName: "favorites")),
                            generateNavController(rootController: downloadsController, tabBarTitle: "Downloads", tabBarImage: #imageLiteral(resourceName: "downloads"))]
         //被點選的 tab 的文字和圖案顏色
         tabBar.tintColor = .purple
@@ -83,4 +83,10 @@ class MainTabBarController: UITabBarController {
     }
 
 
+}
+
+enum TabBarControllerType: Int {
+    case Search
+    case Favorites
+    case Downloads
 }
