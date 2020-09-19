@@ -9,7 +9,7 @@
 import UIKit
 
 class FavoritesController: UICollectionViewController {
-    
+    let headerID = "headerID"
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
@@ -27,6 +27,7 @@ class FavoritesController: UICollectionViewController {
     fileprivate func setupCollectionView(){
         collectionView.backgroundColor = .white
         collectionView!.register(FavoritesCell.self, forCellWithReuseIdentifier: FavoritesCell.cellID)
+        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerID)
         guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         layout.scrollDirection = .vertical
         layout.sectionInset = .init(top: 16, left: 16, bottom: 16, right: 16)
@@ -45,12 +46,24 @@ class FavoritesController: UICollectionViewController {
         cell.delegate = self
         return cell
     }
-    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerID, for: indexPath)
+        let label = UILabel(text: "No favorite Pocast!", font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
+        header.addSubview(label)
+        label.centerInSuperview()
+        return header
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
+extension FavoritesController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        //若不給size,viewForSupplementaryElementOfKind就不會被呼叫
+        let height: CGFloat = favoritePodcasts.isEmpty ? 250 : 0
+        return .init(width: collectionView.frame.size.width, height: height)
+    }
+}
 extension FavoritesController: FavoritesCellDelegate {
     func longPressOnFavoritesCell(cell: UICollectionViewCell) {
         //計算long press在哪個podcast
