@@ -15,6 +15,7 @@ extension UserDefaults {
             //Transform object to data
             let data = try JSONEncoder().encode(favoriteList)
             UserDefaults.standard.set(data, forKey: UserDefaults.commonKey)
+            print("Info - saveFavoritePodcast:\(favoriteList.count)")
         } catch {
             print("Error - Encode object to data failed:\(error)")
         }
