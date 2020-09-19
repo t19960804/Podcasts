@@ -23,7 +23,7 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
         setUpSearchController()
         setupConstraints()
-        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
+        //searchBar(navigationItem.searchController!.searchBar, textDidChange: "Brian voong")
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
@@ -63,12 +63,10 @@ class SearchPodcastsController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
         let isSearching = searchingView.isHidden == false
-        if isSearching {
-            return 0    //Searching中隱藏Header,高度為0時,viewForHeaderInSection不會觸發
-        } else if isSearching == false && podcasts.isEmpty {
+        if isSearching == false && podcasts.isEmpty {
             return 250 //Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
         }
-        return 0 //Searching完且有結果,隱藏Header
+        return 0 //Searching中隱藏Header / Searching完且有結果,隱藏Header
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()

@@ -22,7 +22,6 @@ class EpisodesController: UITableViewController {
     }
     let cellID = "EpisodeCell"
     var episodeViewModels = [EpisodeViewModel]()
-    var isSearching = true
     let searchingView = SearchingView()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +57,6 @@ class EpisodesController: UITableViewController {
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
-        isSearching = true
         searchingView.isHidden = false
         NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
             switch result {
@@ -71,7 +69,6 @@ class EpisodesController: UITableViewController {
                 })
             }
             
-            self.isSearching = false
             DispatchQueue.main.async {
                 self.searchingView.isHidden = true
                 self.tableView.reloadData()
@@ -101,6 +98,7 @@ class EpisodesController: UITableViewController {
         return label
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        let isSearching = searchingView.isHidden == false
         if isSearching == false && episodeViewModels.isEmpty {
             return 200
         }
