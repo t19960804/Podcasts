@@ -47,7 +47,7 @@ class NetworkService {
             }
         }
     }
-    func fetchEpisodes(url: URL, completion: @escaping ([Episode]) -> Void){
+    func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
         //Qos > 執行任務的優先順序,等級越高越快被執行
         //userInteractive > userInitiated > `default` > utility > background > unspecified
         DispatchQueue.global(qos: .background).async {
@@ -64,9 +64,9 @@ class NetworkService {
                         return
                     }
                     let episodes = rssFeed.getEpisodes()
-                    completion(episodes)
+                    completion(.success(episodes))
                 case .failure(let error):
-                    print("Error - Parse XML failed:\(error)")
+                    completion(.failure(error))
                 }
             }
         }

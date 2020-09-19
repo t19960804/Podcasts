@@ -50,18 +50,25 @@ class EpisodesController: UITableViewController {
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
-        //不要將Network相關的code放在Controller
-        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (episodes) in
-            self.episodeViewModels = episodes.map({
-                return EpisodeViewModel(episode: $0)
-            })
+        self.activityIndicatorView.isHidden = false
+        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
+            switch result {
+            case .failure(let error):
+                print("Error - Parse XML failed:\(error)")
+                self.episodeViewModels = []
+            case .success(let episodes):
+                self.episodeViewModels = episodes.map({
+                    return EpisodeViewModel(episode: $0)
+                })
+            }
+            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
+                self.activityIndicatorView.isHidden = true
             }
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        activityIndicatorView.isHidden = !episodeViewModels.isEmpty
         return episodeViewModels.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
