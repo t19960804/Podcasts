@@ -56,7 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
-        guard let mainTabBarController = UIApplication.shared.keyWindow?.rootViewController as? MainTabBarController else { return }
+        guard let mainTabBarController = UIApplication.mainTabBarController else { return }
         let podcastPlayerIsMaximizing = mainTabBarController.topAnchorForFullScreenPlayer?.constant == 0
         if podcastPlayerIsMaximizing { //iOS13中,從背景回到前景,tabBar會不明原因的彈上來,所以強制讓tabBar往下,https://stackoverflow.com/questions/58199604/cgaffinetransform-translation-doesnt-work-on-tabbar-after-update-to-xcode-11
             mainTabBarController.tabBar.frame.origin.y += 100 //CGAffineTransform無效

@@ -30,17 +30,8 @@ class EpisodesController: UITableViewController {
         tableView.eliminateExtraSeparators()
         
         
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite)),
-        UIBarButtonItem(title: "Fetch", style: .plain, target: self, action: #selector(handleFetch))]
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
     }
-    //model object > data > UserDefaults > data > model object
-    @objc fileprivate func handleFetch(){
-        let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
-        favoritePodcasts?.forEach({
-            print($0.trackName ?? "N/A")
-        })
-    }
-    
     @objc fileprivate func handleFavorite(){
         guard let podcast = self.podcast else { return }
     
