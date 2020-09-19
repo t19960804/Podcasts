@@ -22,15 +22,23 @@ class EpisodesController: UITableViewController {
     }
     let cellID = "EpisodeCell"
     var episodeViewModels = [EpisodeViewModel]()
-    
+    var isSearching = true
+    let searchingView = SearchingView()
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
         
-        
+        setupConstraints()
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
+    }
+    fileprivate func setupConstraints(){
+        view.addSubview(searchingView)
+        searchingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        searchingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
+        searchingView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     }
     @objc fileprivate func handleFavorite(){
         guard let podcast = self.podcast else { return }
@@ -50,7 +58,8 @@ class EpisodesController: UITableViewController {
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
-        self.activityIndicatorView.isHidden = false
+        isSearching = true
+        searchingView.isHidden = false
         NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
             switch result {
             case .failure(let error):
@@ -62,9 +71,10 @@ class EpisodesController: UITableViewController {
                 })
             }
             
+            self.isSearching = false
             DispatchQueue.main.async {
+                self.searchingView.isHidden = true
                 self.tableView.reloadData()
-                self.activityIndicatorView.isHidden = true
             }
         }
     }
@@ -85,12 +95,15 @@ class EpisodesController: UITableViewController {
         let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel, episodesList: episodeViewModels)
     }
-    let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+    
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        activityIndicatorView.color = .purple
-        return activityIndicatorView
+        let label = UILabel(text: "No Episodes!", font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
+        return label
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 200
+        if isSearching == false && episodeViewModels.isEmpty {
+            return 200
+        }
+        return 0
     }
 }
