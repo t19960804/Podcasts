@@ -23,7 +23,7 @@ class FavoritesController: UICollectionViewController {
         super.viewWillAppear(animated)
         favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() ?? []
         collectionView.reloadData()
-        self.tabBarItem.badgeValue = nil
+        tabBarItem.badgeValue = nil
     }
     fileprivate func setupCollectionView(){
         collectionView.backgroundColor = .white
@@ -53,6 +53,11 @@ class FavoritesController: UICollectionViewController {
         header.addSubview(label)
         label.centerInSuperview()
         return header
+    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let episodeController = EpisodesController()
+        episodeController.podcast = favoritePodcasts[indexPath.item]
+        navigationController?.pushViewController(episodeController, animated: true)
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
