@@ -28,9 +28,22 @@ class EpisodesController: UITableViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
-        
         setupConstraints()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkIfPodcastDidFavorited()
+    }
+    fileprivate func checkIfPodcastDidFavorited(){
+        let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
+        guard let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() else {
+            navigationItem.rightBarButtonItem = favoriteBarButtonItem
+            return
+        }
+        let podcastDidFavorited = favoritePodcasts.contains(where: {
+             $0.trackName == self.podcast.trackName && $0.artistName == self.podcast.artistName
+        })
+        navigationItem.rightBarButtonItem = podcastDidFavorited ? nil : favoriteBarButtonItem
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
@@ -54,6 +67,7 @@ class EpisodesController: UITableViewController {
             return
         }
         favoritesController.tabBarItem.badgeValue = "New"
+        navigationItem.rightBarButtonItem = nil
     }
     fileprivate func parseXMLFromURL(with url: String){
         guard let feedURL = URL(string: url) else { return }
