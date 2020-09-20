@@ -14,14 +14,17 @@ extension UserDefaults {
         do {
             //Transform object to data
             let data = try JSONEncoder().encode(favoriteList)
-            UserDefaults.standard.set(data, forKey: UserDefaults.commonKey)
-            print("Info - saveFavoritePodcast:\(favoriteList.count)")
+            //實際將data透過UserDefaults寫入記憶體需要一點時間,如果太快就把App關掉,會導致改動無效
+            //使用.synchronize()也無效
+            //https://stackoverflow.com/questions/40808072/when-and-why-should-you-use-nsuserdefaultss-synchronize-method/40809748#40809748
+            //https://stackoverflow.com/questions/51904374/userdefaults-sometimes-not-retaining-saved-values-when-restarting-app-swift-4
+            set(data, forKey: UserDefaults.commonKey)
         } catch {
             print("Error - Encode object to data failed:\(error)")
         }
     }
     func fetchFavoritePodcasts() -> [Podcast]? {
-        guard let favoriteListData = UserDefaults.standard.data(forKey: UserDefaults.commonKey) else {
+        guard let favoriteListData = data(forKey: UserDefaults.commonKey) else {
             print("Info - UserDefaults does not have favoriteList")
             return nil
         }
