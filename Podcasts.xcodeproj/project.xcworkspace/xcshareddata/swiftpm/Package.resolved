@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "b02c4ee7f1659090f7ac543c022f922beeb04bc6",
-          "version": "5.0.2"
+          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
+          "version": "5.2.2"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/nmdias/FeedKit",
         "state": {
           "branch": null,
-          "revision": "7dcec40f4f48ed08de4b8455a29bf5d22bdf4cfb",
-          "version": "9.1.0"
+          "revision": "68493a33d862c33c9a9f67ec729b3b7df1b20ade",
+          "version": "9.1.2"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage",
         "state": {
           "branch": null,
-          "revision": "2dcf1b65994d92ef8806f52dc41aa6fdd677489c",
-          "version": "5.6.1"
+          "revision": "7a21432a370a34925046244462281bd36ebab73d",
+          "version": "5.9.1"
         }
       }
     ]

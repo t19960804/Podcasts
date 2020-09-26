@@ -21,7 +21,7 @@ class FavoritesController: UICollectionViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() ?? []
+        favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
         collectionView.reloadData()
         tabBarItem.badgeValue = nil
     }
