@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B1EE821251F485E00DC6A16 /* DownloadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadController.swift */; };
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
 		0B3B0795250C9ACA0087D63D /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3B0794250C9ACA0087D63D /* UserDefaults.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B1EE820251F485E00DC6A16 /* DownloadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadController.swift; sourceTree = "<group>"; };
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
 		0B3B0794250C9ACA0087D63D /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeViewModel.swift; sourceTree = "<group>"; };
@@ -83,6 +85,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B1EE81F251F484400DC6A16 /* Download */ = {
+			isa = PBXGroup;
+			children = (
+				0B1EE820251F485E00DC6A16 /* DownloadController.swift */,
+			);
+			path = Download;
+			sourceTree = "<group>";
+		};
 		0B4ABC7D24D56D4800410ADA /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +188,7 @@
 				0B9934BC2425C641005C148D /* NetworkService */,
 				0BC9DF67240A3B1700142424 /* Search */,
 				0B5BF31425034E9700BBA1D6 /* Favorites */,
+				0B1EE81F251F484400DC6A16 /* Download */,
 				0BC9DF65240A0DD400142424 /* MainTabBarController.swift */,
 				0BC9DF552408BECC00142424 /* Assets.xcassets */,
 				0BC9DF5A2408BECC00142424 /* LaunchScreen.storyboard */,
@@ -313,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */,
+				0B1EE821251F485E00DC6A16 /* DownloadController.swift in Sources */,
 				0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */,
 				0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */,
 				0BBD6A18242F0CA8000FB9CB /* PodcastCell.swift in Sources */,

@@ -97,7 +97,15 @@ class EpisodesController: UITableViewController {
         let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel, episodesList: episodeViewModels)
     }
-    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
+            var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+            let episodeViewModel = self.episodeViewModels[indexPath.row]
+            downloadedEpisodes.append(episodeViewModel)
+            UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
+        }
+        return [downloadAction]
+    }
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let label = UILabel(text: "No Episodes!", font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
         return label
