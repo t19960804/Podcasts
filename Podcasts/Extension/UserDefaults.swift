@@ -23,10 +23,10 @@ extension UserDefaults {
             print("Error - Encode object to data failed:\(error)")
         }
     }
-    func fetchFavoritePodcasts() -> [Podcast]? {
+    func fetchFavoritePodcasts() -> [Podcast] {
         guard let favoriteListData = data(forKey: UserDefaults.commonKey) else {
             print("Info - UserDefaults does not have favoriteList")
-            return nil
+            return []
         }
         do {
             //Transform data to object
@@ -34,7 +34,7 @@ extension UserDefaults {
             return favoritePodcasts
         } catch {
             print("Error - Unarchive data to object failed:\(error)")
-            return nil
+            return []
         }
     }
 }

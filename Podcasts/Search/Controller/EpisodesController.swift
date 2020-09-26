@@ -36,10 +36,7 @@ class EpisodesController: UITableViewController {
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
-        guard let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() else {
-            navigationItem.rightBarButtonItem = favoriteBarButtonItem
-            return
-        }
+        let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
         let podcastDidFavorited = favoritePodcasts.contains(where: {
              $0.trackName == self.podcast.trackName && $0.artistName == self.podcast.artistName
         })
@@ -54,15 +51,9 @@ class EpisodesController: UITableViewController {
     }
     @objc fileprivate func handleFavorite(){
         guard let podcast = self.podcast else { return }
-    
-        if var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts() {
-            favoritePodcasts.append(podcast)
-            UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
-        } else {
-            var emptyFavoriteList = [Podcast]()
-            emptyFavoriteList.append(podcast)
-            UserDefaults.standard.saveFavoritePodcast(with: emptyFavoriteList)
-        }
+        var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
+        favoritePodcasts.append(podcast)
+        UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
         guard let favoritesController = UIApplication.mainTabBarController?.viewControllers?[TabBarControllerType.Favorites.rawValue] else {
             return
         }
