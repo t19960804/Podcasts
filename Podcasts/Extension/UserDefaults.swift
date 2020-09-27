@@ -11,7 +11,9 @@ import Foundation
 extension UserDefaults {
     static let favoriteKey = "favoriteKey"
     static let downloadKey = "downloadKey"
-    
+    //為什麼做save的時候不順便做fetch來減少外部使用的程式碼?
+    //若在save裡面做fetch,如果想要對save做測試,發現失敗時會不知道是fetch出問題,還是save本身出問題
+    //如果save就存粹的做save,fetch就存粹的做fetch,測試時就不會有上面的問題
     func saveFavoritePodcast(with favoriteList: [Podcast]){
         do {
             //Transform object to data
