@@ -57,6 +57,7 @@ extension UserDefaults {
         }
         do {
             //Transform data to object
+            //".self" represent the actual class type
             let downloadedEpisodes = try JSONDecoder().decode([EpisodeViewModel].self, from: downloadedEpisodesData)
             return downloadedEpisodes
         } catch {

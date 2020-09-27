@@ -20,13 +20,12 @@ class EpisodesController: UITableViewController {
             parseXMLFromURL(with: url)
         }
     }
-    let cellID = "EpisodeCell"
     var episodeViewModels = [EpisodeViewModel]()
     let searchingView = SearchingView()
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
-        tableView.register(EpisodeCell.self, forCellReuseIdentifier: cellID)
+        tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
         setupConstraints()
     }
@@ -84,7 +83,7 @@ class EpisodesController: UITableViewController {
         return episodeViewModels.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! EpisodeCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
         let episodeViewModel = episodeViewModels[indexPath.row]
         cell.episodeViewModel = episodeViewModel
         return cell

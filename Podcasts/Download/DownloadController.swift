@@ -9,19 +9,17 @@
 import UIKit
 
 class DownloadController: UITableViewController {
-    let cellID = "CellID"
+    
     var downloadedEpisodes = [EpisodeViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellID)
+        self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
-        downloadedEpisodes.forEach({
-            print($0.title)
-        })
+        downloadedEpisodes.reverse()
         tableView.reloadData()
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -31,9 +29,11 @@ class DownloadController: UITableViewController {
         return downloadedEpisodes.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
-        cell.backgroundColor = .red
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
+        cell.episodeViewModel = downloadedEpisodes[indexPath.row]
         return cell
     }
-    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 150
+    }
 }

@@ -17,6 +17,8 @@ class EpisodeCell: UITableViewCell {
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
         }
     }
+    static let cellID = "EpisodeCell"
+
     let episodeImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = #imageLiteral(resourceName: "appicon")
