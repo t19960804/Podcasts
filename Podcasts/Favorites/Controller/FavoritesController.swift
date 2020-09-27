@@ -17,7 +17,9 @@ class FavoritesController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCollectionView()
+        collectionView.backgroundColor = .white
+        collectionView!.register(FavoritesCell.self, forCellWithReuseIdentifier: FavoritesCell.cellID)
+        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerID)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -25,10 +27,14 @@ class FavoritesController: UICollectionViewController {
         collectionView.reloadData()
         tabBarItem.badgeValue = nil
     }
+    //Notify the view controller that its view has just laid out its subviews.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //在viewDidLayoutSubviews中,collectionView的長寬才會被決定,計算itemSize時才不會錯誤
+        //https://medium.com/%E5%BD%BC%E5%BE%97%E6%BD%98%E7%9A%84-swift-ios-app-%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E8%A7%A3%E7%AD%94%E9%9B%86/auto-layout-%E7%9A%84%E5%85%83%E4%BB%B6%E8%A9%B2%E5%9C%A8%E4%BD%95%E6%99%82%E8%A8%AD%E5%AE%9A%E5%9C%93%E8%A7%92%E7%9A%84-layer-cornerradius-669fae1c287c
+        setupCollectionView()
+    }
     fileprivate func setupCollectionView(){
-        collectionView.backgroundColor = .white
-        collectionView!.register(FavoritesCell.self, forCellWithReuseIdentifier: FavoritesCell.cellID)
-        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerID)
         guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         layout.scrollDirection = .vertical
         layout.sectionInset = .init(top: 16, left: 16, bottom: 16, right: 16)
