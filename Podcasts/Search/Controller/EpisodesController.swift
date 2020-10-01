@@ -53,10 +53,8 @@ class EpisodesController: UITableViewController {
         var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
         favoritePodcasts.append(podcast)
         UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
-        guard let favoritesController = UIApplication.mainTabBarController?.viewControllers?[TabBarControllerType.Favorites.rawValue] else {
-            return
-        }
-        favoritesController.tabBarItem.badgeValue = "New"
+        let favoritesController = UIApplication.mainTabBarController?.favoritesController
+        favoritesController?.tabBarItem.badgeValue = "New"
         navigationItem.rightBarButtonItem = nil
     }
     fileprivate func parseXMLFromURL(with url: String){
@@ -102,6 +100,9 @@ class EpisodesController: UITableViewController {
             let episodeViewModel = self.episodeViewModels[indexPath.row]
             downloadedEpisodes.append(episodeViewModel)
             UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
+            
+            let downloadController = UIApplication.mainTabBarController?.downloadController
+            downloadController?.tabBarItem.badgeValue = "New"
         }
         return [downloadAction]
     }

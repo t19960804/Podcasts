@@ -15,9 +15,11 @@ class DownloadController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
+        tableView.eliminateExtraSeparators()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        tabBarItem.badgeValue = nil
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
         downloadedEpisodes.reverse()
         tableView.reloadData()
@@ -35,5 +37,13 @@ class DownloadController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
+    }
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (_, _) in
+            self.downloadedEpisodes.remove(at: indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
+        }
+        return [deleteAction]
     }
 }

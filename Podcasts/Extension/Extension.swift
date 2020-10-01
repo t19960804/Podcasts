@@ -72,3 +72,18 @@ extension UIImageView {
         self.clipsToBounds = clipsToBounds
     }
 }
+
+extension MainTabBarController {
+    var favoritesController: FavoritesController? {
+        guard let navigationController = viewControllers?[TabBarControllerType.Favorites.rawValue] as? UINavigationController else {
+            return nil
+        }
+        return navigationController.viewControllers.first as? FavoritesController
+    }
+    var downloadController: DownloadController? {
+        guard let navigationController = viewControllers?[TabBarControllerType.Downloads.rawValue] as? UINavigationController else {
+            return nil
+        }
+        return navigationController.viewControllers.first as? DownloadController
+    }
+}
