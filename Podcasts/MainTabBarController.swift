@@ -63,7 +63,7 @@ class MainTabBarController: UITabBarController {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
-            self.tabBar.transform = CGAffineTransform(translationX: 0, y: 100)
+            self.tabBar.frame.origin.y += 100
             self.episodePlayerView.miniPlayerView.isHidden = true
             self.episodePlayerView.vStackView.alpha = 1
         })
