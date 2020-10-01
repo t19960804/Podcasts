@@ -103,6 +103,8 @@ class EpisodesController: UITableViewController {
             
             let downloadController = UIApplication.mainTabBarController?.downloadController
             downloadController?.tabBarItem.badgeValue = "New"
+            //Download real episode file from internet
+            NetworkService.sharedInstance.downloadEpisode(with: episodeViewModel)
         }
         return [downloadAction]
     }

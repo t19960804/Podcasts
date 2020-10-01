@@ -72,6 +72,32 @@ class NetworkService {
         }
 
     }
+    func downloadEpisode(with episodeViewModel: EpisodeViewModel){
+        guard let url = episodeViewModel.audioUrl else {
+            print("Error - AudioUrl has some problem")
+            return
+        }
+        //Download episode to FileManager
+        let destination = DownloadRequest.suggestedDownloadDestination()
+
+        print("Downloading from:\(episodeViewModel.audioUrl)")
+        AF.download(url, to: destination)
+                .downloadProgress { progress in
+                    print("Download Progress: \(progress.fractionCompleted)")
+                }
+                .response { (response) in
+                    print("Download file done,file at:\(response.fileURL)")
+                    //下載完需要更新剛剛存進Userdefaults的episodeViewModel資訊
+                    var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+                    if let index = downloadEpisodes.firstIndex(where: {
+                        $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+                    }) {
+                        downloadEpisodes[index].fileUrl = response.fileURL
+                        print("Update fileUrl success")
+                    }
+                    UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
+                }
+    }
 }
 
 //Closure跟Function差別

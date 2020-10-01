@@ -46,4 +46,8 @@ class DownloadController: UITableViewController {
         }
         return [deleteAction]
     }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let episodeViewModel = downloadedEpisodes[indexPath.row]
+        print(episodeViewModel.fileUrl)
+    }
 }

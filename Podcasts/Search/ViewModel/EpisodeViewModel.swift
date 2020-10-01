@@ -15,14 +15,15 @@ struct EpisodeViewModel: Codable {
     var audioUrl: URL?
     let publishDateString: String
     let description: String
+    var fileUrl: URL?
     
     //Dependency Injection
     //在單元測試中,我們可以在外部創建Model,並隨意修改Model的屬性,來測試ViewModel的邏輯
     init(episode: Episode) {
         self.title = episode.title
         self.author = episode.author
-        self.imageUrl = URL(string: episode.imageURL ?? "")
-        self.audioUrl = URL(string: episode.audioURL ?? "")
+        self.imageUrl = URL(string: episode.imageURL)
+        self.audioUrl = URL(string: episode.audioURL)
         self.description = episode.description
         
         //Date to Custom String
