@@ -9,6 +9,7 @@
 import UIKit
 import AVKit
 import MediaPlayer
+import MarqueeLabel
 
 class EpisodePlayerView: UIView {
     var episodesList = [EpisodeViewModel]()
@@ -48,7 +49,7 @@ class EpisodePlayerView: UIView {
                                                       UIView(),
                                                       timeLabel_UpperBound],
                                            axis: .horizontal)
-    let titleLabel = UILabel(text: "Title", font: .boldSystemFont(ofSize: 18), textAlignment: .center, numberOfLines: 2)
+    let titleLabel = MarqueeLabel(text: "Title", font: .boldSystemFont(ofSize: 18), textAlignment: .center, numberOfLines: 1)
     let authorLabel = UILabel(text: "Author Name", font: .boldSystemFont(ofSize: 18), textColor: .purple, textAlignment: .center)
     //MARK: - StackView_OperationBtn
     let rewindButton = UIButton(image: #imageLiteral(resourceName: "rewind15"), tintColor: .black, target: self, action: #selector(handleRewindAndForward(button:)))
@@ -99,6 +100,7 @@ class EpisodePlayerView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .white
         setUpConstraints()
+        setupMarqueeLabel()
         scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
@@ -109,6 +111,13 @@ class EpisodePlayerView: UIView {
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    fileprivate func setupMarqueeLabel(){
+        titleLabel.type = .continuous
+        titleLabel.speed = .rate(20) //points per second
+        titleLabel.animationCurve = .linear
+        titleLabel.fadeLength = 10.0
+        titleLabel.trailingBuffer = 30.0
     }
     //MARK: - Interruption handle
     fileprivate func setupInterruptionNotification(){
