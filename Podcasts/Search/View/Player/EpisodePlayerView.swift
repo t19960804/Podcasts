@@ -416,6 +416,14 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     func cancelMiniPlayerView() {
         scaleDownEpisodeImageView()
         pausePodcats()
-        miniPlayerView.isHidden = true
+        
+        guard let mainTabBarController = UIApplication.mainTabBarController else { return }
+        mainTabBarController.topAnchorForMiniPlayer?.isActive = false
+        mainTabBarController.topAnchorForFullScreenPlayer?.constant = mainTabBarController.view.frame.height
+        mainTabBarController.topAnchorForFullScreenPlayer?.isActive = true
+        
+        UIView.animate(withDuration: 0.1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.layoutIfNeeded()
+        })
     }
 }
