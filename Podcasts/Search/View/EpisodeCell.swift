@@ -63,6 +63,7 @@ class EpisodeCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         addSubview(hStackView)
         hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
