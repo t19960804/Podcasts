@@ -57,6 +57,7 @@ class DownloadController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let episodeViewModel = downloadedEpisodes[indexPath.row]
-        print(episodeViewModel.fileUrl)
+        let tabBarController = UIApplication.mainTabBarController
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel, episodesList: downloadedEpisodes)
     }
 }

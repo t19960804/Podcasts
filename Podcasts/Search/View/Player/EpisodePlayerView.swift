@@ -22,7 +22,16 @@ class EpisodePlayerView: UIView {
             authorLabel.text = episodeViewModel.author
             miniPlayerView.episodeViewModel = episodeViewModel
             setupAudioSession()//播放時再取得Audio使用權
-            playAudio(with: episodeViewModel.audioUrl)
+            if let fileUrl = episodeViewModel.fileUrl {
+                //每一次重新啟動App,資料夾的路徑會有所變動
+                //若依照當初下載檔案後所存fileUrl會無法找到檔案
+                var trueLocation = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+                let fileName = fileUrl.lastPathComponent
+                trueLocation?.appendPathComponent(fileName)
+                playAudio(with: trueLocation)
+            } else {
+                playAudio(with: episodeViewModel.audioUrl)
+            }
         }
     }
     let dismissButton = UIButton(title: "Dismiss", titleColor: .black, font: .boldSystemFont(ofSize: 16), target: self, action: #selector(handleDismissPlayerView))
@@ -280,7 +289,10 @@ class EpisodePlayerView: UIView {
         timeSlider.value = Float(progressPercent)
     }
     fileprivate func playAudio(with url: URL?) {
-        guard let url = url else { return }
+        guard let url = url else {
+            print("Error - audio url is nil")
+            return
+        }
         let item = AVPlayerItem(url: url)
         podcastPlayer.replaceCurrentItem(with: item)
         playPodcats()
