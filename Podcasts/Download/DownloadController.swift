@@ -40,6 +40,15 @@ class DownloadController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (_, _) in
+            //Remove episode file from FileManager and UserDefaults
+            let episode = self.downloadedEpisodes[indexPath.row]
+            guard let fileUrl = episode.fileUrl else { return }
+            do {
+               try FileManager.default.removeItem(at: fileUrl)
+            } catch {
+                print("Error - Remove downloaded file failed:\(error)")
+            }
+            
             self.downloadedEpisodes.remove(at: indexPath.row)
             self.tableView.deleteRows(at: [indexPath], with: .automatic)
             UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
