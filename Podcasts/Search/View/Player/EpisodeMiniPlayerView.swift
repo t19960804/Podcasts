@@ -26,7 +26,7 @@ class EpisodeMiniPlayerView: UIView {
     }
     weak var delegate: EpisodeMiniPlayerViewDelegate?
     
-    let imageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), contentMode: .scaleAspectFill)
+    let imageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), contentMode: .scaleToFill)
     let titleLabel = MarqueeLabel(text: nil, font: .systemFont(ofSize: 18), textColor: .black, textAlignment: .left, numberOfLines: 1)
     let playerControlButton = UIButton(image: #imageLiteral(resourceName: "play"), tintColor: .black, target: self, action: #selector(handlePlayerPauseAndPlay))
     let cancelButton = UIButton(image: #imageLiteral(resourceName: "close"), tintColor: .black, target: self, action: #selector(handleCancelMiniPlayerView))
@@ -72,9 +72,9 @@ class EpisodeMiniPlayerView: UIView {
         titleLabel.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.64, height: 0))
         hStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: frame.width * 0.0169, left: frame.width * 0.0362, bottom: frame.width * 0.0169, right: frame.width * 0.0362))
         
-        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.0386, height: frame.width * 0.0386))
+        playerControlButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.06, height: frame.width * 0.06))
         
-        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.0386, height: frame.width * 0.0386))
+        cancelButton.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.06, height: frame.width * 0.06))
 
         imageView.anchor(top: nil, leading: nil, bottom: nil, trailing: nil, padding: .zero, size: .init(width: frame.width * 0.1087, height: frame.width * 0.1087))
     }
