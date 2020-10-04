@@ -16,8 +16,8 @@ class DownloadController: UITableViewController {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate), name: NSNotification.Name("progressUpdate"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone), name: NSNotification.Name(rawValue: "episodeDownloadDone"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate), name: .progressUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone), name: .episodeDownloadDone, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

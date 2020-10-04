@@ -87,3 +87,8 @@ extension MainTabBarController {
         return navigationController.viewControllers.first as? DownloadController
     }
 }
+
+extension NSNotification.Name {
+    static let episodeDownloadDone = NSNotification.Name(rawValue: "episodeDownloadDone")
+    static let progressUpdate = NSNotification.Name("progressUpdate")
+}

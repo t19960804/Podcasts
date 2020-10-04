@@ -85,7 +85,7 @@ class NetworkService {
                     let info: [String : Any] = [
                                 "progress" : Int(progress.fractionCompleted * 100),
                                 "episodeViewModel" : episodeViewModel]
-                    NotificationCenter.default.post(name: NSNotification.Name("progressUpdate"), object: nil, userInfo: info)
+                    NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
                 }
                 .response { (response) in
                     //下載完需要更新剛剛存進Userdefaults的episodeViewModel資訊
@@ -97,7 +97,7 @@ class NetworkService {
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
                     //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "episodeDownloadDone"), object: nil, userInfo: nil)
+                    NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: nil)
                 }
     }
 }
