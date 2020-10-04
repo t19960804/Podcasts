@@ -25,6 +25,7 @@ class EpisodeCell: UITableViewCell {
         iv.contentMode = .scaleToFill //填滿imageView，但圖片不會保持的比例
         return iv
     }()
+    let progressLabel = UILabel(text: "100%", font: .boldSystemFont(ofSize: 25), textColor: .white, textAlignment: .center, numberOfLines: 1)
     let pubDateLabel: UILabel = {
         let lb = UILabel()
         lb.font = .systemFont(ofSize: 18)
@@ -64,6 +65,9 @@ class EpisodeCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
+        progressLabel.isHidden = true
+        //https://stackoverflow.com/questions/13123306/ios-what-is-superview-and-what-is-subviews
+        episodeImageView.addSubview(progressLabel)
         addSubview(hStackView)
         hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
@@ -72,7 +76,7 @@ class EpisodeCell: UITableViewCell {
         
         episodeImageView.heightAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
         episodeImageView.widthAnchor.constraint(equalTo: episodeImageView.heightAnchor).isActive = true
-        
+        progressLabel.centerInSuperview()
     }
     
     required init?(coder: NSCoder) {

@@ -16,6 +16,8 @@ class DownloadController: UITableViewController {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate), name: NSNotification.Name("progressUpdate"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone), name: NSNotification.Name(rawValue: "episodeDownloadDone"), object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -23,6 +25,23 @@ class DownloadController: UITableViewController {
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
         downloadedEpisodes.reverse()
         tableView.reloadData()
+    }
+    @objc fileprivate func handleEpisdoeDownloadDone(){
+        downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+        downloadedEpisodes.reverse()
+    }
+    @objc fileprivate func handleProgressUpdate(notification: Notification){
+        guard let progress = notification.userInfo?["progress"] as? Int, let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
+            return
+        }
+        guard let index = downloadedEpisodes.firstIndex(where: {
+            return $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+        }) else {
+            return
+        }
+        let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+        cell?.progressLabel.text = "\(progress)%"
+        cell?.progressLabel.isHidden = progress == 100
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
