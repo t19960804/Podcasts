@@ -23,12 +23,12 @@ class DownloadController: UITableViewController {
         super.viewWillAppear(animated)
         tabBarItem.badgeValue = nil
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        downloadedEpisodes.reverse()
+        downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
         tableView.reloadData()
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        downloadedEpisodes.reverse()
+        downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
         guard let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
             return
         }
