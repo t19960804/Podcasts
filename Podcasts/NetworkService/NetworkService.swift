@@ -89,11 +89,12 @@ class NetworkService {
                 }
                 .response { (response) in
                     //下載完需要更新剛剛存進Userdefaults的episodeViewModel資訊
-                    var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+                    var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
                     if let index = downloadEpisodes.firstIndex(where: {
                         $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
                     }) {
                         downloadEpisodes[index].fileUrl = response.fileURL
+                        downloadEpisodes[index].isWaitingForDownload = false
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
                     //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch

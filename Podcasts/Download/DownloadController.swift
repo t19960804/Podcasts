@@ -22,12 +22,12 @@ class DownloadController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarItem.badgeValue = nil
-        downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+        downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.reverse()
         tableView.reloadData()
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
-        downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
+        downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.reverse()
         guard let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
             return
@@ -40,7 +40,7 @@ class DownloadController: UITableViewController {
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.descriptionLabel.text = episodeViewModel.description
         cell?.isUserInteractionEnabled = true
-        cell?.alpha = 1
+        cell?.contentView.backgroundColor = .clear
     }
     @objc fileprivate func handleProgressUpdate(notification: Notification){
         guard let progress = notification.userInfo?["progress"] as? Int, let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
@@ -53,8 +53,6 @@ class DownloadController: UITableViewController {
         }
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.descriptionLabel.text = "Downloading...\(progress)%"
-        cell?.isUserInteractionEnabled = false
-        cell?.alpha = 0.5
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1

@@ -50,7 +50,7 @@ extension UserDefaults {
             print("Error - Encode object to data failed:\(error)")
         }
     }
-    func fetchDownloadedEpisode() -> [EpisodeViewModel] {
+    func fetchDownloadedEpisodes() -> [EpisodeViewModel] {
         guard let downloadedEpisodesData = data(forKey: UserDefaults.downloadKey) else {
             print("Info - UserDefaults does not have downloadList")
             return []

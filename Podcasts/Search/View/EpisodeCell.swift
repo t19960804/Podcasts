@@ -15,6 +15,12 @@ class EpisodeCell: UITableViewCell {
             titleLabel.text = episodeViewModel.title
             descriptionLabel.text = episodeViewModel.description
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
+            
+            if episodeViewModel.isWaitingForDownload {
+                self.descriptionLabel.text = "Waiting for download..."
+                self.isUserInteractionEnabled = false
+                self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+            }
         }
     }
     static let cellID = "EpisodeCell"

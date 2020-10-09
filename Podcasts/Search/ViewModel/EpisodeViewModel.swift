@@ -16,6 +16,7 @@ struct EpisodeViewModel: Codable {
     let publishDateString: String
     let description: String
     var fileUrl: URL?
+    var isWaitingForDownload = false
     
     //Dependency Injection
     //在單元測試中,我們可以在外部創建Model,並隨意修改Model的屬性,來測試ViewModel的邏輯

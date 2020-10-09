@@ -96,8 +96,10 @@ class EpisodesController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
-            var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
-            let episodeViewModel = self.episodeViewModels[indexPath.row]
+            var episodeViewModel = self.episodeViewModels[indexPath.row]
+            episodeViewModel.isWaitingForDownload = true
+            
+            var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
             downloadedEpisodes.append(episodeViewModel)
             UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
             
