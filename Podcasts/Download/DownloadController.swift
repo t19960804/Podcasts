@@ -37,6 +37,7 @@ class DownloadController: UITableViewController {
         }) else {
             return
         }
+        //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.descriptionLabel.text = episodeViewModel.description
         cell?.isUserInteractionEnabled = true
