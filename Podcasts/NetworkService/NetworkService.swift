@@ -97,7 +97,8 @@ class NetworkService {
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
                     //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch
-                    NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: nil)
+                    let info: [String : Any] = ["episodeViewModel" : episodeViewModel]
+                    NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
                 }
     }
 }

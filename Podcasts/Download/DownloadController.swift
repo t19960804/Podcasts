@@ -16,8 +16,8 @@ class DownloadController: UITableViewController {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate), name: .progressUpdate, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone), name: .episodeDownloadDone, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -26,9 +26,21 @@ class DownloadController: UITableViewController {
         downloadedEpisodes.reverse()
         tableView.reloadData()
     }
-    @objc fileprivate func handleEpisdoeDownloadDone(){
+    @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisode()
         downloadedEpisodes.reverse()
+        guard let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
+            return
+        }
+        guard let index = downloadedEpisodes.firstIndex(where: {
+            return $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+        }) else {
+            return
+        }
+        let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+        cell?.descriptionLabel.text = episodeViewModel.description
+        cell?.isUserInteractionEnabled = true
+        cell?.alpha = 1
     }
     @objc fileprivate func handleProgressUpdate(notification: Notification){
         guard let progress = notification.userInfo?["progress"] as? Int, let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
@@ -40,8 +52,9 @@ class DownloadController: UITableViewController {
             return
         }
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-        cell?.progressLabel.text = "\(progress)%"
-        cell?.progressLabel.isHidden = progress == 100
+        cell?.descriptionLabel.text = "Downloading...\(progress)%"
+        cell?.isUserInteractionEnabled = false
+        cell?.alpha = 0.5
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
