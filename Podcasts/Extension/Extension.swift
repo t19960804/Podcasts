@@ -92,3 +92,8 @@ extension NSNotification.Name {
     static let episodeDownloadDone = NSNotification.Name(rawValue: "episodeDownloadDone")
     static let progressUpdate = NSNotification.Name("progressUpdate")
 }
+
+extension Notification {
+    static let episodeKey = "episode"
+    static let progressKey = "progress"
+}

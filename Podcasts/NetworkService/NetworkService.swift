@@ -83,8 +83,8 @@ class NetworkService {
         AF.download(url, to: destination)
                 .downloadProgress { progress in
                     let info: [String : Any] = [
-                                "progress" : Int(progress.fractionCompleted * 100),
-                                "episodeViewModel" : episodeViewModel]
+                        Notification.progressKey : Int(progress.fractionCompleted * 100),
+                        Notification.episodeKey : episodeViewModel]
                     NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
                 }
                 .response { (response) in
@@ -98,7 +98,7 @@ class NetworkService {
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
                     //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch
-                    let info: [String : Any] = ["episodeViewModel" : episodeViewModel]
+                    let info: [String : Any] = [Notification.episodeKey : episodeViewModel]
                     NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
                 }
     }

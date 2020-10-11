@@ -29,7 +29,7 @@ class DownloadController: UITableViewController {
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
-        guard let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
+        guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
             return
         }
         guard let index = downloadedEpisodes.firstIndex(where: {
@@ -44,7 +44,7 @@ class DownloadController: UITableViewController {
         cell?.contentView.backgroundColor = .clear
     }
     @objc fileprivate func handleProgressUpdate(notification: Notification){
-        guard let progress = notification.userInfo?["progress"] as? Int, let episodeViewModel = notification.userInfo?["episodeViewModel"] as? EpisodeViewModel else {
+        guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
             return
         }
         guard let index = downloadedEpisodes.firstIndex(where: {
