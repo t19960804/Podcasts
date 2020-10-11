@@ -63,7 +63,7 @@ class MainTabBarController: UITabBarController {
         
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
-            self.tabBar.frame.origin.y += 100
+            self.tabBar.frame.origin.y = self.view.frame.height
             self.episodePlayerView.miniPlayerView.isHidden = true
             self.episodePlayerView.vStackView.alpha = 1
         })
@@ -72,10 +72,9 @@ class MainTabBarController: UITabBarController {
         topAnchorForFullScreenPlayer?.isActive = false
         topAnchorForMiniPlayer?.isActive = true
         
-        tabBar.transform = .identity
-
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
+            self.tabBar.frame.origin.y = self.view.frame.height - self.tabBar.frame.height
             self.episodePlayerView.miniPlayerView.isHidden = false
             self.episodePlayerView.miniPlayerView.alpha = 1
             self.episodePlayerView.vStackView.alpha = 0

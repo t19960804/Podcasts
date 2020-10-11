@@ -59,7 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let mainTabBarController = UIApplication.mainTabBarController else { return }
         let podcastPlayerIsMaximizing = mainTabBarController.topAnchorForFullScreenPlayer?.constant == 0
         if podcastPlayerIsMaximizing { //iOS13中,從背景回到前景,tabBar會不明原因的彈上來,所以強制讓tabBar往下,https://stackoverflow.com/questions/58199604/cgaffinetransform-translation-doesnt-work-on-tabbar-after-update-to-xcode-11
-            mainTabBarController.tabBar.frame.origin.y += 100 //CGAffineTransform無效
+            mainTabBarController.tabBar.frame.origin.y = mainTabBarController.view.frame.height //CGAffineTransform無效
         }
     }
 
