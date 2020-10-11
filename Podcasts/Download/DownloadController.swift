@@ -63,7 +63,7 @@ class DownloadController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
-        cell.episodeViewModel = downloadedEpisodes[indexPath.row]
+        cell.episode = downloadedEpisodes[indexPath.row]
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

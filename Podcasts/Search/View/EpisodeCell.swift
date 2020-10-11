@@ -9,21 +9,21 @@
 import UIKit
 
 class EpisodeCell: UITableViewCell {
-    var episodeViewModel: EpisodeViewModel! {
+    var episode: EpisodeViewModel! {
         didSet {
-            pubDateLabel.text = episodeViewModel.publishDateString
-            titleLabel.text = episodeViewModel.title
-            descriptionLabel.text = episodeViewModel.description
-            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
+            pubDateLabel.text = episode.publishDateString
+            titleLabel.text = episode.title
+            descriptionLabel.text = episode.description
+            episodeImageView.sd_setImage(with: episode.imageUrl)
             
-            if episodeViewModel.isWaitingForDownload {
+            if episode.isWaitingForDownload {
                 self.descriptionLabel.text = "Waiting for download..."
                 self.isUserInteractionEnabled = false
                 self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
             }
             let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
             let episodeWasDownloaded = downloadedEpisodes.contains(where: {
-                $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+                $0.title == episode.title && $0.author == episode.author
             })
             downloadedImageView.isHidden = episodeWasDownloaded ? false : true
         }
