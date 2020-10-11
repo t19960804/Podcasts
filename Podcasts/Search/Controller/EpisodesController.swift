@@ -32,6 +32,8 @@ class EpisodesController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkIfPodcastDidFavorited()
+        //Reload data to check if we need hide downloaded image view
+        tableView.reloadData()
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
@@ -95,18 +97,29 @@ class EpisodesController: UITableViewController {
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel, episodesList: episodeViewModels)
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        var episode = episodeViewModels[indexPath.row]
+        
+        let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+        let episodeWasDownloaded = downloadedEpisodes.contains(where: {
+            $0.title == episode.title && $0.author == episode.author
+        })
+        if episodeWasDownloaded {
+            return nil
+        }
+        
         let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
-            var episodeViewModel = self.episodeViewModels[indexPath.row]
-            episodeViewModel.isWaitingForDownload = true
-            
+            //Save episode
+            episode.isWaitingForDownload = true
             var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-            downloadedEpisodes.append(episodeViewModel)
+            downloadedEpisodes.append(episode)
             UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
-            
+            //Reload cell to show downloadedImageView
+            self.tableView.reloadRows(at: [indexPath], with: .none)
+            //Update Badge
             let downloadController = UIApplication.mainTabBarController?.downloadController
             downloadController?.tabBarItem.badgeValue = "New"
-            //Download real episode file from internet
-            NetworkService.sharedInstance.downloadEpisode(with: episodeViewModel)
+            //Download
+            NetworkService.sharedInstance.downloadEpisode(with: episode)
         }
         return [downloadAction]
     }

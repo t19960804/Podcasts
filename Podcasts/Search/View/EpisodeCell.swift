@@ -21,6 +21,11 @@ class EpisodeCell: UITableViewCell {
                 self.isUserInteractionEnabled = false
                 self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
             }
+            let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+            let episodeWasDownloaded = downloadedEpisodes.contains(where: {
+                $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+            })
+            downloadedImageView.isHidden = episodeWasDownloaded ? false : true
         }
     }
     static let cellID = "EpisodeCell"
@@ -50,10 +55,18 @@ class EpisodeCell: UITableViewCell {
         lb.numberOfLines = 2
         return lb
     }()
+    let downloadedImageView = UIImageView(image: UIImage(named: "cloudDownload")?.withRenderingMode(.alwaysTemplate))
+    lazy var imageAndLabelStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [downloadedImageView,
+                                                descriptionLabel])
+        sv.axis = .horizontal
+        sv.spacing = 5
+        return sv
+    }()
     lazy var vStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [pubDateLabel,
                                                 titleLabel,
-                                                descriptionLabel])
+                                                imageAndLabelStackView])
         sv.axis = .vertical
         sv.spacing = 6
         return sv
@@ -70,6 +83,10 @@ class EpisodeCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
+        downloadedImageView.tintColor = .purple
+        setupConstraints()
+    }
+    fileprivate func setupConstraints(){
         //https://stackoverflow.com/questions/13123306/ios-what-is-superview-and-what-is-subviews
         addSubview(hStackView)
         hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
@@ -79,8 +96,10 @@ class EpisodeCell: UITableViewCell {
         
         episodeImageView.heightAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
         episodeImageView.widthAnchor.constraint(equalTo: episodeImageView.heightAnchor).isActive = true
+
+        downloadedImageView.widthAnchor.constraint(equalTo: imageAndLabelStackView.widthAnchor, multiplier: 0.1).isActive = true
+        downloadedImageView.heightAnchor.constraint(equalTo: imageAndLabelStackView.widthAnchor, multiplier: 0.1).isActive = true
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
