@@ -43,8 +43,8 @@ class EpisodesController: UITableViewController {
             }) else {
                 return
             }
-            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as! EpisodeCell
-            cell.audioPlayingContainerView.isHidden = false
+            episodes[index].isPlaying = true
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
         
         if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
@@ -53,8 +53,8 @@ class EpisodesController: UITableViewController {
             }) else {
                 return
             }
-            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as! EpisodeCell
-            cell.audioPlayingContainerView.isHidden = true
+            episodes[index].isPlaying = false
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
     }
     fileprivate func checkIfPodcastDidFavorited(){
@@ -93,11 +93,21 @@ class EpisodesController: UITableViewController {
                 self.episodes = episodes.map({
                     return EpisodeViewModel(episode: $0)
                 })
+                DispatchQueue.main.async {
+                    //check if the episode is playing now
+                    let tabbarController = UIApplication.mainTabBarController
+                    let currentEpisodePlaying = tabbarController?.episodePlayerView.episodeViewModel
+                    if let index = episodes.firstIndex(where: {
+                        $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
+                    }) {
+                        self.episodes[index].isPlaying = true
+                    }
+                }
             }
             
-            DispatchQueue.main.async {
-                self.searchingView.isHidden = true
-                self.tableView.reloadData()
+            DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
+                searchingView.isHidden = true
+                tableView.reloadData()
             }
         }
     }

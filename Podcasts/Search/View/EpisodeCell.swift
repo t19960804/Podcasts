@@ -26,6 +26,7 @@ class EpisodeCell: UITableViewCell {
                 $0.title == episode.title && $0.author == episode.author
             })
             downloadedImageView.isHidden = episodeWasDownloaded ? false : true
+            audioPlayingContainerView.isHidden = episode.isPlaying ? false : true
         }
     }
     static let cellID = "EpisodeCell"

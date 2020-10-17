@@ -17,6 +17,7 @@ struct EpisodeViewModel: Codable {
     let duration: String
     var fileUrl: URL?
     var isWaitingForDownload = false
+    var isPlaying = false
     
     //Dependency Injection
     //在單元測試中,我們可以在外部創建Model,並隨意修改Model的屬性,來測試ViewModel的邏輯
@@ -30,7 +31,7 @@ struct EpisodeViewModel: Codable {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM dd,yyyy"
         self.publishDateString = formatter.string(from: episode.pubDate)
-        
+        //Duration to Custom String
         let second = episode.duration % 60
         let minute = episode.duration / 60
         let formattedString = String(format: "%02d:%02d",minute,second)
