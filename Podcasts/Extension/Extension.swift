@@ -91,11 +91,13 @@ extension MainTabBarController {
 extension NSNotification.Name {
     static let episodeDownloadDone = NSNotification.Name(rawValue: "episodeDownloadDone")
     static let progressUpdate = NSNotification.Name("progressUpdate")
+    static let playerStateUpdate = NSNotification.Name("playerStateUpdate")
 }
 
 extension Notification {
     static let episodeKey = "episode"
     static let progressKey = "progress"
+    static let previousEpisodeKey = "previousEpisodeKey"
 }
 extension URL {
     func getTrueLocation() -> URL? {

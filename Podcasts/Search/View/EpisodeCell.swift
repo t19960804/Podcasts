@@ -56,6 +56,13 @@ class EpisodeCell: UITableViewCell {
         return lb
     }()
     let downloadedImageView = UIImageView(image: UIImage(named: "cloudDownload")?.withRenderingMode(.alwaysTemplate))
+    let audioPlayingImageView = UIImageView(image: UIImage(named: "audio")?.withRenderingMode(.alwaysTemplate), contentMode: .scaleToFill)
+    let audioPlayingContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+        return view
+    }()
     lazy var imageAndLabelStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [downloadedImageView,
                                                 durationLabel])
@@ -84,11 +91,16 @@ class EpisodeCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         downloadedImageView.tintColor = .purple
+        audioPlayingImageView.tintColor = .white
+        audioPlayingContainerView.isHidden = true
         setupConstraints()
     }
     fileprivate func setupConstraints(){
         //https://stackoverflow.com/questions/13123306/ios-what-is-superview-and-what-is-subviews
         addSubview(hStackView)
+        episodeImageView.addSubview(audioPlayingContainerView)
+        audioPlayingContainerView.addSubview(audioPlayingImageView)
+        
         hStackView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         hStackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
         hStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
@@ -96,6 +108,11 @@ class EpisodeCell: UITableViewCell {
         
         episodeImageView.heightAnchor.constraint(equalTo: hStackView.heightAnchor, multiplier: 1).isActive = true
         episodeImageView.widthAnchor.constraint(equalTo: episodeImageView.heightAnchor).isActive = true
+        
+        audioPlayingContainerView.fillSuperview()
+        audioPlayingImageView.heightAnchor.constraint(equalTo: audioPlayingContainerView.heightAnchor, multiplier: 0.5).isActive = true
+        audioPlayingImageView.widthAnchor.constraint(equalTo: audioPlayingContainerView.widthAnchor, multiplier: 0.5).isActive = true
+        audioPlayingImageView.centerInSuperview()
 
         downloadedImageView.widthAnchor.constraint(equalTo: imageAndLabelStackView.widthAnchor, multiplier: 0.1).isActive = true
         downloadedImageView.heightAnchor.constraint(equalTo: imageAndLabelStackView.widthAnchor, multiplier: 0.1).isActive = true

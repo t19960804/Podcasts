@@ -28,12 +28,34 @@ class EpisodesController: UITableViewController {
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
         setupConstraints()
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkIfPodcastDidFavorited()
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
+    }
+    @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
+        if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
+            guard let index = episodes.firstIndex(where: {
+                $0.title == currentEpisode.title && $0.author == currentEpisode.author
+            }) else {
+                return
+            }
+            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as! EpisodeCell
+            cell.audioPlayingContainerView.isHidden = false
+        }
+        
+        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+            guard let index = episodes.firstIndex(where: {
+                $0.title == previousEpisode.title && $0.author == previousEpisode.author
+            }) else {
+                return
+            }
+            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as! EpisodeCell
+            cell.audioPlayingContainerView.isHidden = true
+        }
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))

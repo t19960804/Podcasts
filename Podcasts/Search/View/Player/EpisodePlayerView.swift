@@ -12,9 +12,12 @@ import MediaPlayer
 import MarqueeLabel
 
 class EpisodePlayerView: UIView {
+    var previousEpisode: EpisodeViewModel?
+    
     var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
+            previousEpisode = oldValue
             guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
@@ -256,6 +259,7 @@ class EpisodePlayerView: UIView {
 
         hStackView_Sound.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.041).isActive = true
     }
+    //MARK: - Player action
     fileprivate func updateUIWhenPoadcastStartPlaying(){
            //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
            //https://blog.csdn.net/caiwenyu9999/article/details/51518960
@@ -271,6 +275,9 @@ class EpisodePlayerView: UIView {
                 self.updateLockScreenDuration()
                 self.commandCenter.nextTrackCommand.isEnabled = true
                 self.commandCenter.previousTrackCommand.isEnabled = true
+                let dict: [String : Any?] = [ Notification.episodeKey : self.episodeViewModel,
+                                              Notification.previousEpisodeKey : self.previousEpisode]
+            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: dict as [AnyHashable : Any])
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){
