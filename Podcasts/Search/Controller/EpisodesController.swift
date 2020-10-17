@@ -28,7 +28,7 @@ class EpisodesController: UITableViewController {
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
         setupConstraints()
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisodeStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -36,7 +36,7 @@ class EpisodesController: UITableViewController {
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
     }
-    @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
+    @objc fileprivate func handleEpisodeStateUpdate(notification: Notification){
         if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
             guard let index = episodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
