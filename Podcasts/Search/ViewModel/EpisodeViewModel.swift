@@ -14,7 +14,7 @@ struct EpisodeViewModel: Codable {
     var imageUrl: URL?
     var audioUrl: URL?
     let publishDateString: String
-    let description: String
+    let duration: String
     var fileUrl: URL?
     var isWaitingForDownload = false
     
@@ -25,12 +25,16 @@ struct EpisodeViewModel: Codable {
         self.author = episode.author
         self.imageUrl = URL(string: episode.imageURL)
         self.audioUrl = URL(string: episode.audioURL)
-        self.description = episode.description
         
         //Date to Custom String
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM dd,yyyy"
         self.publishDateString = formatter.string(from: episode.pubDate)
+        
+        let second = episode.duration % 60
+        let minute = episode.duration / 60
+        let formattedString = String(format: "%02d:%02d",minute,second)
+        self.duration = formattedString
     }
 }
 

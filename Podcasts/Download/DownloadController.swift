@@ -39,7 +39,7 @@ class DownloadController: UITableViewController {
         }
         //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-        cell?.descriptionLabel.text = episodeViewModel.description
+        cell?.durationLabel.text = episodeViewModel.duration
         cell?.isUserInteractionEnabled = true
         cell?.contentView.backgroundColor = .clear
     }
@@ -53,7 +53,7 @@ class DownloadController: UITableViewController {
             return
         }
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-        cell?.descriptionLabel.text = "Downloading...\(progress)%"
+        cell?.durationLabel.text = "Downloading...\(progress)%"
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1

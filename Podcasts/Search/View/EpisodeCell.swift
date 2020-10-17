@@ -13,11 +13,11 @@ class EpisodeCell: UITableViewCell {
         didSet {
             pubDateLabel.text = episode.publishDateString
             titleLabel.text = episode.title
-            descriptionLabel.text = episode.description
+            durationLabel.text = episode.duration
             episodeImageView.sd_setImage(with: episode.imageUrl)
             
             if episode.isWaitingForDownload {
-                self.descriptionLabel.text = "Waiting for download..."
+                self.durationLabel.text = "Waiting for download..."
                 self.isUserInteractionEnabled = false
                 self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
             }
@@ -48,7 +48,7 @@ class EpisodeCell: UITableViewCell {
         lb.numberOfLines = 2
         return lb
     }()
-    let descriptionLabel: UILabel = {
+    let durationLabel: UILabel = {
         let lb = UILabel()
         lb.font = .systemFont(ofSize: 16)
         lb.textColor = .lightGray
@@ -58,7 +58,7 @@ class EpisodeCell: UITableViewCell {
     let downloadedImageView = UIImageView(image: UIImage(named: "cloudDownload")?.withRenderingMode(.alwaysTemplate))
     lazy var imageAndLabelStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [downloadedImageView,
-                                                descriptionLabel])
+                                                durationLabel])
         sv.axis = .horizontal
         sv.spacing = 5
         return sv

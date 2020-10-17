@@ -12,7 +12,7 @@ import FeedKit
 struct Episode {
     let title: String
     let pubDate: Date
-    let description: String
+    let duration: Int
     var imageURL: String
     var author: String?
     var audioURL: String
@@ -20,7 +20,7 @@ struct Episode {
     init(item: RSSFeedItem) {
         self.title = item.title ?? ""
         self.pubDate = item.pubDate ?? Date()
-        self.description = item.iTunes?.iTunesSubtitle ?? item.description ?? ""
+        self.duration = Int(item.iTunes?.iTunesDuration ?? 999.0)
         self.imageURL = item.iTunes?.iTunesImage?.attributes?.href ?? ""
         self.author = item.iTunes?.iTunesAuthor
         self.audioURL = item.enclosure?.attributes?.url ?? ""
