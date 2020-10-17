@@ -97,3 +97,13 @@ extension Notification {
     static let episodeKey = "episode"
     static let progressKey = "progress"
 }
+extension URL {
+    func getTrueLocation() -> URL? {
+        //每一次重新啟動App,資料夾的路徑會有所變動
+        //若依照當初下載檔案後所存fileUrl會無法找到檔案
+        var trueLocation = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let fileName = self.lastPathComponent
+        trueLocation?.appendPathComponent(fileName)
+        return trueLocation
+    }
+}
