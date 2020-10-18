@@ -12,12 +12,12 @@ import MediaPlayer
 import MarqueeLabel
 
 class EpisodePlayerView: UIView {
-    var previousEpisode: EpisodeViewModel?
+    var previousEpisodeViewModel: EpisodeViewModel?
     
     var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
-            previousEpisode = oldValue
+            previousEpisodeViewModel = oldValue
             guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
@@ -276,7 +276,7 @@ class EpisodePlayerView: UIView {
                 self.commandCenter.nextTrackCommand.isEnabled = true
                 self.commandCenter.previousTrackCommand.isEnabled = true
                 let dict: [String : Any?] = [ Notification.episodeKey : self.episodeViewModel,
-                                              Notification.previousEpisodeKey : self.previousEpisode]
+                                              Notification.previousEpisodeKey : self.previousEpisodeViewModel]
             NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: dict as [AnyHashable : Any])
            }
        }
