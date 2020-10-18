@@ -21,12 +21,23 @@ class EpisodeCell: UITableViewCell {
                 self.isUserInteractionEnabled = false
                 self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
             }
+            //downloadedImageView
             let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
             let episodeWasDownloaded = downloadedEpisodes.contains(where: {
                 $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
             })
             downloadedImageView.isHidden = episodeWasDownloaded ? false : true
+            //audioPlayingContainerView
             audioPlayingContainerView.isHidden = episodeViewModel.isPlaying ? false : true
+            if episodeViewModel.isPlaying {
+                var images = [UIImage]()
+                for i in 0...3 {
+                    images.append(UIImage(named: "audio-\(i)")!.withColor(.white))
+                }
+                audioPlayingImageView.startAnimating(images: images, duration: 1, repeatCount: 0)
+            } else {
+                audioPlayingImageView.stopAnimating()
+            }
         }
     }
     static let cellID = "EpisodeCell"
@@ -57,7 +68,7 @@ class EpisodeCell: UITableViewCell {
         return lb
     }()
     let downloadedImageView = UIImageView(image: UIImage(named: "cloudDownload")?.withRenderingMode(.alwaysTemplate))
-    let audioPlayingImageView = UIImageView(image: UIImage(named: "audio")?.withRenderingMode(.alwaysTemplate), contentMode: .scaleToFill)
+    let audioPlayingImageView = UIImageView()
     let audioPlayingContainerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -92,7 +103,6 @@ class EpisodeCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         downloadedImageView.tintColor = .purple
-        audioPlayingImageView.tintColor = .white
         audioPlayingContainerView.isHidden = true
         setupConstraints()
     }

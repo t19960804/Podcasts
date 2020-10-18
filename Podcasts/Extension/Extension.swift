@@ -71,6 +71,14 @@ extension UIImageView {
         self.layer.cornerRadius = cornerRadius
         self.clipsToBounds = clipsToBounds
     }
+    func startAnimating(images: [UIImage], duration: TimeInterval, repeatCount: Int){
+        self.animationImages = images
+        //The amount of time it takes to go through one cycle of the images.
+        self.animationDuration = duration
+        //The default value is 0, which specifies to repeat the animation indefinitely
+        self.animationRepeatCount = repeatCount
+        self.startAnimating()
+    }
 }
 
 extension MainTabBarController {
@@ -107,5 +115,22 @@ extension URL {
         let fileName = self.lastPathComponent
         trueLocation?.appendPathComponent(fileName)
         return trueLocation
+    }
+}
+extension UIImage {
+    //https://stackoverflow.com/questions/27148994/uiimage-animationimages-tint-color
+    func withColor(_ color: UIColor) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        guard let context = UIGraphicsGetCurrentContext(), let cgImage = self.cgImage else { return UIImage() }
+        context.translateBy(x: 0, y: self.size.height)
+        context.scaleBy(x: 1.0, y: -1.0)
+        context.setBlendMode(.normal)
+        let rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        context.clip(to: rect, mask: cgImage)
+        color.setFill()
+        context.fill(rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage ?? UIImage()
     }
 }
