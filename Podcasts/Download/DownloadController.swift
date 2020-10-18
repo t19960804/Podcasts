@@ -18,13 +18,45 @@ class DownloadController: UITableViewController {
         tableView.eliminateExtraSeparators()
         NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisodeStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarItem.badgeValue = nil
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
+        checkIfEpisodeIsPlaying()
         tableView.reloadData()
+    }
+    fileprivate func checkIfEpisodeIsPlaying(){
+        let tabbarController = UIApplication.mainTabBarController
+        let currentEpisodePlaying = tabbarController?.episodePlayerView.episodeViewModel
+        if let index = downloadedEpisodes.firstIndex(where: {
+            $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
+        }) {
+            self.downloadedEpisodes[index].isPlaying = true
+        }
+    }
+    @objc fileprivate func handleEpisodeStateUpdate(notification: Notification){
+        if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
+            guard let index = downloadedEpisodes.firstIndex(where: {
+                $0.title == currentEpisode.title && $0.author == currentEpisode.author
+            }) else {
+                return
+            }
+            downloadedEpisodes[index].isPlaying = true
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+        }
+        
+        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+            guard let index = downloadedEpisodes.firstIndex(where: {
+                $0.title == previousEpisode.title && $0.author == previousEpisode.author
+            }) else {
+                return
+            }
+            downloadedEpisodes[index].isPlaying = false
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+        }
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
@@ -64,6 +96,7 @@ class DownloadController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
         cell.episode = downloadedEpisodes[indexPath.row]
+        cell.downloadedImageView.isHidden = true
         return cell
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
