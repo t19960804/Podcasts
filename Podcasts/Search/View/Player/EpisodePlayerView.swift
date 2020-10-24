@@ -17,8 +17,8 @@ class EpisodePlayerView: UIView {
     var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
+            guard let episodeViewModel = self.episodeViewModel else { return }
             previousEpisodeViewModel = oldValue
-            guard let episodeViewModel = episodeViewModel else { return }//mini > fullScrren不需要重新播放
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
             }
