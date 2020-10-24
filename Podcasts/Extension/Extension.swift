@@ -133,4 +133,11 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return newImage ?? UIImage()
     }
+    static var audioImages: [UIImage] {
+        var images = [UIImage]()
+        for i in 0...3 {
+            images.append(UIImage(named: "audio-\(i)")!.withColor(.white))
+        }
+        return images
+    }
 }

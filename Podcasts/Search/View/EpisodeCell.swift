@@ -30,11 +30,7 @@ class EpisodeCell: UITableViewCell {
             //audioPlayingContainerView
             audioPlayingContainerView.isHidden = episodeViewModel.isPlaying ? false : true
             if episodeViewModel.isPlaying {
-                var images = [UIImage]()
-                for i in 0...3 {
-                    images.append(UIImage(named: "audio-\(i)")!.withColor(.white))
-                }
-                audioPlayingImageView.startAnimating(images: images, duration: 1, repeatCount: 0)
+                audioPlayingImageView.startAnimating(images: UIImage.audioImages, duration: 1, repeatCount: 0)
             } else {
                 audioPlayingImageView.stopAnimating()
             }
