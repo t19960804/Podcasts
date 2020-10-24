@@ -38,23 +38,20 @@ class EpisodesController: UITableViewController {
     }
     @objc fileprivate func handleEpisodeStateUpdate(notification: Notification){
         if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
-            guard let index = episodes.firstIndex(where: {
+            if let index = episodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
-            }) else {
-                return
+            })  {
+                episodes[index].isPlaying = true
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
-            episodes[index].isPlaying = true
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
-        
         if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
-            guard let index = episodes.firstIndex(where: {
+            if let index = episodes.firstIndex(where: {
                 $0.title == previousEpisode.title && $0.author == previousEpisode.author
-            }) else {
-                return
+            }) {
+                episodes[index].isPlaying = false
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
-            episodes[index].isPlaying = false
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
     }
     fileprivate func checkIfPodcastDidFavorited(){

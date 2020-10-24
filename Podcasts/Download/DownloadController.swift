@@ -39,23 +39,21 @@ class DownloadController: UITableViewController {
     }
     @objc fileprivate func handleEpisodeStateUpdate(notification: Notification){
         if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
-            guard let index = downloadedEpisodes.firstIndex(where: {
+            if let index = downloadedEpisodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
-            }) else {
-                return
+            }) {
+                downloadedEpisodes[index].isPlaying = true
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
-            downloadedEpisodes[index].isPlaying = true
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            
         }
-        
         if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
-            guard let index = downloadedEpisodes.firstIndex(where: {
+            if let index = downloadedEpisodes.firstIndex(where: {
                 $0.title == previousEpisode.title && $0.author == previousEpisode.author
-            }) else {
-                return
+            }) {
+                downloadedEpisodes[index].isPlaying = false
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
-            downloadedEpisodes[index].isPlaying = false
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
