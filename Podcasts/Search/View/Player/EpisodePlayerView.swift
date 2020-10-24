@@ -277,7 +277,7 @@ class EpisodePlayerView: UIView {
                 self.commandCenter.previousTrackCommand.isEnabled = true
                 let dict: [String : Any?] = [ Notification.episodeKey : self.episodeViewModel,
                                               Notification.previousEpisodeKey : self.previousEpisodeViewModel]
-            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: dict as [AnyHashable : Any])
+            NotificationCenter.default.post(name: .newPodcastStartPlaying, object: nil, userInfo: dict as [AnyHashable : Any])
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){

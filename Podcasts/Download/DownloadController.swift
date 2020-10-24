@@ -18,7 +18,7 @@ class DownloadController: UITableViewController {
         tableView.eliminateExtraSeparators()
         NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisodeStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewPodcastStartPlaying(notification:)), name: .newPodcastStartPlaying, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -37,7 +37,7 @@ class DownloadController: UITableViewController {
             self.downloadedEpisodes[index].isPlaying = true
         }
     }
-    @objc fileprivate func handleEpisodeStateUpdate(notification: Notification){
+    @objc fileprivate func handleNewPodcastStartPlaying(notification: Notification){
         if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
             if let index = downloadedEpisodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author

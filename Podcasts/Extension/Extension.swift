@@ -99,7 +99,7 @@ extension MainTabBarController {
 extension NSNotification.Name {
     static let episodeDownloadDone = NSNotification.Name(rawValue: "episodeDownloadDone")
     static let progressUpdate = NSNotification.Name("progressUpdate")
-    static let playerStateUpdate = NSNotification.Name("playerStateUpdate")
+    static let newPodcastStartPlaying = NSNotification.Name("newPodcastStartPlaying")
 }
 
 extension Notification {
