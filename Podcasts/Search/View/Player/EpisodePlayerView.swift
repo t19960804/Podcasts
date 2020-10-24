@@ -13,7 +13,7 @@ import MarqueeLabel
 
 class EpisodePlayerView: UIView {
     var previousEpisodeViewModel: EpisodeViewModel?
-    
+    var isPlayingPodcast = false
     var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
@@ -106,9 +106,17 @@ class EpisodePlayerView: UIView {
         setupGesture()
         setupRemoteControl()
         setupInterruptionNotification()
+        podcastPlayer.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 0 {
+            isPlayingPodcast = false
+        } else if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 1 {
+            isPlayingPodcast = true
+        }
     }
     fileprivate func setupMarqueeLabel(){
         titleLabel.type = .continuous

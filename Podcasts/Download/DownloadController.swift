@@ -29,12 +29,12 @@ class DownloadController: UITableViewController {
         tableView.reloadData()
     }
     fileprivate func checkIfEpisodeIsPlaying(){
-        let tabbarController = UIApplication.mainTabBarController
-        let currentEpisodePlaying = tabbarController?.episodePlayerView.episodeViewModel
+        guard let tabbarController = UIApplication.mainTabBarController else { return }
+        let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
         if let index = downloadedEpisodes.firstIndex(where: {
             $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
         }) {
-            self.downloadedEpisodes[index].isPlaying = true
+            downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
         }
     }
     @objc fileprivate func handleNewPodcastStartPlaying(notification: Notification){

@@ -33,6 +33,7 @@ class EpisodesController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkIfPodcastDidFavorited()
+        checkIfEpisodeIsPlaying()
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
     }
@@ -102,12 +103,12 @@ class EpisodesController: UITableViewController {
         }
     }
     fileprivate func checkIfEpisodeIsPlaying(){
-        let tabbarController = UIApplication.mainTabBarController
-        let currentEpisodePlaying = tabbarController?.episodePlayerView.episodeViewModel
+        guard let tabbarController = UIApplication.mainTabBarController else { return }
+        let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
         if let index = episodes.firstIndex(where: {
             $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
         }) {
-            episodes[index].isPlaying = true
+            episodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
