@@ -24,6 +24,7 @@ class EpisodePlayerView: UIView {
             }
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
+            timeLabel_UpperBound.text = episodeViewModel.duration
             miniPlayerView.episodeViewModel = episodeViewModel
             setupAudioSession()//播放時再取得Audio使用權
             if let fileUrl = episodeViewModel.fileUrl {
@@ -278,8 +279,6 @@ class EpisodePlayerView: UIView {
                [weak self] in
                 guard let self = self else { return }
                 self.scaleUpEpisodeImageView()
-                let duration = self.podcastPlayer.currentItem?.asset.duration
-                self.timeLabel_UpperBound.text = duration?.getFormattedString()
                 self.updateLockScreenDuration()
                 self.commandCenter.nextTrackCommand.isEnabled = true
                 self.commandCenter.previousTrackCommand.isEnabled = true
