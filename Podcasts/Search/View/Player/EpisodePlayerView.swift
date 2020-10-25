@@ -112,15 +112,17 @@ class EpisodePlayerView: UIView {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        let info: [String : Any?] = [ Notification.episodeKey : episodeViewModel,
+                                      Notification.previousEpisodeKey : previousEpisodeViewModel]
+        
         if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 0 {
             isPlayingPodcast = false
-            let info = [Notification.episodeKey : episodeViewModel!]
-            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info)
+            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         } else if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 1 {
             isPlayingPodcast = true
-            let info = [Notification.episodeKey : episodeViewModel!]
-            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info)
+            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         }
     }
     fileprivate func setupMarqueeLabel(){
@@ -286,9 +288,6 @@ class EpisodePlayerView: UIView {
                 self.updateLockScreenDuration()
                 self.commandCenter.nextTrackCommand.isEnabled = true
                 self.commandCenter.previousTrackCommand.isEnabled = true
-                let dict: [String : Any?] = [ Notification.episodeKey : self.episodeViewModel,
-                                              Notification.previousEpisodeKey : self.previousEpisodeViewModel]
-            NotificationCenter.default.post(name: .newPodcastStartPlaying, object: nil, userInfo: dict as [AnyHashable : Any])
            }
        }
     fileprivate func updateCurrentPlayingTimePeriodically(){

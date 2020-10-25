@@ -18,7 +18,6 @@ class DownloadController: UITableViewController {
         tableView.eliminateExtraSeparators()
         NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNewPodcastStartPlaying(notification:)), name: .newPodcastStartPlaying, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -32,12 +31,21 @@ class DownloadController: UITableViewController {
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
-        let currentEpisode = info?[Notification.episodeKey] as! EpisodeViewModel
-        if let index = downloadedEpisodes.firstIndex(where: {
-            $0.title == currentEpisode.title && $0.author == currentEpisode.author
-        })  {
-            downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeViewModel {
+            if let index = downloadedEpisodes.firstIndex(where: {
+                $0.title == currentEpisode.title && $0.author == currentEpisode.author
+            })  {
+                downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            }
+        }
+        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+            if let index = downloadedEpisodes.firstIndex(where: {
+                $0.title == previousEpisode.title && $0.author == previousEpisode.author
+            }) {
+                downloadedEpisodes[index].isPlaying = false
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            }
         }
     }
     fileprivate func checkIfEpisodeIsPlaying(){
@@ -47,25 +55,6 @@ class DownloadController: UITableViewController {
             $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
         }) {
             downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
-        }
-    }
-    @objc fileprivate func handleNewPodcastStartPlaying(notification: Notification){
-        if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
-            if let index = downloadedEpisodes.firstIndex(where: {
-                $0.title == currentEpisode.title && $0.author == currentEpisode.author
-            }) {
-                downloadedEpisodes[index].isPlaying = true
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-            
-        }
-        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
-            if let index = downloadedEpisodes.firstIndex(where: {
-                $0.title == previousEpisode.title && $0.author == previousEpisode.author
-            }) {
-                downloadedEpisodes[index].isPlaying = false
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
         }
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){

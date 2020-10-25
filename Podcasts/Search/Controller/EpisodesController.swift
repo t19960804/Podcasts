@@ -28,7 +28,6 @@ class EpisodesController: UITableViewController {
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
         setupConstraints()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNewPodcastStartPlaying(notification:)), name: .newPodcastStartPlaying, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -41,24 +40,15 @@ class EpisodesController: UITableViewController {
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
-        let currentEpisode = info?[Notification.episodeKey] as! EpisodeViewModel
-        if let index = episodes.firstIndex(where: {
-            $0.title == currentEpisode.title && $0.author == currentEpisode.author
-        })  {
-            episodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-        }
-    }
-    @objc fileprivate func handleNewPodcastStartPlaying(notification: Notification){
-        if let currentEpisode = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel {
+        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeViewModel {
             if let index = episodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
             })  {
-                episodes[index].isPlaying = true
+                episodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeViewModel {
             if let index = episodes.firstIndex(where: {
                 $0.title == previousEpisode.title && $0.author == previousEpisode.author
             }) {
