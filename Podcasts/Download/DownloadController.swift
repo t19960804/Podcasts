@@ -19,6 +19,7 @@ class DownloadController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewPodcastStartPlaying(notification:)), name: .newPodcastStartPlaying, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -27,6 +28,17 @@ class DownloadController: UITableViewController {
         downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
         checkIfEpisodeIsPlaying()
         tableView.reloadData()
+    }
+    @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
+        guard let tabbarController = UIApplication.mainTabBarController else { return }
+        let info = notification.userInfo
+        let currentEpisode = info?[Notification.episodeKey] as! EpisodeViewModel
+        if let index = downloadedEpisodes.firstIndex(where: {
+            $0.title == currentEpisode.title && $0.author == currentEpisode.author
+        })  {
+            downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+        }
     }
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }

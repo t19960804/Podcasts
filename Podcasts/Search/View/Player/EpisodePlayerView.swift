@@ -115,8 +115,12 @@ class EpisodePlayerView: UIView {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 0 {
             isPlayingPodcast = false
+            let info = [Notification.episodeKey : episodeViewModel!]
+            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info)
         } else if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 1 {
             isPlayingPodcast = true
+            let info = [Notification.episodeKey : episodeViewModel!]
+            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info)
         }
     }
     fileprivate func setupMarqueeLabel(){
