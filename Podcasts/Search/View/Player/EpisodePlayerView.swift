@@ -19,6 +19,11 @@ class EpisodePlayerView: UIView {
         didSet {
             guard let episodeViewModel = self.episodeViewModel else { return }
             previousEpisodeViewModel = oldValue
+            //Init UI
+            scaleDownEpisodeImageView()
+            timeSlider.value = 0
+            let initialTime = CMTime(seconds: 0, preferredTimescale: 1000)
+            timeLabel_LowerBound.text = initialTime.getFormattedString()
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
             }
@@ -26,6 +31,7 @@ class EpisodePlayerView: UIView {
             authorLabel.text = episodeViewModel.author
             timeLabel_UpperBound.text = episodeViewModel.duration
             miniPlayerView.episodeViewModel = episodeViewModel
+            //Play new podcast
             setupAudioSession()//播放時再取得Audio使用權
             if let fileUrl = episodeViewModel.fileUrl {
                 playAudio(with: fileUrl.getTrueLocation())
@@ -100,7 +106,6 @@ class EpisodePlayerView: UIView {
         backgroundColor = .white
         setUpConstraints()
         setupMarqueeLabel()
-        scaleDownEpisodeImageView()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
         miniPlayerView.delegate = self
@@ -447,16 +452,16 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     }
     
     func cancelMiniPlayerView() {
-        scaleDownEpisodeImageView()
-        pausePodcats()
-        
-        guard let mainTabBarController = UIApplication.mainTabBarController else { return }
-        mainTabBarController.topAnchorForMiniPlayer?.isActive = false
-        mainTabBarController.topAnchorForFullScreenPlayer?.constant = mainTabBarController.view.frame.height
-        mainTabBarController.topAnchorForFullScreenPlayer?.isActive = true
-        
-        UIView.animate(withDuration: 0.1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.layoutIfNeeded()
-        })
+//        scaleDownEpisodeImageView()
+//        pausePodcats()
+//
+//        guard let mainTabBarController = UIApplication.mainTabBarController else { return }
+//        mainTabBarController.topAnchorForMiniPlayer?.isActive = false
+//        mainTabBarController.topAnchorForFullScreenPlayer?.constant = mainTabBarController.view.frame.height
+//        mainTabBarController.topAnchorForFullScreenPlayer?.isActive = true
+//
+//        UIView.animate(withDuration: 0.1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+//            self.layoutIfNeeded()
+//        })
     }
 }
