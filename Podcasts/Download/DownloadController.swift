@@ -25,7 +25,7 @@ class DownloadController: UITableViewController {
         tabBarItem.badgeValue = nil
         downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
-        checkIfEpisodeIsPlaying()
+        checkIfEpisodeIsPlaying()//因為上面重新fetch,每一個episode的isPlaying都是false.所以要check
         tableView.reloadData()
     }
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
@@ -39,7 +39,7 @@ class DownloadController: UITableViewController {
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        if let previousEpisode = notification.userInfo?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeViewModel {
             if let index = downloadedEpisodes.firstIndex(where: {
                 $0.title == previousEpisode.title && $0.author == previousEpisode.author
             }) {

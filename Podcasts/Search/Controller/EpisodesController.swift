@@ -33,7 +33,6 @@ class EpisodesController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkIfPodcastDidFavorited()
-        checkIfEpisodeIsPlaying()
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
     }
