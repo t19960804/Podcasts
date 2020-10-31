@@ -244,19 +244,22 @@ class EpisodePlayerView: UIView {
     }
     @objc fileprivate func handlePan(gesture: UIPanGestureRecognizer){
         let translation = gesture.translation(in: superview)
-        
+        let tabBarController = UIApplication.mainTabBarController
+
         if gesture.state == .began {
             
         } else if gesture.state == .changed {
             transform = CGAffineTransform(translationX: 0, y: max(0,translation.y))
+            tabBarController?.tabBar.isHidden = true
         } else if gesture.state == .ended {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 //因為中間經過了transform,若不先用identity回到原位,會導致anchor更新後元件位置有誤
                 self.transform = .identity
-                
                 if translation.y > 100 {
-                    let tabBarController = UIApplication.mainTabBarController
+                    tabBarController?.tabBar.isHidden = false
                     tabBarController?.minimizePodcastPlayerView()
+                } else {
+                    tabBarController?.tabBar.isHidden = true
                 }
             })
         }
