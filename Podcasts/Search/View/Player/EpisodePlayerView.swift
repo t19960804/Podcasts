@@ -454,17 +454,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
         handlePlayAndPause()
     }
     
-    func cancelMiniPlayerView() {
-//        scaleDownEpisodeImageView()
-//        pausePodcats()
-//
-//        guard let mainTabBarController = UIApplication.mainTabBarController else { return }
-//        mainTabBarController.topAnchorForMiniPlayer?.isActive = false
-//        mainTabBarController.topAnchorForFullScreenPlayer?.constant = mainTabBarController.view.frame.height
-//        mainTabBarController.topAnchorForFullScreenPlayer?.isActive = true
-//
-//        UIView.animate(withDuration: 0.1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-//            self.layoutIfNeeded()
-//        })
+    func playNextTrack() {
+        let _ = self.handleNextTrack()
     }
 }

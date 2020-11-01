@@ -12,7 +12,7 @@ import MarqueeLabel
 
 protocol EpisodeMiniPlayerViewDelegate: class {
     func handlePlayerPauseAndPlay()
-    func cancelMiniPlayerView()
+    func playNextTrack()
     func handleMiniPlayerTapped()
     func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer)
 }
@@ -29,10 +29,10 @@ class EpisodeMiniPlayerView: UIView {
     let imageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), contentMode: .scaleToFill)
     let titleLabel = MarqueeLabel(text: nil, font: .systemFont(ofSize: 18), textColor: .black, textAlignment: .left, numberOfLines: 1)
     let playerControlButton = UIButton(image: #imageLiteral(resourceName: "play"), tintColor: .black, target: self, action: #selector(handlePlayerPauseAndPlay))
-    let cancelButton = UIButton(image: #imageLiteral(resourceName: "next"), tintColor: .black, target: self, action: #selector(handleCancelMiniPlayerView))
+    let nextTrackButton = UIButton(image: #imageLiteral(resourceName: "next"), tintColor: .black, target: self, action: #selector(handleNextTrack))
     lazy var btnHStackView = UIStackView(subViews: [
                                               playerControlButton,
-                                              cancelButton],
+                                              nextTrackButton],
                                    axis: .horizontal,
                                    alignment: .center,
                                    distribution: .fillEqually,
@@ -48,7 +48,7 @@ class EpisodeMiniPlayerView: UIView {
         backgroundColor = .white
         translatesAutoresizingMaskIntoConstraints = false
         layer.shadowOpacity = 0.1
-        cancelButton.imageView?.contentMode = .scaleAspectFit
+        nextTrackButton.imageView?.contentMode = .scaleAspectFit
         setupMarqueeLabel()
         setupConstraints()
         addGesture()
@@ -79,7 +79,7 @@ class EpisodeMiniPlayerView: UIView {
         
         //Aspect Fit：等比例縮放圖片直到完整顯示在Image View中，有時會出現Image View留白的部分
         //讓btn寬度增加的同時,imageView不會跟著被延伸
-        cancelButton.imageView?.contentMode = .scaleAspectFit
+        nextTrackButton.imageView?.contentMode = .scaleAspectFit
         playerControlButton.imageView?.contentMode = .scaleAspectFit
     }
     @objc func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer){
@@ -91,8 +91,8 @@ class EpisodeMiniPlayerView: UIView {
     @objc fileprivate func handlePlayerPauseAndPlay(){
         delegate?.handlePlayerPauseAndPlay()
     }
-    @objc fileprivate func handleCancelMiniPlayerView(){
-        delegate?.cancelMiniPlayerView()
+    @objc fileprivate func handleNextTrack(){
+        delegate?.playNextTrack()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
