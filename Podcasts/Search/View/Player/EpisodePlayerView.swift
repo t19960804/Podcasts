@@ -121,12 +121,8 @@ class EpisodePlayerView: UIView {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         let info: [String : Any?] = [ Notification.episodeKey : episodeViewModel,
                                       Notification.previousEpisodeKey : previousEpisodeViewModel]
-        
-        if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 0 {
-            isPlayingPodcast = false
-            NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
-        } else if keyPath == "rate" && (change?[NSKeyValueChangeKey.newKey] as? Float) == 1 {
-            isPlayingPodcast = true
+        if keyPath == "rate" {
+            isPlayingPodcast = (change?[NSKeyValueChangeKey.newKey] as? Float) == 1
             NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         }
     }
