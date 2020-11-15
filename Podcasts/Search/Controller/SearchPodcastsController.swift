@@ -28,6 +28,7 @@ class SearchPodcastsController: UITableViewController {
     }
     fileprivate func setupObserver(){
         //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
+        //以Controller的ViewModel為主體,裡面再包含cell要用的ViewModel
         searchPodcastsViewModel.isSearchingObserver = { [self] isSearching in
             searchingView.isHidden = !isSearching
         }
