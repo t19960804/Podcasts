@@ -11,9 +11,9 @@ import Alamofire
 
 class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
-    var podcasts = [Podcast]()
     var timer: Timer?
     let searchingView = SearchingView()
+    let searchPodcastsViewModel = SearchPodcastsViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +24,16 @@ class SearchPodcastsController: UITableViewController {
         setUpSearchController()
         setupConstraints()
         searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
+        setupObserver()
+    }
+    fileprivate func setupObserver(){
+        //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
+        searchPodcastsViewModel.isSearchingObserver = { [self] isSearching in
+            searchingView.isHidden = !isSearching
+        }
+        searchPodcastsViewModel.reloadController = { [self] podcasts in
+            tableView.reloadData()
+        }
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
@@ -42,11 +52,11 @@ class SearchPodcastsController: UITableViewController {
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return podcasts.count
+        return searchPodcastsViewModel.podcasts.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! PodcastCell
-        let podcast = podcasts[indexPath.row]
+        let podcast = searchPodcastsViewModel.podcasts[indexPath.row]
         cell.podcast = podcast
         return cell
     }
@@ -62,15 +72,15 @@ class SearchPodcastsController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
-        let isSearching = searchingView.isHidden == false
-        if isSearching == false && podcasts.isEmpty {
+        let isSearching = searchPodcastsViewModel.isSearching
+        if isSearching == false && searchPodcastsViewModel.podcasts.isEmpty {
             return 250 //Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
         }
         return 0
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()
-        let podcast = podcasts[indexPath.row]
+        let podcast = searchPodcastsViewModel.podcasts[indexPath.row]
         controller.podcast = podcast
         navigationController?.pushViewController(controller, animated: true)
     }
@@ -79,21 +89,7 @@ extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
-            self.searchingView.isHidden = false
-            self.podcasts = []
-            self.tableView.reloadData()
-            
-            NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
-                switch result {
-                case .failure(let error):
-                    print("Request data failed:\(error)")
-                    self.podcasts = []
-                case .success(let podcasts):
-                    self.podcasts = podcasts
-                }
-                self.searchingView.isHidden = true
-                self.tableView.reloadData()
-            }
+            self.searchPodcastsViewModel.fetchPodcasts(searchText: searchText)
         }
     }
     //function的型別 > 參數型別 + 回傳型別
