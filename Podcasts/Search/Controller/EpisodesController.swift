@@ -43,7 +43,7 @@ class EpisodesController: UITableViewController {
             if let index = episodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
             })  {
-                episodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+                episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
@@ -109,7 +109,7 @@ class EpisodesController: UITableViewController {
         if let index = episodes.firstIndex(where: {
             $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
         }) {
-            episodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+            episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

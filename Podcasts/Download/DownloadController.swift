@@ -35,7 +35,7 @@ class DownloadController: UITableViewController {
             if let index = downloadedEpisodes.firstIndex(where: {
                 $0.title == currentEpisode.title && $0.author == currentEpisode.author
             })  {
-                downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+                downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
@@ -54,7 +54,7 @@ class DownloadController: UITableViewController {
         if let index = downloadedEpisodes.firstIndex(where: {
             $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
         }) {
-            downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.isPlayingPodcast
+            downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){

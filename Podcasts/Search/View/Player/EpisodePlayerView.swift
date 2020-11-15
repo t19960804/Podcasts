@@ -13,7 +13,6 @@ import MarqueeLabel
 
 class EpisodePlayerView: UIView {
     var previousEpisodeViewModel: EpisodeViewModel?
-    var isPlayingPodcast = false
     var episodesList = [EpisodeViewModel]()
     var episodeViewModel: EpisodeViewModel? {
         didSet {
@@ -121,7 +120,6 @@ class EpisodePlayerView: UIView {
         let info: [String : Any?] = [ Notification.episodeKey : episodeViewModel,
                                       Notification.previousEpisodeKey : previousEpisodeViewModel]
         if keyPath == "rate" {
-            isPlayingPodcast = (change?[NSKeyValueChangeKey.newKey] as? Float) == 1
             NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         }
     }
@@ -370,7 +368,7 @@ class EpisodePlayerView: UIView {
         tabBarController?.minimizePodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
-        if podcastPlayer.timeControlStatus == .playing {
+        if podcastPlayer.isPlayingItem {
             scaleDownEpisodeImageView()
             pausePodcats()
         } else {

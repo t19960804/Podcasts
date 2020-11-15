@@ -8,6 +8,7 @@
 
 import UIKit
 import FeedKit
+import AVKit
 
 extension UITableView {
     func eliminateExtraSeparators(){
@@ -140,5 +141,12 @@ extension UIImage {
             images.append(UIImage(named: "audio-\(i)")!.withColor(.white))
         }
         return images
+    }
+}
+
+extension AVPlayer {
+    //若使用static,會讓isPlayingItem屬於AVPlayer類別,這時self指的是AVPlayer類別,可是.timeControlStatus屬性只能用在AVPlayer物件,所以會報錯
+    var isPlayingItem: Bool {
+        return self.timeControlStatus == .playing
     }
 }
