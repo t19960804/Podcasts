@@ -22,8 +22,7 @@ class EpisodePlayerView: UIView {
             //Init UI
             scaleDownEpisodeImageView()
             timeSlider.value = 0
-            let initialTime = CMTime(seconds: 0, preferredTimescale: 1000)
-            timeLabel_LowerBound.text = initialTime.getFormattedString()
+            timeLabel_LowerBound.text = "00:00:00"
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
             }
