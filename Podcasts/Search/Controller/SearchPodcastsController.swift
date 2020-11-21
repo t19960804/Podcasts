@@ -13,7 +13,7 @@ class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
     var timer: Timer?
     let searchingView = SearchingView()
-    let searchPodcastsViewModel = SearchPodcastsViewModel()
+    let viewModel = SearchPodcastsViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,10 +28,10 @@ class SearchPodcastsController: UITableViewController {
     }
     fileprivate func setupObserver(){
         //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
-        searchPodcastsViewModel.isSearchingObserver = { [self] isSearching in
+        viewModel.isSearchingObserver = { [self] isSearching in
             searchingView.isHidden = !isSearching
         }
-        searchPodcastsViewModel.reloadController = { [self] podcasts in
+        viewModel.reloadController = { [self] podcasts in
             tableView.reloadData()
         }
     }
@@ -52,11 +52,11 @@ class SearchPodcastsController: UITableViewController {
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchPodcastsViewModel.podcasts.count
+        return viewModel.podcasts.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! PodcastCell
-        let podcast = searchPodcastsViewModel.podcasts[indexPath.row]
+        let podcast = viewModel.podcasts[indexPath.row]
         cell.podcast = podcast
         return cell
     }
@@ -67,17 +67,17 @@ class SearchPodcastsController: UITableViewController {
         guard let input = navigationItem.searchController?.searchBar.text else { return nil }
         let label = UILabel(text: nil, font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
         //若是邏輯包含在生命週期內,就不需要特別跳脫週期去用Observer,因為Observer內還需要特別去create header再做轉型,增加code複雜度
-        searchPodcastsViewModel.searchBarInputUpdate(input: input)
-        label.text = searchPodcastsViewModel.headerLabelString
+        viewModel.searchBarInputUpdate(input: input)
+        label.text = viewModel.headerLabelString
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
-        return searchPodcastsViewModel.calculateHeightForHeader()
+        return viewModel.calculateHeightForHeader()
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()
-        let podcast = searchPodcastsViewModel.podcasts[indexPath.row]
+        let podcast = viewModel.podcasts[indexPath.row]
         controller.podcast = podcast
         navigationController?.pushViewController(controller, animated: true)
     }
@@ -86,7 +86,7 @@ extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
-            self.searchPodcastsViewModel.fetchPodcasts(searchText: searchText)
+            self.viewModel.fetchPodcasts(searchText: searchText)
         }
     }
     //function的型別 > 參數型別 + 回傳型別
