@@ -23,12 +23,11 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
         setUpSearchController()
         setupConstraints()
-        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
+//        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
         setupObserver()
     }
     fileprivate func setupObserver(){
         //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
-        //以Controller的ViewModel為主體,裡面再包含cell要用的ViewModel
         searchPodcastsViewModel.isSearchingObserver = { [self] isSearching in
             searchingView.isHidden = !isSearching
         }
@@ -67,17 +66,14 @@ class SearchPodcastsController: UITableViewController {
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let input = navigationItem.searchController?.searchBar.text else { return nil }
         let label = UILabel(text: nil, font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
-
-        label.text = input.isEmpty ? "Please enter a search query" : "There is no podcast about:\(input)"
+        //若是邏輯包含在生命週期內,就不需要特別跳脫週期去用Observer,因為Observer內還需要特別去create header再做轉型,增加code複雜度
+        searchPodcastsViewModel.searchBarInputUpdate(input: input)
+        label.text = searchPodcastsViewModel.headerLabelString
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
-        let isSearching = searchPodcastsViewModel.isSearching
-        if isSearching == false && searchPodcastsViewModel.podcasts.isEmpty {
-            return 250 //Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
-        }
-        return 0
+        return searchPodcastsViewModel.calculateHeightForHeader()
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesController()

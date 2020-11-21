@@ -7,9 +7,11 @@
 //
 
 import Foundation
+import UIKit
 
 class SearchPodcastsViewModel {
     //用Binding實作Reactive Programming
+    //Fetch Data
     var isSearching = false {
         didSet {
             isSearchingObserver?(isSearching)
@@ -36,6 +38,19 @@ class SearchPodcastsViewModel {
                 self.podcasts = podcasts
             }
             self.isSearching = false
+        }
+    }
+    //SearchBar
+    var headerLabelString = ""
+    func searchBarInputUpdate(input: String){
+        headerLabelString = input.isEmpty ? "Please enter a search query" : "There is no podcast about: \(input)"
+    }
+    //HeightForHeader
+    func calculateHeightForHeader() -> CGFloat {
+        if isSearching == false && podcasts.isEmpty {
+             return 250//Searching完且沒有任何結果,秀出Header,並根據使用者有無輸入顯示不同內容
+        } else {
+            return 0
         }
     }
 }
