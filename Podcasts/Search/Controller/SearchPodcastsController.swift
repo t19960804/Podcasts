@@ -17,22 +17,26 @@ class SearchPodcastsController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
-        self.definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
-        tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
-        tableView.eliminateExtraSeparators()
+        setupTableView()
         setUpSearchController()
         setupConstraints()
 //        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
         setupObserver()
     }
+
+    fileprivate func setupTableView(){
+        //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
+        definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
+        tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
+        tableView.eliminateExtraSeparators()
+    }
     fileprivate func setupObserver(){
         //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
-        viewModel.isSearchingObserver = { [self] isSearching in
-            searchingView.isHidden = !isSearching
+        viewModel.isSearchingObserver = { [weak self] isSearching in
+            self?.searchingView.isHidden = !isSearching
         }
-        viewModel.reloadController = { [self] podcasts in
-            tableView.reloadData()
+        viewModel.reloadController = { [weak self] podcasts in
+            self?.tableView.reloadData()
         }
     }
     fileprivate func setupConstraints(){
@@ -85,8 +89,8 @@ class SearchPodcastsController: UITableViewController {
 extension SearchPodcastsController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (_) in
-            self.viewModel.fetchPodcasts(searchText: searchText)
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self](_) in
+            self?.viewModel.fetchPodcasts(searchText: searchText)
         }
     }
     //function的型別 > 參數型別 + 回傳型別

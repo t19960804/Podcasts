@@ -18,8 +18,8 @@ class FavoritesListController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
-        viewModel.reloadController = {
-            self.collectionView.reloadData()
+        viewModel.reloadController = { [weak self] in
+            self?.collectionView.reloadData()
         }
     }
     override func viewWillAppear(_ animated: Bool) {
