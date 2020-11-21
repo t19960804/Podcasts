@@ -83,11 +83,11 @@ extension UIImageView {
 }
 
 extension MainTabBarController {
-    var favoritesController: FavoritesController? {
+    var favoritesController: FavoritesListController? {
         guard let navigationController = viewControllers?[TabBarControllerType.Favorites.rawValue] as? UINavigationController else {
             return nil
         }
-        return navigationController.viewControllers.first as? FavoritesController
+        return navigationController.viewControllers.first as? FavoritesListController
     }
     var downloadController: DownloadController? {
         guard let navigationController = viewControllers?[TabBarControllerType.Downloads.rawValue] as? UINavigationController else {

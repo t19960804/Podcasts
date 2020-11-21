@@ -17,7 +17,7 @@ class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let favoritesController = FavoritesController()
+        let favoritesController = FavoritesListController()
         let searchController = SearchPodcastsController()
         let downloadsController = DownloadController()
 
