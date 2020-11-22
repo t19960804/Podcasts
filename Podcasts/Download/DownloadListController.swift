@@ -96,9 +96,9 @@ class DownloadListController: UITableViewController {
         return 150
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (_, _) in
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [self] (_, _) in
             //Remove episode file from FileManager and UserDefaults
-            let episode = self.downloadedEpisodes[indexPath.row]
+            let episode = downloadedEpisodes[indexPath.row]
             guard let fileUrl = episode.fileUrl?.getTrueLocation() else {
                 print("Error - Can't get true fileUrl")
                 return
@@ -109,18 +109,18 @@ class DownloadListController: UITableViewController {
                 print("Error - Remove downloaded file failed:\(error)")
             }
             
-            self.downloadedEpisodes.remove(at: indexPath.row)
-            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            downloadedEpisodes.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
             //若當前有兩個podcast,一個在播放,刪除另一個時,會把正在播放的狀態一起save,導致下次開機時podcast維持在播的狀態
             guard let tabbarController = UIApplication.mainTabBarController else { return }
             let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
-            if let index = self.getIndexOfEpisode(currentEpisodePlaying) {
+            if let index = getIndexOfEpisode(currentEpisodePlaying) {
                 //先把狀態改為false並存起來,存完再打開
-                self.downloadedEpisodes[index].isPlaying = false
-                UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
-                self.downloadedEpisodes[index].isPlaying = true
+                downloadedEpisodes[index].isPlaying = false
+                UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
+                downloadedEpisodes[index].isPlaying = true
             } else {
-                UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
+                UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
             }
         }
         return [deleteAction]
