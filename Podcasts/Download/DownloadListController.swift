@@ -32,17 +32,13 @@ class DownloadListController: UITableViewController {
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
         if let currentEpisode = info?[Notification.episodeKey] as? EpisodeViewModel {
-            if let index = downloadedEpisodes.firstIndex(where: {
-                $0.title == currentEpisode.title && $0.author == currentEpisode.author
-            })  {
+            if let index = getIndexOfEpisode(currentEpisode) {
                 downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
         if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeViewModel {
-            if let index = downloadedEpisodes.firstIndex(where: {
-                $0.title == previousEpisode.title && $0.author == previousEpisode.author
-            }) {
+            if let index = getIndexOfEpisode(previousEpisode) {
                 downloadedEpisodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
@@ -51,9 +47,7 @@ class DownloadListController: UITableViewController {
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
-        if let index = downloadedEpisodes.firstIndex(where: {
-            $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
-        }) {
+        if let index = getIndexOfEpisode(currentEpisodePlaying) {
             downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
@@ -63,11 +57,7 @@ class DownloadListController: UITableViewController {
         guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
             return
         }
-        guard let index = downloadedEpisodes.firstIndex(where: {
-            return $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
-        }) else {
-            return
-        }
+        guard let index = getIndexOfEpisode(episodeViewModel) else { return }
         //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.durationLabel.text = episodeViewModel.duration
@@ -78,11 +68,7 @@ class DownloadListController: UITableViewController {
         guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
             return
         }
-        guard let index = downloadedEpisodes.firstIndex(where: {
-            return $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
-        }) else {
-            return
-        }
+        guard let index = getIndexOfEpisode(episodeViewModel) else { return }
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.durationLabel.text = "Downloading...\(progress)%"
     }
