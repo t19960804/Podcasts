@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DownloadController: UITableViewController {
+class DownloadListController: UITableViewController {
     
     var downloadedEpisodes = [EpisodeViewModel]()
     

@@ -89,11 +89,11 @@ extension MainTabBarController {
         }
         return navigationController.viewControllers.first as? FavoritesListController
     }
-    var downloadController: DownloadController? {
+    var downloadController: DownloadListController? {
         guard let navigationController = viewControllers?[TabBarControllerType.Downloads.rawValue] as? UINavigationController else {
             return nil
         }
-        return navigationController.viewControllers.first as? DownloadController
+        return navigationController.viewControllers.first as? DownloadListController
     }
 }
 
