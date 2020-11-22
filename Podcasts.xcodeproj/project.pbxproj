@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B1EE821251F485E00DC6A16 /* DownloadController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadController.swift */; };
+		0B1EE821251F485E00DC6A16 /* DownloadListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadListController.swift */; };
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
 		0B3B0795250C9ACA0087D63D /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3B0794250C9ACA0087D63D /* UserDefaults.swift */; };
@@ -42,7 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0B1EE820251F485E00DC6A16 /* DownloadController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadController.swift; sourceTree = "<group>"; };
+		0B1EE820251F485E00DC6A16 /* DownloadListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadListController.swift; sourceTree = "<group>"; };
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
 		0B3B0794250C9ACA0087D63D /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0B4ABC7E24D56DA200410ADA /* EpisodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeViewModel.swift; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 		0B1EE81F251F484400DC6A16 /* Download */ = {
 			isa = PBXGroup;
 			children = (
-				0B1EE820251F485E00DC6A16 /* DownloadController.swift */,
+				0B1EE820251F485E00DC6A16 /* DownloadListController.swift */,
 			);
 			path = Download;
 			sourceTree = "<group>";
@@ -338,7 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BC9DF502408BECB00142424 /* AppDelegate.swift in Sources */,
-				0B1EE821251F485E00DC6A16 /* DownloadController.swift in Sources */,
+				0B1EE821251F485E00DC6A16 /* DownloadListController.swift in Sources */,
 				0BC9DF522408BECB00142424 /* SceneDelegate.swift in Sources */,
 				0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */,
 				0BBD6A18242F0CA8000FB9CB /* PodcastCell.swift in Sources */,
