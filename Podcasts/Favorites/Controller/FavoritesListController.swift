@@ -18,13 +18,12 @@ class FavoritesListController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
-        viewModel.reloadController = { [weak self] in
-            self?.collectionView.reloadData()
-        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
+        viewModel.favoritePodcasts.reverse()
+        collectionView.reloadData()
         tabBarItem.badgeValue = nil
     }
     override func viewDidLayoutSubviews() {
@@ -88,12 +87,10 @@ extension FavoritesListController: FavoritesCellDelegate {
 
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [self] (_) in
-            viewModel.isDeleting = true
             viewModel.favoritePodcasts.remove(at: indexPath.item)
             //https://stackoverflow.com/questions/46140824/invalid-update-invalid-number-of-items-in-section-0
             collectionView.deleteItems(at: [indexPath])//比.reloadData()多了動畫
             UserDefaults.standard.saveFavoritePodcast(with: viewModel.favoritePodcasts)
-            viewModel.isDeleting = false
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         

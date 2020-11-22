@@ -10,16 +10,7 @@ import Foundation
 import UIKit
 
 class FavoritesListViewModel {
-    var isDeleting = false
-    var favoritePodcasts = [Podcast]() {
-        didSet {
-            if isDeleting == false { //刪除Item時不需要做事,否則會報錯
-                favoritePodcasts.reverse()
-                reloadController?()
-            }
-        }
-    }
-    var reloadController: (() -> ())?
+    var favoritePodcasts = [Podcast]()
     
     //HeightForHeader
     func calculateHeightForHeader() -> CGFloat {
