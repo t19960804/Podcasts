@@ -86,6 +86,14 @@ class DownloadListController: UITableViewController {
         let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
         cell?.durationLabel.text = "Downloading...\(progress)%"
     }
+    func getIndexOfEpisode(_ episode: EpisodeViewModel?) -> Int? {
+        guard let index = downloadedEpisodes.firstIndex(where: {
+            $0.title == episode?.title && $0.author == episode?.author
+        }) else {
+            return nil
+        }
+        return index
+    }
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -117,7 +125,17 @@ class DownloadListController: UITableViewController {
             
             self.downloadedEpisodes.remove(at: indexPath.row)
             self.tableView.deleteRows(at: [indexPath], with: .automatic)
-            UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
+            //若當前有兩個podcast,一個在播放,刪除另一個時,會把正在播放的狀態一起save,導致下次開機時podcast維持在播的狀態
+            guard let tabbarController = UIApplication.mainTabBarController else { return }
+            let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
+            if let index = self.getIndexOfEpisode(currentEpisodePlaying) {
+                //先把狀態改為false並存起來,存完再打開
+                self.downloadedEpisodes[index].isPlaying = false
+                UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
+                self.downloadedEpisodes[index].isPlaying = true
+            } else {
+                UserDefaults.standard.saveDownloadEpisode(with: self.downloadedEpisodes)
+            }
         }
         return [deleteAction]
     }
