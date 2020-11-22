@@ -20,7 +20,7 @@ class SearchPodcastsController: UITableViewController {
         setupTableView()
         setUpSearchController()
         setupConstraints()
-//        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
+        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
         setupObserver()
     }
 
