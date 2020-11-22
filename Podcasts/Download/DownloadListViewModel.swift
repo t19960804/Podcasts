@@ -35,6 +35,7 @@ class DownloadListViewModel {
     func removeEpisodeFromUserDefaults(episode: EpisodeViewModel?) {
         if let index = getIndexOfEpisode(episode) {
             //先把狀態改為false並存起來,存完再打開
+            //不然會把播放中的狀態存進去
             downloadedEpisodes[index].isPlaying = false
             UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
             downloadedEpisodes[index].isPlaying = true
