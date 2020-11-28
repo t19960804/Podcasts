@@ -106,29 +106,19 @@ class EpisodesListController: UITableViewController {
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: viewModel.episodes)
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        var episode = viewModel.episodes[indexPath.row]
         
-        let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        let episodeWasDownloaded = downloadedEpisodes.contains(where: {
-            $0.title == episode.title && $0.author == episode.author
-        })
+        let episodeWasDownloaded = viewModel.isEpisodeDownloaded(index: indexPath.row)
         if episodeWasDownloaded {
             return nil
         }
         
         let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
-            //Save episode
-            episode.isWaitingForDownload = true
-            var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-            downloadedEpisodes.append(episode)
-            UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
+            self.viewModel.downloadEpisode(index: indexPath.row)
             //Reload cell to show downloadedImageView
             self.tableView.reloadRows(at: [indexPath], with: .none)
             //Update Badge
             let downloadController = UIApplication.mainTabBarController?.downloadController
             downloadController?.tabBarItem.badgeValue = "New"
-            //Download
-            NetworkService.sharedInstance.downloadEpisode(with: episode)
         }
         return [downloadAction]
     }

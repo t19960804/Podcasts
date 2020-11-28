@@ -63,5 +63,24 @@ class EpisodesListViewModel {
         })
         return podcastDidFavorited
     }
-
+    
+    func isEpisodeDownloaded(index: Int) -> Bool {
+        let episode = episodes[index]
+        let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+        let episodeWasDownloaded = downloadedEpisodes.contains(where: {
+            $0.title == episode.title && $0.author == episode.author
+        })
+        return episodeWasDownloaded
+    }
+    
+    func downloadEpisode(index: Int){
+        //Save episode
+        var episode = episodes[index]
+        episode.isWaitingForDownload = true
+        var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+        downloadedEpisodes.append(episode)
+        UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
+        //Download
+        NetworkService.sharedInstance.downloadEpisode(with: episode)
+    }
 }
