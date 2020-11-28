@@ -13,14 +13,18 @@ class EpisodesListController: UITableViewController {
     var podcast: Podcast! {
         didSet {
             viewModel.isSearchingObserver = { [weak self] isSearching in
-                self?.searchingView.isHidden = !isSearching
+                DispatchQueue.main.async {
+                    self?.searchingView.isHidden = !isSearching
+                }
+            }
+            viewModel.reloadControllerObserver = {
+                DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
+                    checkIfEpisodeIsPlaying()
+                    tableView.reloadData()
+                }
             }
             navigationItem.title = podcast.trackName
-            guard let url = podcast.feedUrl else {
-                print("Error - feedUrl is nil")
-                return
-            }
-            parseXMLFromURL(with: url)
+            viewModel.parseXMLFromURL(with: podcast.feedUrl ?? "")
         }
     }
     let searchingView = SearchingView()
@@ -76,29 +80,6 @@ class EpisodesListController: UITableViewController {
         let favoritesController = UIApplication.mainTabBarController?.favoritesController
         favoritesController?.tabBarItem.badgeValue = "New"
         navigationItem.rightBarButtonItem = nil
-    }
-    fileprivate func parseXMLFromURL(with url: String){
-        guard let feedURL = URL(string: url) else { return }
-        viewModel.isSearching = true
-        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
-            switch result {
-            case .failure(let error):
-                print("Error - Parse XML failed:\(error)")
-                self.viewModel.episodes = []
-            case .success(let episodes):
-                self.viewModel.episodes = episodes.map({
-                    return EpisodeCellViewModel(episode: $0)
-                })
-                DispatchQueue.main.async { [self] in
-                    checkIfEpisodeIsPlaying()
-                }
-            }
-            
-            DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
-                viewModel.isSearching = false
-                tableView.reloadData()
-            }
-        }
     }
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }

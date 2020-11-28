@@ -9,7 +9,11 @@
 import Foundation
 
 class EpisodesListViewModel {
-    var episodes = [EpisodeCellViewModel]()
+    var episodes = [EpisodeCellViewModel]() {
+        didSet {
+            reloadControllerObserver?()
+        }
+    }
 
     var isSearching = false {
         didSet {
@@ -17,6 +21,26 @@ class EpisodesListViewModel {
         }
     }
     var isSearchingObserver: ((Bool)->Void)?
+    var reloadControllerObserver: (()->Void)?
+    
+    
+    func parseXMLFromURL(with url: String) {
+        guard let feedURL = URL(string: url) else {
+            print("Error - feedURL is nil")
+            return
+        }
+        isSearching = true
+        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
+            switch result {
+            case .failure(let error):
+                print("Error - Parse XML failed:\(error)")
+                self.episodes = []
+            case .success(let episodes):
+                self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
+            }
+            self.isSearching = false
+        }
+    }
     
     var footerHeight = 0
     func calculateFooterHeight() {
@@ -42,4 +66,5 @@ class EpisodesListViewModel {
         })
         return podcastDidFavorited
     }
+
 }
