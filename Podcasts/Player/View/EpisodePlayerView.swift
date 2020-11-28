@@ -95,9 +95,10 @@ class EpisodePlayerView: UIView {
         return player
     }()
     let miniPlayerView = EpisodeMiniPlayerView()
-    var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
     let commandCenter = MPRemoteCommandCenter.shared()
 
+    let viewModel = EpisodePlayerViewModel()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
@@ -295,7 +296,7 @@ class EpisodePlayerView: UIView {
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in
             guard let self = self else { return }
-            if self.isSeekingTime == false {
+            if self.viewModel.isSeekingTime == false {
                 self.timeLabel_LowerBound.text = currentTime.getFormattedString()
                 self.updateTimeSlider()
                 //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
@@ -338,14 +339,14 @@ class EpisodePlayerView: UIView {
                 print("tlee slider began")
             case .moved:
                 print("tlee slider moved")
-                isSeekingTime = true
+                viewModel.isSeekingTime = true
             case .ended:
                 print("tlee slider ended")
                 //過多的seekRequest會導致seek出問題,只需要在ended做
                 //https://developer.apple.com/documentation/avfoundation/avplayer/1387018-seek
-                podcastPlayer.seek(to: seekTime) { (isFinished) in
+                podcastPlayer.seek(to: seekTime) { [weak self](isFinished) in
                     if isFinished {
-                        self.isSeekingTime = false
+                        self?.viewModel.isSeekingTime = false
                     }
                 }
             default:

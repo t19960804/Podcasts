@@ -9,5 +9,6 @@
 import Foundation
 
 class EpisodePlayerViewModel {
-    
+    var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
+
 }
