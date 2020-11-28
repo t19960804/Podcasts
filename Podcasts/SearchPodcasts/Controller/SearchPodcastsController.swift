@@ -80,7 +80,7 @@ class SearchPodcastsController: UITableViewController {
         return viewModel.calculateHeightForHeader()
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let controller = EpisodesController()
+        let controller = EpisodesListController()
         let podcast = viewModel.podcasts[indexPath.row]
         controller.podcast = podcast
         navigationController?.pushViewController(controller, animated: true)

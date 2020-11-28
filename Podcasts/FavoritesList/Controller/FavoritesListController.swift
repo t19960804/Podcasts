@@ -63,7 +63,7 @@ class FavoritesListController: UICollectionViewController {
         return header
     }
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let episodeController = EpisodesController()
+        let episodeController = EpisodesListController()
         episodeController.podcast = viewModel.favoritePodcasts[indexPath.item]
         navigationController?.pushViewController(episodeController, animated: true)
     }

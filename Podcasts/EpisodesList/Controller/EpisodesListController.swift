@@ -9,7 +9,7 @@
 import UIKit
 import FeedKit
 
-class EpisodesController: UITableViewController {
+class EpisodesListController: UITableViewController {
     var podcast: Podcast! {
         didSet {
             navigationItem.title = podcast.trackName
