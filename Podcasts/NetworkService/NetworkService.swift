@@ -72,7 +72,7 @@ class NetworkService {
         }
 
     }
-    func downloadEpisode(with episodeViewModel: EpisodeViewModel){
+    func downloadEpisode(with episodeViewModel: EpisodeCellViewModel){
         guard let url = episodeViewModel.audioUrl else {
             print("Error - AudioUrl has some problem")
             return

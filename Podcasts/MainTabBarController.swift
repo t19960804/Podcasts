@@ -53,7 +53,7 @@ class MainTabBarController: UITabBarController {
         episodePlayerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         episodePlayerView.heightAnchor.constraint(equalToConstant: view.frame.height).isActive = true
     }
-    func maximizePodcastPlayerView(episodeViewModel: EpisodeViewModel?,episodesList: [EpisodeViewModel]){
+    func maximizePodcastPlayerView(episodeViewModel: EpisodeCellViewModel?,episodesList: [EpisodeCellViewModel]){
         if let model = episodeViewModel { //防止nil重新賦值,導致oldValue變成current podcast
             if model.title != episodePlayerView.episodeViewModel?.title { //防止同一個podcast重新賦值,導致oldValue變成current podcast
                 episodePlayerView.episodeViewModel = model

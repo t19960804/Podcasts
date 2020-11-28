@@ -9,7 +9,7 @@
 import UIKit
 
 class EpisodeCell: UITableViewCell {
-    var episodeViewModel: EpisodeViewModel! {
+    var episodeViewModel: EpisodeCellViewModel! {
         didSet {
             pubDateLabel.text = episodeViewModel.publishDateString
             titleLabel.text = episodeViewModel.title

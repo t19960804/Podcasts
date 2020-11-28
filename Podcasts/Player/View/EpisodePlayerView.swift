@@ -12,9 +12,9 @@ import MediaPlayer
 import MarqueeLabel
 
 class EpisodePlayerView: UIView {
-    var previousEpisodeViewModel: EpisodeViewModel?
-    var episodesList = [EpisodeViewModel]()
-    var episodeViewModel: EpisodeViewModel? {
+    var previousEpisodeViewModel: EpisodeCellViewModel?
+    var episodesList = [EpisodeCellViewModel]()
+    var episodeViewModel: EpisodeCellViewModel? {
         didSet {
             guard let episodeViewModel = self.episodeViewModel else { return }
             previousEpisodeViewModel = oldValue

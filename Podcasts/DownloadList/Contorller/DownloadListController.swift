@@ -31,13 +31,13 @@ class DownloadListController: UITableViewController {
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
-        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeViewModel {
+        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeCellViewModel {
             if let index = viewModel.getIndexOfEpisode(currentEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeViewModel {
+        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeCellViewModel {
             if let index = viewModel.getIndexOfEpisode(previousEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
@@ -54,7 +54,7 @@ class DownloadListController: UITableViewController {
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         viewModel.downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
-        guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
+        guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
             return
         }
         guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }
@@ -65,7 +65,7 @@ class DownloadListController: UITableViewController {
         cell?.contentView.backgroundColor = .clear
     }
     @objc fileprivate func handleProgressUpdate(notification: Notification){
-        guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeViewModel else {
+        guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
             return
         }
         guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }

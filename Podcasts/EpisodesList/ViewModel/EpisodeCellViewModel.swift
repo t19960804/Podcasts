@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct EpisodeViewModel: Codable {
+struct EpisodeCellViewModel: Codable {
     let title: String
     let author: String?
     var imageUrl: URL?
