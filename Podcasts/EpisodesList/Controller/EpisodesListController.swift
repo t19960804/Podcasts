@@ -20,8 +20,9 @@ class EpisodesListController: UITableViewController {
             parseXMLFromURL(with: url)
         }
     }
-    var episodes = [EpisodeViewModel]()
     let searchingView = SearchingView()
+    let viewModel = EpisodesListViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
@@ -87,10 +88,10 @@ class EpisodesListController: UITableViewController {
             switch result {
             case .failure(let error):
                 print("Error - Parse XML failed:\(error)")
-                self.episodes = []
+                self.viewModel.episodes = []
             case .success(let episodes):
-                self.episodes = episodes.map({
-                    return EpisodeViewModel(episode: $0)
+                self.viewModel.episodes = episodes.map({
+                    return EpisodeCellViewModel(episode: $0)
                 })
                 DispatchQueue.main.async { [self] in
                     checkIfEpisodeIsPlaying()
@@ -113,11 +114,11 @@ class EpisodesListController: UITableViewController {
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return episodes.count
+        return viewModel.episodes.count
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
-        let episode = episodes[indexPath.row]
+        let episode = viewModel.episodes[indexPath.row]
         cell.episodeViewModel = episode
         return cell
     }
@@ -125,12 +126,12 @@ class EpisodesListController: UITableViewController {
         return 150
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let episode = episodes[indexPath.row]
+        let episode = viewModel.episodes[indexPath.row]
         let tabBarController = UIApplication.mainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: episodes)
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: viewModel.episodes)
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        var episode = episodes[indexPath.row]
+        var episode = viewModel.episodes[indexPath.row]
         
         let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         let episodeWasDownloaded = downloadedEpisodes.contains(where: {
