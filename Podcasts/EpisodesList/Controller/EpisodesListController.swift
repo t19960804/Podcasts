@@ -43,29 +43,22 @@ class EpisodesListController: UITableViewController {
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
-        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeViewModel {
-            if let index = episodes.firstIndex(where: {
-                $0.title == currentEpisode.title && $0.author == currentEpisode.author
-            })  {
-                episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeCellViewModel {
+            if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
+                viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeViewModel {
-            if let index = episodes.firstIndex(where: {
-                $0.title == previousEpisode.title && $0.author == previousEpisode.author
-            }) {
-                episodes[index].isPlaying = false
+        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeCellViewModel {
+            if let index = viewModel.getEpisodeIndex(episode: previousEpisode) {
+                viewModel.episodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
-        let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
-        let podcastDidFavorited = favoritePodcasts.contains(where: {
-             $0.trackName == self.podcast.trackName && $0.artistName == self.podcast.artistName
-        })
+        let podcastDidFavorited = viewModel.isPodcastFavorited(podcast: self.podcast)
         navigationItem.rightBarButtonItem = podcastDidFavorited ? nil : favoriteBarButtonItem
     }
     fileprivate func setupConstraints(){
@@ -110,10 +103,8 @@ class EpisodesListController: UITableViewController {
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
-        if let index = episodes.firstIndex(where: {
-            $0.title == currentEpisodePlaying?.title && $0.author == currentEpisodePlaying?.author
-        }) {
-            episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+        if let index = viewModel.getEpisodeIndex(episode: currentEpisodePlaying) {
+            viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
