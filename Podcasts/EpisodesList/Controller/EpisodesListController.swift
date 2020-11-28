@@ -33,10 +33,13 @@ class EpisodesListController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
-        tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
-        tableView.eliminateExtraSeparators()
+        setupTableView()
         setupConstraints()
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+    }
+    fileprivate func setupTableView(){
+        tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
+        tableView.eliminateExtraSeparators()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -73,10 +76,7 @@ class EpisodesListController: UITableViewController {
         searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     }
     @objc fileprivate func handleFavorite(){
-        guard let podcast = self.podcast else { return }
-        var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
-        favoritePodcasts.append(podcast)
-        UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
+        viewModel.favoritePodcast(podcast: self.podcast)
         let favoritesController = UIApplication.mainTabBarController?.favoritesController
         favoritesController?.tabBarItem.badgeValue = "New"
         navigationItem.rightBarButtonItem = nil

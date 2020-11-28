@@ -83,4 +83,11 @@ class EpisodesListViewModel {
         //Download
         NetworkService.sharedInstance.downloadEpisode(with: episode)
     }
+    
+    func favoritePodcast(podcast: Podcast?){
+        guard let podcast = podcast else { return }
+        var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
+        favoritePodcasts.append(podcast)
+        UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
+    }
 }
