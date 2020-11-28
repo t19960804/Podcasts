@@ -9,15 +9,12 @@
 import Foundation
 
 class EpisodesListViewModel {
-    var episodes = [EpisodeCellViewModel]() {
-        didSet {
-            reloadControllerObserver?()
-        }
-    }
+    var episodes = [EpisodeCellViewModel]()
 
     var isSearching = false {
         didSet {
             isSearchingObserver?(isSearching)
+            reloadControllerObserver?()
         }
     }
     var isSearchingObserver: ((Bool)->Void)?
