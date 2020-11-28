@@ -13,7 +13,7 @@ import MarqueeLabel
 
 class EpisodePlayerView: UIView {
     var previousEpisodeViewModel: EpisodeCellViewModel?
-    var episodesList = [EpisodeCellViewModel]()
+    
     var episodeViewModel: EpisodeCellViewModel? {
         didSet {
             guard let episodeViewModel = self.episodeViewModel else { return }
@@ -174,39 +174,21 @@ class EpisodePlayerView: UIView {
         commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
     }
     @objc fileprivate func handleNextTrack() -> MPRemoteCommandHandlerStatus {
-        if episodesList.isEmpty {
-            print("Error - Can not get next episode because list is empty")
-            return .commandFailed
-        }
-        let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
-        guard let index = currentEpisodeIndex else {
-            print("Error - Can not get episode index from list")
+        guard let nextEpisode = viewModel.getNextEpisode(currentEpisode: episodeViewModel) else {
             return .commandFailed
         }
         commandCenter.nextTrackCommand.isEnabled = false
         commandCenter.previousTrackCommand.isEnabled = false
-        
-        let needTurnBackToFirstEpisode = index == episodesList.count - 1
-        let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
-        episodeViewModel = episode
+        episodeViewModel = nextEpisode
         return .success
     }
     @objc fileprivate func handlePreviousTrack() -> MPRemoteCommandHandlerStatus {
-        if episodesList.isEmpty {
-            print("Error - Can not get previous episode because list is empty")
-            return .commandFailed
-        }
-        let currentEpisodeIndex = episodesList.firstIndex { $0.title == episodeViewModel?.title }
-        guard let index = currentEpisodeIndex else {
-            print("Error - Can not get episode index from list")
+        guard let previousEpisode = viewModel.getPreviousEpisode(currentEpisode: episodeViewModel) else {
             return .commandFailed
         }
         commandCenter.nextTrackCommand.isEnabled = false
         commandCenter.previousTrackCommand.isEnabled = false
-        
-        let needTurnBackToLastEpisode = index == 0
-        let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
-        episodeViewModel = episode
+        episodeViewModel = previousEpisode
         return .success
     }
     //MARK: - Lock Screen Player
@@ -422,7 +404,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
         vStackView.alpha = -translation.y / 300
     }
     func handlePanEnded(gesture: UIPanGestureRecognizer){
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { [self] in
             //因為中間經過了transform,若不先用identity回到原位,會導致anchor更新後元件位置有誤
             self.transform = .identity
             let translation = gesture.translation(in: self.superview)
@@ -430,7 +412,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
             
             if translation.y < -200 || velocity.y < -500{
                 let tabbarController = UIApplication.mainTabBarController
-                tabbarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: self.episodesList)
+                tabbarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: viewModel.episodesList)
             } else {
                 //Minimize
                 self.miniPlayerView.alpha = 1
@@ -441,7 +423,7 @@ extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     }
     func handleMiniPlayerTapped() {
         let tabBarController = UIApplication.mainTabBarController
-        tabBarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: self.episodesList)
+        tabBarController?.maximizePodcastPlayerView(episodeViewModel: nil, episodesList: viewModel.episodesList)
     }
     
     func handlePlayerPauseAndPlay() {

@@ -59,7 +59,7 @@ class MainTabBarController: UITabBarController {
                 episodePlayerView.episodeViewModel = model
             }
         }
-        episodePlayerView.episodesList = episodesList
+        episodePlayerView.viewModel.episodesList = episodesList
         topAnchorForMiniPlayer?.isActive = false
         topAnchorForFullScreenPlayer?.isActive = true
 
