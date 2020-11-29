@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import AVKit
 
 class EpisodePlayerViewModel {
     var episodesList = [EpisodeCellViewModel]()
@@ -66,5 +67,21 @@ class EpisodePlayerViewModel {
         let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
         newEpisode = episode
         return true
+    }
+    
+    var sliderValue: Float64 = 0 {
+        didSet {
+            let floatValue = Float(sliderValue)
+            sliderValueUpdateObserver?(floatValue)
+        }
+    }
+    
+    var sliderValueUpdateObserver: ((Float)->Void)?
+    
+    func updateTimeSliderValue(currentTime: CMTime, duration: CMTime){
+        let currentSeconds = currentTime.toSeconds()
+        let totalSeconds = duration.toSeconds()
+        let progressPercent = currentSeconds / totalSeconds
+        sliderValue = progressPercent
     }
 }

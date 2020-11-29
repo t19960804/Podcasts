@@ -132,6 +132,10 @@ class EpisodePlayerView: UIView {
             self?.playerControlButton.setImage(image, for: .normal)
             self?.miniPlayerView.playerControlButton.setImage(image, for: .normal)
         }
+        
+        viewModel.sliderValueUpdateObserver = { [weak self] newValue in
+            self?.timeSlider.value = newValue
+        }
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -286,18 +290,12 @@ class EpisodePlayerView: UIView {
             guard let self = self else { return }
             if self.viewModel.isSeekingTime == false {
                 self.timeLabel_LowerBound.text = currentTime.getFormattedString()
-                self.updateTimeSlider()
+                guard let duration = self.podcastPlayer.currentItem?.asset.duration else { return }
+                self.viewModel.updateTimeSliderValue(currentTime: self.podcastPlayer.currentTime(), duration: duration)
                 //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
                 self.updateLockScreenElapsedTime()
             }
         }
-    }
-    fileprivate func updateTimeSlider(){
-        let currentSeconds = podcastPlayer.currentTime().toSeconds()
-        guard let duration = podcastPlayer.currentItem?.asset.duration else { return }
-        let totalSeconds = duration.toSeconds()
-        let progressPercent = currentSeconds / totalSeconds
-        timeSlider.value = Float(progressPercent)
     }
     fileprivate func playAudio(with url: URL?) {
         guard let url = url else {
@@ -316,7 +314,7 @@ class EpisodePlayerView: UIView {
         let durationInSeconds = duration.toSeconds()
         //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
         let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
-        //一秒切成1000份(1份 = 0.001秒),假設我們想要123.45秒,由於0.45秒(450份)可以提供,故為238.87秒
+        //一秒切成1000份(1份 = 0.001秒),假設我們想要123.45秒,AVKit可以處理0.45秒(450份)
         //若preferredTimescale為1,將無法處理小數點的情況,因為小數點不滿一份(1秒)
         let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
         timeLabel_LowerBound.text = seekTime.getFormattedString()
