@@ -112,6 +112,13 @@ class EpisodePlayerView: UIView {
         setupRemoteControl()
         setupInterruptionNotification()
         podcastPlayer.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
+        
+        
+        viewModel.newEpisodePlayObserver = { [weak self] newEpisode in
+            self?.commandCenter.nextTrackCommand.isEnabled = false
+            self?.commandCenter.previousTrackCommand.isEnabled = false
+            self?.episodeViewModel = newEpisode
+        }
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -174,22 +181,12 @@ class EpisodePlayerView: UIView {
         commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
     }
     @objc fileprivate func handleNextTrack() -> MPRemoteCommandHandlerStatus {
-        guard let nextEpisode = viewModel.getNextEpisode(currentEpisode: episodeViewModel) else {
-            return .commandFailed
-        }
-        commandCenter.nextTrackCommand.isEnabled = false
-        commandCenter.previousTrackCommand.isEnabled = false
-        episodeViewModel = nextEpisode
-        return .success
+        let result = viewModel.playNextEpisode(currentEpisode: episodeViewModel)
+        return result ? .success : .commandFailed
     }
     @objc fileprivate func handlePreviousTrack() -> MPRemoteCommandHandlerStatus {
-        guard let previousEpisode = viewModel.getPreviousEpisode(currentEpisode: episodeViewModel) else {
-            return .commandFailed
-        }
-        commandCenter.nextTrackCommand.isEnabled = false
-        commandCenter.previousTrackCommand.isEnabled = false
-        episodeViewModel = previousEpisode
-        return .success
+        let result = viewModel.playPreviousEpisode(currentEpisode: episodeViewModel)
+        return result ? .success : .commandFailed
     }
     //MARK: - Lock Screen Player
     fileprivate func updateLockScreenElapsedTime(){

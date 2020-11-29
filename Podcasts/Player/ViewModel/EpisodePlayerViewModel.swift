@@ -12,41 +12,50 @@ class EpisodePlayerViewModel {
     var episodesList = [EpisodeCellViewModel]()
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
 
-    func getNextEpisode(currentEpisode: EpisodeCellViewModel?) -> EpisodeCellViewModel? {
+    var newEpisode: EpisodeCellViewModel! {
+        didSet {
+            newEpisodePlayObserver?(newEpisode)
+        }
+    }
+    var newEpisodePlayObserver: ((EpisodeCellViewModel)->Void)?
+    
+    func playNextEpisode(currentEpisode: EpisodeCellViewModel?) -> Bool {
         guard let currentEpisode = currentEpisode else {
-            return nil
+            return false
         }
         if episodesList.isEmpty {
             print("Error - Can not get next episode because list is empty")
-            return nil
+            return false
         }
         let currentEpisodeIndex = episodesList.firstIndex { $0.title == currentEpisode.title }
         guard let index = currentEpisodeIndex else {
             print("Error - Can not get episode index from list")
-            return nil
+            return false
         }
         
         let needTurnBackToFirstEpisode = index == episodesList.count - 1
         let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
-        return episode
+        newEpisode = episode
+        return true
     }
     
-    func getPreviousEpisode(currentEpisode: EpisodeCellViewModel?) -> EpisodeCellViewModel? {
+    func playPreviousEpisode(currentEpisode: EpisodeCellViewModel?) -> Bool {
         guard let currentEpisode = currentEpisode else {
-            return nil
+            return false
         }
         if episodesList.isEmpty {
             print("Error - Can not get next episode because list is empty")
-            return nil
+            return false
         }
         let currentEpisodeIndex = episodesList.firstIndex { $0.title == currentEpisode.title }
         guard let index = currentEpisodeIndex else {
             print("Error - Can not get episode index from list")
-            return nil
+            return false
         }
         
         let needTurnBackToLastEpisode = index == 0
         let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
-        return episode
+        newEpisode = episode
+        return true
     }
 }
