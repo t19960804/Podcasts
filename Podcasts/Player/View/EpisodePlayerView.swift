@@ -19,7 +19,6 @@ class EpisodePlayerView: UIView {
             guard let episodeViewModel = self.episodeViewModel else { return }
             previousEpisodeViewModel = oldValue
             //Init UI
-            scaleDownEpisodeImageView()
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
                 MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
             }
@@ -162,10 +161,7 @@ class EpisodePlayerView: UIView {
             return
         }
         if interruptionType == AVAudioSession.InterruptionType.began.rawValue {
-            scaleDownEpisodeImageView()
-            //不用.pause,被干擾時player會自動pause
-            playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
-            miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+            viewModel.needToPausePlayer = true
         }
     }
     //MARK: - Command Center
@@ -279,7 +275,6 @@ class EpisodePlayerView: UIView {
            podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
                [weak self] in
                 guard let self = self else { return }
-                self.scaleUpEpisodeImageView()
                 self.updateLockScreenDuration()
                 self.commandCenter.nextTrackCommand.isEnabled = true
                 self.commandCenter.previousTrackCommand.isEnabled = true
@@ -363,17 +358,6 @@ class EpisodePlayerView: UIView {
     }
     @objc fileprivate func handlePlayAndPause(){
         viewModel.needToPausePlayer = podcastPlayer.isPlayingItem
-    }
-    //MARK: - Image Scale up / down
-    fileprivate func scaleDownEpisodeImageView(completion: ((Bool) -> Void)? = nil){
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
-            self.episodeImageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-        }, completion: completion)
-    }
-    fileprivate func scaleUpEpisodeImageView(completion: ((Bool) -> Void)? = nil){
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
-                self.episodeImageView.transform = CGAffineTransform.identity
-        }, completion: completion)
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
