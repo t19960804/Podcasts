@@ -119,6 +119,20 @@ class EpisodePlayerView: UIView {
             self?.commandCenter.previousTrackCommand.isEnabled = false
             self?.episodeViewModel = newEpisode
         }
+        
+        viewModel.needToPausePlayerObserver = { [weak self] (needToPause, image) in
+            if needToPause {
+                self?.podcastPlayer.pause()
+            } else {
+                self?.podcastPlayer.play()
+            }
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
+                let transForm: CGAffineTransform = needToPause ? .init(scaleX: 0.8, y: 0.8) : .identity
+                    self?.episodeImageView.transform = transForm
+            })
+            self?.playerControlButton.setImage(image, for: .normal)
+            self?.miniPlayerView.playerControlButton.setImage(image, for: .normal)
+        }
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -297,7 +311,7 @@ class EpisodePlayerView: UIView {
         }
         let item = AVPlayerItem(url: url)
         podcastPlayer.replaceCurrentItem(with: item)
-        playPodcats()
+        viewModel.needToPausePlayer = false
     }
     @objc fileprivate func handleTimeSliderValueChanged(slider: UISlider, event: UIEvent){
         guard let duration = podcastPlayer.currentItem?.duration else {
@@ -348,23 +362,7 @@ class EpisodePlayerView: UIView {
         tabBarController?.minimizePodcastPlayerView()
     }
     @objc fileprivate func handlePlayAndPause(){
-        if podcastPlayer.isPlayingItem {
-            scaleDownEpisodeImageView()
-            pausePodcats()
-        } else {
-            scaleUpEpisodeImageView()
-            playPodcats()
-        }
-    }
-    fileprivate func playPodcats(){
-        podcastPlayer.play()
-        playerControlButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
-        miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "pause"), for: .normal)
-    }
-    fileprivate func pausePodcats(){
-        podcastPlayer.pause()
-        playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
-        miniPlayerView.playerControlButton.setImage(#imageLiteral(resourceName: "play"), for: .normal)
+        viewModel.needToPausePlayer = podcastPlayer.isPlayingItem
     }
     //MARK: - Image Scale up / down
     fileprivate func scaleDownEpisodeImageView(completion: ((Bool) -> Void)? = nil){

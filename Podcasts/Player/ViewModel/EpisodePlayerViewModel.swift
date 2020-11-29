@@ -7,11 +7,20 @@
 //
 
 import Foundation
+import UIKit
 
 class EpisodePlayerViewModel {
     var episodesList = [EpisodeCellViewModel]()
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
-
+    
+    var needToPausePlayer = false {
+        didSet {
+            let image = needToPausePlayer ? UIImage(named: "play") : UIImage(named: "pause")
+            needToPausePlayerObserver?(needToPausePlayer,image ?? UIImage())
+        }
+    }
+    var needToPausePlayerObserver: ((Bool,UIImage)->Void)?
+    
     var newEpisode: EpisodeCellViewModel! {
         didSet {
             newEpisodePlayObserver?(newEpisode)
