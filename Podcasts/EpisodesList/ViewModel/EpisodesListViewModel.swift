@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class EpisodesListViewModel {
     var episodes = [EpisodeCellViewModel]()
@@ -39,7 +40,7 @@ class EpisodesListViewModel {
         }
     }
     
-    var footerHeight = 0
+    var footerHeight: CGFloat = 0
     func calculateFooterHeight() {
         if isSearching == false && episodes.isEmpty { //Searching完且沒有任何結果
             footerHeight = 200

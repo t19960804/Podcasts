@@ -117,6 +117,6 @@ class DownloadListController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         viewModel.calculateHeightForFooter()
-        return CGFloat(viewModel.heightForFooter)
+        return viewModel.heightForFooter
     }
 }

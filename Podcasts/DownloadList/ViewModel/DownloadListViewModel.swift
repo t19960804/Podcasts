@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class DownloadListViewModel {
     var downloadedEpisodes = [EpisodeCellViewModel]()
@@ -20,7 +21,7 @@ class DownloadListViewModel {
         return index
     }
     
-    var heightForFooter = 0
+    var heightForFooter: CGFloat = 0
     func calculateHeightForFooter() {
         heightForFooter = downloadedEpisodes.isEmpty ? 200 : 0
     }

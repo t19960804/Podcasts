@@ -128,6 +128,6 @@ class EpisodesListController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         viewModel.calculateFooterHeight()
-        return CGFloat(viewModel.footerHeight)
+        return viewModel.footerHeight
     }
 }
