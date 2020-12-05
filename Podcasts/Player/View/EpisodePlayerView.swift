@@ -100,9 +100,7 @@ class EpisodePlayerView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = .white
-        setUpConstraints()
+        setUpUI()
         setupMarqueeLabel()
         updateUIWhenPoadcastStartPlaying()
         updateCurrentPlayingTimePeriodically()
@@ -242,10 +240,16 @@ class EpisodePlayerView: UIView {
         }
     }
     //MARK: - Constraints
-    func setUpConstraints(){
+    func setUpUI(){
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .white
+        rewindButton.tag = 1
+        fastForwardButton.tag = 2
         miniPlayerView.isHidden = true
         addSubview(vStackView)
         addSubview(miniPlayerView)
+        
+        //Constraints
         miniPlayerView.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, size: .init(width: 0, height: EpisodeMiniPlayerView.height))
         
         vStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 40, left: 24, bottom: 24, right: 24))
@@ -261,19 +265,18 @@ class EpisodePlayerView: UIView {
     }
     //MARK: - Player action
     fileprivate func updateUIWhenPoadcastStartPlaying(){
-           //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
-           //https://blog.csdn.net/caiwenyu9999/article/details/51518960
-           let time = CMTime(value: 1, timescale: 3)
-           let times = [NSValue(time: time)]
-           //在播放期間,若跨過指定的時間,就執行closure
-           podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
-               [weak self] in
-                guard let self = self else { return }
-                self.updateLockScreenDuration()
-                self.commandCenter.nextTrackCommand.isEnabled = true
-                self.commandCenter.previousTrackCommand.isEnabled = true
-           }
+       //value: 當前為第幾個Frame, timeScale: 一秒播放多少個frame,下例為0.33秒
+       //https://blog.csdn.net/caiwenyu9999/article/details/51518960
+       let time = CMTime(value: 1, timescale: 3)
+       let times = [NSValue(time: time)]
+       //在播放期間,若跨過指定的時間,就執行closure
+       podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
+           [weak self] in
+            self?.updateLockScreenDuration()
+            self?.commandCenter.nextTrackCommand.isEnabled = true
+            self?.commandCenter.previousTrackCommand.isEnabled = true
        }
+    }
     fileprivate func updateCurrentPlayingTimePeriodically(){
         let interval = CMTime(value: 1, timescale: 2) //0.5秒執行一次call back來更新進度
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in
@@ -301,7 +304,7 @@ class EpisodePlayerView: UIView {
             print("Error - currentItem is nil")
             return
         }
-        viewModel.calculateSeekTime(ratio: slider.value, duration: duration)
+        viewModel.calculateSeekTime_TimeSilderDragged(ratio: slider.value, duration: duration)
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
             case .began:
@@ -325,10 +328,8 @@ class EpisodePlayerView: UIView {
     }
     @objc fileprivate func handleRewindAndForward(button: UIButton){
         let currentTime = podcastPlayer.currentTime()
-        let deltaSeconds: Int64 = button == rewindButton ? -15 : 15
-        let deltaTime = CMTime(value: deltaSeconds, timescale: 1)
-        let seekTime = CMTimeAdd(currentTime, deltaTime)//也可以像上面的method,將currentTime轉秒數在做加減
-        podcastPlayer.seek(to: seekTime)
+        viewModel.calculateSeekTime_RewindAndFastforward(currentTime: currentTime, button: button)
+        podcastPlayer.seek(to: viewModel.seekTime)
     }
     @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){
         podcastPlayer.volume = slider.value
