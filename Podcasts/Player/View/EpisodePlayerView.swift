@@ -25,7 +25,7 @@ class EpisodePlayerView: UIView {
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
             timeSlider.value = 0
-            timeLabel_LowerBound.text = "00:00:00"
+            viewModel.seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             timeLabel_UpperBound.text = episodeViewModel.duration
             miniPlayerView.episodeViewModel = episodeViewModel
             //Play new podcast
@@ -135,6 +135,10 @@ class EpisodePlayerView: UIView {
         
         viewModel.sliderValueUpdateObserver = { [weak self] newValue in
             self?.timeSlider.value = newValue
+        }
+        
+        viewModel.lowerBoundTimeLabelUpdateObserver = { [weak self] timeString in
+            self?.timeLabel_LowerBound.text = timeString
         }
     }
     deinit {
@@ -275,7 +279,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] (currentTime) in
             guard let self = self else { return }
             if self.viewModel.isSeekingTime == false {
-                self.timeLabel_LowerBound.text = currentTime.getFormattedString()
+                self.viewModel.seekTime = currentTime
                 guard let duration = self.podcastPlayer.currentItem?.asset.duration else { return }
                 self.viewModel.updateTimeSliderValue(currentTime: self.podcastPlayer.currentTime(), duration: duration)
                 //LockScreen的ElapsedTime跟Player的會有落差,所以要同步更新
@@ -297,14 +301,7 @@ class EpisodePlayerView: UIView {
             print("Error - currentItem is nil")
             return
         }
-        let durationInSeconds = duration.toSeconds()
-        //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
-        let seekTimeInSeconds = Float64(slider.value) * durationInSeconds
-        //一秒切成1000份(1份 = 0.001秒),假設我們想要123.45秒,AVKit可以處理0.45秒(450份)
-        //若preferredTimescale為1,將無法處理小數點的情況,因為小數點不滿一份(1秒)
-        let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
-        timeLabel_LowerBound.text = seekTime.getFormattedString()
-
+        viewModel.calculateSeekTime(ratio: slider.value, duration: duration)
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
             case .began:
@@ -316,7 +313,7 @@ class EpisodePlayerView: UIView {
                 print("tlee slider ended")
                 //過多的seekRequest會導致seek出問題,只需要在ended做
                 //https://developer.apple.com/documentation/avfoundation/avplayer/1387018-seek
-                podcastPlayer.seek(to: seekTime) { [weak self](isFinished) in
+                podcastPlayer.seek(to: viewModel.seekTime) { [weak self](isFinished) in
                     if isFinished {
                         self?.viewModel.isSeekingTime = false
                     }

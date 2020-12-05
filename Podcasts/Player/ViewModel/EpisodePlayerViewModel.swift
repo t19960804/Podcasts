@@ -99,4 +99,22 @@ class EpisodePlayerViewModel {
             print("Set up session failed:\(sessionError)")
         }
     }
+    
+    var seekTime = CMTime(seconds: 1, preferredTimescale: 1000){
+        didSet {
+            let timeString = seekTime.getFormattedString()
+            lowerBoundTimeLabelUpdateObserver?(timeString)
+        }
+    }
+    var lowerBoundTimeLabelUpdateObserver: ((String)->Void)?
+    
+    func calculateSeekTime(ratio: Float, duration: CMTime){
+        let durationInSeconds = duration.toSeconds()
+        //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
+        let seekTimeInSeconds = Float64(ratio) * durationInSeconds
+        //一秒切成1000份(1份 = 0.001秒),假設我們想要123.45秒,AVKit可以處理0.45秒(450份)
+        //若preferredTimescale為1,將無法處理小數點的情況,因為小數點不滿一份(1秒)
+        let seekTime = CMTime(seconds: seekTimeInSeconds, preferredTimescale: 1000)
+        self.seekTime = seekTime
+    }
 }
