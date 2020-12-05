@@ -112,8 +112,6 @@ class EpisodePlayerView: UIView {
         
         
         viewModel.newEpisodePlayObserver = { [weak self] newEpisode in
-            self?.commandCenter.nextTrackCommand.isEnabled = false
-            self?.commandCenter.previousTrackCommand.isEnabled = false
             self?.episodeViewModel = newEpisode
         }
         
@@ -141,6 +139,11 @@ class EpisodePlayerView: UIView {
         
         viewModel.volumeUpdateObserver = { [weak self] value in
             self?.podcastPlayer.volume = value
+        }
+        
+        viewModel.startToPlayEpisodeObserver = { [weak self] startToPlay in
+            self?.commandCenter.nextTrackCommand.isEnabled = startToPlay
+            self?.commandCenter.previousTrackCommand.isEnabled = startToPlay
         }
     }
     deinit {
@@ -271,8 +274,7 @@ class EpisodePlayerView: UIView {
        podcastPlayer.addBoundaryTimeObserver(forTimes: times, queue: .main) {
            [weak self] in
             self?.updateLockScreenDuration()
-            self?.commandCenter.nextTrackCommand.isEnabled = true
-            self?.commandCenter.previousTrackCommand.isEnabled = true
+            self?.viewModel.startToPlayEpisode = true
        }
     }
     fileprivate func updateCurrentPlayingTimePeriodically(){
@@ -330,7 +332,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.seek(to: viewModel.seekTime)
     }
     @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){
-        viewModel.handleVolumeUpdate(value: slider.value)
+        viewModel.volume = slider.value
     }
     @objc fileprivate func handleDismissPlayerView(){
         let tabBarController = UIApplication.mainTabBarController

@@ -21,11 +21,19 @@ class EpisodePlayerViewModel {
         }
     }
     var needToPausePlayerObserver: ((Bool,UIImage)->Void)?
+    
+    var startToPlayEpisode = false {
+        didSet {
+            startToPlayEpisodeObserver?(startToPlayEpisode)
+        }
+    }
+    var startToPlayEpisodeObserver: ((Bool)->Void)?
     //MARK: - EpisodeObserver
     var episodesList = [EpisodeCellViewModel]()
     
     var newEpisode: EpisodeCellViewModel! {
         didSet {
+            startToPlayEpisode = false
             newEpisodePlayObserver?(newEpisode)
         }
     }
@@ -118,9 +126,7 @@ class EpisodePlayerViewModel {
         }
     }
     var volumeUpdateObserver: ((Float)->Void)?
-    func handleVolumeUpdate(value: Float){
-        volume = value
-    }
+
     //MARK: - Other
     //若沒有加入此Function,有時背景播放會無效
     func setupAudioSession(){
