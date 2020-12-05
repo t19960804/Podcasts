@@ -46,7 +46,7 @@ class DownloadListController: UITableViewController {
     }
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
-        let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
+        let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.episodeViewModel
         if let index = viewModel.getIndexOfEpisode(currentEpisodePlaying) {
             viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
@@ -101,7 +101,7 @@ class DownloadListController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .automatic)
             //若當前有兩個podcast,一個在播放,刪除另一個時,會把正在播放的狀態一起save,導致下次開機時podcast維持在播的狀態
             guard let tabbarController = UIApplication.mainTabBarController else { return }
-            let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
+            let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.episodeViewModel
             viewModel.removeEpisodeFromUserDefaults(episode: currentEpisodePlaying)
         }
         return [deleteAction]

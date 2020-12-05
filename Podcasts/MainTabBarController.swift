@@ -55,8 +55,8 @@ class MainTabBarController: UITabBarController {
     }
     func maximizePodcastPlayerView(episodeViewModel: EpisodeCellViewModel?,episodesList: [EpisodeCellViewModel]){
         if let model = episodeViewModel { //防止nil重新賦值,導致oldValue變成current podcast
-            if model.title != episodePlayerView.episodeViewModel?.title { //防止同一個podcast重新賦值,導致oldValue變成current podcast
-                episodePlayerView.episodeViewModel = model
+            if model.title != episodePlayerView.viewModel.episodeViewModel?.title { //防止同一個podcast重新賦值,導致oldValue變成current podcast
+                episodePlayerView.viewModel.episodeViewModel = model
             }
         }
         episodePlayerView.viewModel.episodesList = episodesList

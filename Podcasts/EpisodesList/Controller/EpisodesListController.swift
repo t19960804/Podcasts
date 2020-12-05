@@ -83,7 +83,7 @@ class EpisodesListController: UITableViewController {
     }
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
-        let currentEpisodePlaying = tabbarController.episodePlayerView.episodeViewModel
+        let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.episodeViewModel
         if let index = viewModel.getEpisodeIndex(episode: currentEpisodePlaying) {
             viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }

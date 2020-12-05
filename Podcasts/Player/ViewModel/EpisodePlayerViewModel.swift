@@ -13,6 +13,25 @@ import AVKit
 class EpisodePlayerViewModel {
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
     
+    
+    var previousEpisodeViewModel: EpisodeCellViewModel?
+    
+    var episodeViewModel: EpisodeCellViewModel? {
+        didSet {
+            guard let episodeViewModel = self.episodeViewModel else { return }
+            previousEpisodeViewModel = oldValue
+            sliderValue = 0
+            seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
+            setupAudioSession()//播放時再取得Audio使用權
+            if let fileUrl = episodeViewModel.fileUrl {
+                newEpisodeNeedToPlayObserver?(episodeViewModel,fileUrl.getTrueLocation())
+            } else {
+                newEpisodeNeedToPlayObserver?(episodeViewModel,episodeViewModel.audioUrl)
+            }
+        }
+    }
+    
+    var newEpisodeNeedToPlayObserver:((EpisodeCellViewModel,URL?)->Void)?
     //MARK: - PlayerStateObserver
     var needToPausePlayer = false {
         didSet {

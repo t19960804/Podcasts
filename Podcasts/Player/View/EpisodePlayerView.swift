@@ -12,31 +12,7 @@ import MediaPlayer
 import MarqueeLabel
 
 class EpisodePlayerView: UIView {
-    var previousEpisodeViewModel: EpisodeCellViewModel?
-    
-    var episodeViewModel: EpisodeCellViewModel? {
-        didSet {
-            guard let episodeViewModel = self.episodeViewModel else { return }
-            previousEpisodeViewModel = oldValue
-            //Init UI
-            episodeImageView.sd_setImage(with: episodeViewModel.imageUrl) { (image, _, _, _) in
-                MPNowPlayingInfoCenter.default().setInfo(title: episodeViewModel.title, artist: episodeViewModel.author, image: image)
-            }
-            titleLabel.text = episodeViewModel.title
-            authorLabel.text = episodeViewModel.author
-            viewModel.sliderValue = 0
-            viewModel.seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
-            timeLabel_UpperBound.text = episodeViewModel.duration
-            miniPlayerView.episodeViewModel = episodeViewModel
-            //Play new podcast
-            viewModel.setupAudioSession()//播放時再取得Audio使用權
-            if let fileUrl = episodeViewModel.fileUrl {
-                playAudio(with: fileUrl.getTrueLocation())
-            } else {
-                playAudio(with: episodeViewModel.audioUrl)
-            }
-        }
-    }
+
     let dismissButton = UIButton(title: "Dismiss", titleColor: .black, font: .boldSystemFont(ofSize: 16), target: self, action: #selector(handleDismissPlayerView))
     let episodeImageView = UIImageView(image: #imageLiteral(resourceName: "appicon"), cornerRadius: 5, clipsToBounds: true)
     //MARK: - StackView_Time
@@ -110,9 +86,19 @@ class EpisodePlayerView: UIView {
         setupInterruptionNotification()
         podcastPlayer.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
         
-        
+        viewModel.newEpisodeNeedToPlayObserver = { [weak self] (episode, url) in
+            guard let self = self else { return }
+            self.episodeImageView.sd_setImage(with: episode.imageUrl) { (image, _, _, _) in
+                MPNowPlayingInfoCenter.default().setInfo(title: episode.title, artist: episode.author, image: image)
+            }
+            self.titleLabel.text = episode.title
+            self.authorLabel.text = episode.author
+            self.timeLabel_UpperBound.text = episode.duration
+            self.miniPlayerView.episodeViewModel = episode
+            self.playAudio(with: url)
+        }
         viewModel.newEpisodePlayObserver = { [weak self] newEpisode in
-            self?.episodeViewModel = newEpisode
+            self?.viewModel.episodeViewModel = newEpisode
         }
         
         viewModel.needToPausePlayerObserver = { [weak self] (needToPause, image) in
@@ -151,8 +137,8 @@ class EpisodePlayerView: UIView {
     }
     //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        let info: [String : Any?] = [ Notification.episodeKey : episodeViewModel,
-                                      Notification.previousEpisodeKey : previousEpisodeViewModel]
+        let info: [String : Any?] = [ Notification.episodeKey : viewModel.episodeViewModel,
+                                      Notification.previousEpisodeKey : viewModel.previousEpisodeViewModel]
         if keyPath == "rate" {
             NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         }
@@ -198,11 +184,11 @@ class EpisodePlayerView: UIView {
         commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
     }
     @objc fileprivate func handleNextTrack() -> MPRemoteCommandHandlerStatus {
-        let result = viewModel.playNextEpisode(currentEpisode: episodeViewModel)
+        let result = viewModel.playNextEpisode(currentEpisode: viewModel.episodeViewModel)
         return result ? .success : .commandFailed
     }
     @objc fileprivate func handlePreviousTrack() -> MPRemoteCommandHandlerStatus {
-        let result = viewModel.playPreviousEpisode(currentEpisode: episodeViewModel)
+        let result = viewModel.playPreviousEpisode(currentEpisode: viewModel.episodeViewModel)
         return result ? .success : .commandFailed
     }
     //MARK: - Lock Screen Player
