@@ -14,12 +14,12 @@ class EpisodePlayerViewModel {
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
     
     
-    var previousEpisodeViewModel: EpisodeCellViewModel?
+    var previousEpisode: EpisodeCellViewModel?
     
-    var episodeViewModel: EpisodeCellViewModel? {
+    var currentEpisode: EpisodeCellViewModel? {
         didSet {
-            guard let episodeViewModel = self.episodeViewModel else { return }
-            previousEpisodeViewModel = oldValue
+            guard let episodeViewModel = self.currentEpisode else { return }
+            previousEpisode = oldValue
             sliderValue = 0
             seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             setupAudioSession()//播放時再取得Audio使用權

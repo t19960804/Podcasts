@@ -98,7 +98,7 @@ class EpisodePlayerView: UIView {
             self.playAudio(with: url)
         }
         viewModel.newEpisodePlayObserver = { [weak self] newEpisode in
-            self?.viewModel.episodeViewModel = newEpisode
+            self?.viewModel.currentEpisode = newEpisode
         }
         
         viewModel.needToPausePlayerObserver = { [weak self] (needToPause, image) in
@@ -137,8 +137,8 @@ class EpisodePlayerView: UIView {
     }
     //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        let info: [String : Any?] = [ Notification.episodeKey : viewModel.episodeViewModel,
-                                      Notification.previousEpisodeKey : viewModel.previousEpisodeViewModel]
+        let info: [String : Any?] = [ Notification.episodeKey : viewModel.currentEpisode,
+                                      Notification.previousEpisodeKey : viewModel.previousEpisode]
         if keyPath == "rate" {
             NotificationCenter.default.post(name: .playerStateUpdate, object: nil, userInfo: info as [AnyHashable : Any])
         }
@@ -184,11 +184,11 @@ class EpisodePlayerView: UIView {
         commandCenter.previousTrackCommand.addTarget(self, action: #selector(handlePreviousTrack))
     }
     @objc fileprivate func handleNextTrack() -> MPRemoteCommandHandlerStatus {
-        let result = viewModel.playNextEpisode(currentEpisode: viewModel.episodeViewModel)
+        let result = viewModel.playNextEpisode(currentEpisode: viewModel.currentEpisode)
         return result ? .success : .commandFailed
     }
     @objc fileprivate func handlePreviousTrack() -> MPRemoteCommandHandlerStatus {
-        let result = viewModel.playPreviousEpisode(currentEpisode: viewModel.episodeViewModel)
+        let result = viewModel.playPreviousEpisode(currentEpisode: viewModel.currentEpisode)
         return result ? .success : .commandFailed
     }
     //MARK: - Lock Screen Player
