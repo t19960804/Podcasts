@@ -162,13 +162,7 @@ class EpisodePlayerView: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
     }
     @objc fileprivate func handleInterruption(notification: Notification){
-        let userInfo = notification.userInfo
-        guard let interruptionType = userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt else {
-            return
-        }
-        if interruptionType == AVAudioSession.InterruptionType.began.rawValue {
-            viewModel.needToPausePlayer = true
-        }
+        viewModel.handleInteruption(notification: notification)
     }
     //MARK: - Command Center
     fileprivate func setupRemoteControl(){
@@ -348,11 +342,12 @@ class EpisodePlayerView: UIView {
 
 extension EpisodePlayerView: EpisodeMiniPlayerViewDelegate {
     func handleMiniPlayerViewPanned(gesture: UIPanGestureRecognizer) {
-      if gesture.state == .began {
-            
-        } else if gesture.state == .changed {
+        switch gesture.state {
+        case .began:
+            break
+        case .changed:
             handlePanChanged(gesture: gesture)
-        } else {
+        default:
             handlePanEnded(gesture: gesture)
         }
     }

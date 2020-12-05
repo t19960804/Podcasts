@@ -112,7 +112,7 @@ class EpisodePlayerViewModel {
         self.seekTime = seekTime
     }
     
-    //MARK: - Setup Audio
+    //MARK: - Other
     //若沒有加入此Function,有時背景播放會無效
     func setupAudioSession(){
         do {
@@ -125,6 +125,16 @@ class EpisodePlayerViewModel {
         } catch let sessionError{
             //https://stackoverflow.com/questions/31352593/how-to-print-details-of-a-catch-all-exception-in-swift
             print("Set up session failed:\(sessionError)")
+        }
+    }
+    
+    func handleInteruption(notification: Notification){
+        let userInfo = notification.userInfo
+        guard let interruptionType = userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt else {
+            return
+        }
+        if interruptionType == AVAudioSession.InterruptionType.began.rawValue {
+            needToPausePlayer = true
         }
     }
 }
