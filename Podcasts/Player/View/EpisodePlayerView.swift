@@ -24,7 +24,7 @@ class EpisodePlayerView: UIView {
             }
             titleLabel.text = episodeViewModel.title
             authorLabel.text = episodeViewModel.author
-            timeSlider.value = 0
+            viewModel.sliderValue = 0
             viewModel.seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             timeLabel_UpperBound.text = episodeViewModel.duration
             miniPlayerView.episodeViewModel = episodeViewModel
