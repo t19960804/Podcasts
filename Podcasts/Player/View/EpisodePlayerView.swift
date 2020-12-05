@@ -138,6 +138,10 @@ class EpisodePlayerView: UIView {
         viewModel.lowerBoundTimeLabelUpdateObserver = { [weak self] timeString in
             self?.timeLabel_LowerBound.text = timeString
         }
+        
+        viewModel.volumeUpdateObserver = { [weak self] value in
+            self?.podcastPlayer.volume = value
+        }
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -326,7 +330,7 @@ class EpisodePlayerView: UIView {
         podcastPlayer.seek(to: viewModel.seekTime)
     }
     @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){
-        podcastPlayer.volume = slider.value
+        viewModel.handleVolumeUpdate(value: slider.value)
     }
     @objc fileprivate func handleDismissPlayerView(){
         let tabBarController = UIApplication.mainTabBarController

@@ -112,13 +112,20 @@ class EpisodePlayerViewModel {
         self.seekTime = seekTime
     }
     
+    var volume: Float = 0.0 {
+        didSet {
+          volumeUpdateObserver?(volume)
+        }
+    }
+    var volumeUpdateObserver: ((Float)->Void)?
+    func handleVolumeUpdate(value: Float){
+        volume = value
+    }
     //MARK: - Other
     //若沒有加入此Function,有時背景播放會無效
     func setupAudioSession(){
         do {
             //https://ithelp.ithome.com.tw/articles/10195770?sc=iThelpR
-            //App - AVAudioSession(中介) - OS
-            //使用AVAudioSession來告訴OS我們要在App中要如何使用Audio
             try AVAudioSession.sharedInstance().setCategory(.playback)
             //向OS請求使用Audio,因為多個App中只能有一個使用Audio,比如一通電話打來,電話就有使用Audio的最高優先,低優先的會被暫停
             try AVAudioSession.sharedInstance().setActive(true)
