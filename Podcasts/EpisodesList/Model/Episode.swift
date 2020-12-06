@@ -14,15 +14,15 @@ struct Episode {
     let pubDate: Date
     let duration: Int
     var imageURL: String
-    var author: String?
-    var audioURL: String
+    let author: String
+    let audioURL: String
     
     init(item: RSSFeedItem) {
-        self.title = item.title ?? ""
+        self.title = item.title ?? "unknow title"
         self.pubDate = item.pubDate ?? Date()
         self.duration = Int(item.iTunes?.iTunesDuration ?? 999.0)
-        self.imageURL = item.iTunes?.iTunesImage?.attributes?.href ?? ""
-        self.author = item.iTunes?.iTunesAuthor
-        self.audioURL = item.enclosure?.attributes?.url ?? ""
+        self.imageURL = item.iTunes?.iTunesImage?.attributes?.href ?? "unknow imageURL"
+        self.author = item.iTunes?.iTunesAuthor ?? "unknow author"
+        self.audioURL = item.enclosure?.attributes?.url ?? "unknow audioURL"
     }
 }

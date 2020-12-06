@@ -7,8 +7,10 @@
 //
 
 import XCTest
+import FeedKit
 
-class PodcastsTests: XCTestCase {
+@testable import Podcasts
+class EpisodesListTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -28,6 +30,18 @@ class PodcastsTests: XCTestCase {
         measure {
             // Put the code you want to measure the time of here.
         }
+    }
+    
+    func testEpisodeCellViewModel(){
+        let item = RSSFeedItem()
+        let episode = Episode(item: item)
+        let episodeCellViewModel = EpisodeCellViewModel(episode: episode)
+        XCTAssertEqual(episodeCellViewModel.title, "unknow title")
+        XCTAssertEqual(episodeCellViewModel.author, "unknow author")
+        XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
+        XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 06,2020")
+        XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
 
 }

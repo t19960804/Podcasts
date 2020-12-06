@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B19D303257CC358009A9854 /* PodcastsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B19D302257CC358009A9854 /* PodcastsTests.swift */; };
+		0B19D303257CC358009A9854 /* EpisodesListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B19D302257CC358009A9854 /* EpisodesListTests.swift */; };
 		0B1EE821251F485E00DC6A16 /* DownloadListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadListController.swift */; };
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
@@ -57,7 +57,7 @@
 
 /* Begin PBXFileReference section */
 		0B19D300257CC358009A9854 /* PodcastsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PodcastsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0B19D302257CC358009A9854 /* PodcastsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsTests.swift; sourceTree = "<group>"; };
+		0B19D302257CC358009A9854 /* EpisodesListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListTests.swift; sourceTree = "<group>"; };
 		0B19D304257CC358009A9854 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B1EE820251F485E00DC6A16 /* DownloadListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadListController.swift; sourceTree = "<group>"; };
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
@@ -119,7 +119,7 @@
 		0B19D301257CC358009A9854 /* PodcastsTests */ = {
 			isa = PBXGroup;
 			children = (
-				0B19D302257CC358009A9854 /* PodcastsTests.swift */,
+				0B19D302257CC358009A9854 /* EpisodesListTests.swift */,
 				0B19D304257CC358009A9854 /* Info.plist */,
 			);
 			path = PodcastsTests;
@@ -480,7 +480,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B19D303257CC358009A9854 /* PodcastsTests.swift in Sources */,
+				0B19D303257CC358009A9854 /* EpisodesListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

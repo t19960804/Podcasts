@@ -35,7 +35,7 @@ extension RSSFeed {
         
         self.items?.forEach {
             var episode = Episode(item: $0)
-            if episode.imageURL.isEmpty { //若沒有episode封面,則用Podcast封面
+            if episode.imageURL == "unknow imageURL" { //若沒有episode封面,則用Podcast封面
                 let imageURLString = self.iTunes?.iTunesImage?.attributes?.href
                 episode.imageURL = imageURLString?.turnHTTPToHTTPS() ?? ""
             }
