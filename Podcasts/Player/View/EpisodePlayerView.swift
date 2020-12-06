@@ -97,9 +97,6 @@ class EpisodePlayerView: UIView {
             self.miniPlayerView.episodeViewModel = episode
             self.playAudio(with: url)
         }
-        viewModel.newEpisodePlayObserver = { [weak self] newEpisode in
-            self?.viewModel.currentEpisode = newEpisode
-        }
         
         viewModel.needToPausePlayerObserver = { [weak self] (needToPause, image) in
             if needToPause {

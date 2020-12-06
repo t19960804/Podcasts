@@ -20,6 +20,7 @@ class EpisodePlayerViewModel {
         didSet {
             guard let episodeViewModel = self.currentEpisode else { return }
             previousEpisode = oldValue
+            startToPlayEpisode = false
             sliderValue = 0
             seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             setupAudioSession()//播放時再取得Audio使用權
@@ -50,14 +51,6 @@ class EpisodePlayerViewModel {
     //MARK: - EpisodeObserver
     var episodesList = [EpisodeCellViewModel]()
     
-    var newEpisode: EpisodeCellViewModel! {
-        didSet {
-            startToPlayEpisode = false
-            newEpisodePlayObserver?(newEpisode)
-        }
-    }
-    var newEpisodePlayObserver: ((EpisodeCellViewModel)->Void)?
-
     func playNextEpisode(currentEpisode: EpisodeCellViewModel?) -> Bool {
         guard let currentEpisode = currentEpisode else {
             return false
@@ -73,8 +66,8 @@ class EpisodePlayerViewModel {
         }
         
         let needTurnBackToFirstEpisode = index == episodesList.count - 1
-        let episode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
-        newEpisode = episode
+        let newEpisode = needTurnBackToFirstEpisode ? episodesList.first : episodesList[index + 1]
+        self.currentEpisode = newEpisode
         return true
     }
     
@@ -93,8 +86,8 @@ class EpisodePlayerViewModel {
         }
         
         let needTurnBackToLastEpisode = index == 0
-        let episode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
-        newEpisode = episode
+        let newEpisode = needTurnBackToLastEpisode ? episodesList.last : episodesList[index - 1]
+        self.currentEpisode = newEpisode
         return true
     }
     //MARK: - SliderObserver
