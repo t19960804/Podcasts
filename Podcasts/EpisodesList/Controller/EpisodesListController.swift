@@ -12,17 +12,7 @@ import FeedKit
 class EpisodesListController: UITableViewController {
     var podcast: Podcast! {
         didSet {
-            viewModel.isSearchingObserver = { [weak self] isSearching in
-                DispatchQueue.main.async {
-                    self?.searchingView.isHidden = !isSearching
-                }
-            }
-            viewModel.reloadControllerObserver = {
-                DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
-                    checkIfEpisodeIsPlaying()
-                    tableView.reloadData()
-                }
-            }
+            setupViewModel()
             navigationItem.title = podcast.trackName
             viewModel.parseXMLFromURL(with: podcast.feedUrl ?? "")
         }
@@ -36,6 +26,19 @@ class EpisodesListController: UITableViewController {
         setupTableView()
         setupConstraints()
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+    }
+    func setupViewModel(){
+        viewModel.isSearchingObserver = { [weak self] isSearching in
+            DispatchQueue.main.async {
+                self?.searchingView.isHidden = !isSearching
+            }
+        }
+        viewModel.reloadControllerObserver = {
+            DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
+                checkIfEpisodeIsPlaying()
+                tableView.reloadData()
+            }
+        }
     }
     fileprivate func setupTableView(){
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)

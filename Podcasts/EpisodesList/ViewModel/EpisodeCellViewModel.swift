@@ -37,6 +37,15 @@ struct EpisodeCellViewModel: Codable {
         let formattedString = String(format: "%02d:%02d",minute,second)
         self.duration = formattedString
     }
+    //Unit Test用
+    init(title: String,author: String) {
+        self.title = title
+        self.author = author
+        self.imageUrl = nil
+        self.audioUrl = nil
+        self.publishDateString = ""
+        self.duration = ""
+    }
 }
 
 //ViewModel好處:
