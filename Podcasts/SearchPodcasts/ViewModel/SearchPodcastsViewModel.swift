@@ -15,7 +15,7 @@ import UIKit
 //1.Presentation Logic > 跟View相關的邏輯
 //2.Controller Logic > 跟View無關的邏輯(Fetch API / FileManager)
 class SearchPodcastsViewModel {
-    //用Binding實作Reactive Programming(讓View隨著state property的變化而變化)
+    //用Data Binding(View與ViewModel之間的連結)實作Reactive Programming(讓View隨著state property的變化而變化)
     //Fetch Data
     var isSearching = false {
         didSet {
