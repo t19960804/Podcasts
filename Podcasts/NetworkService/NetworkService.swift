@@ -72,8 +72,8 @@ class NetworkService {
         }
 
     }
-    func downloadEpisode(with episodeViewModel: EpisodeCellViewModel){
-        guard let url = episodeViewModel.audioUrl else {
+    func downloadEpisode(with episode: EpisodeCellViewModel){
+        guard let url = episode.audioUrl else {
             print("Error - AudioUrl has some problem")
             return
         }
@@ -84,21 +84,21 @@ class NetworkService {
                 .downloadProgress { progress in
                     let info: [String : Any] = [
                         Notification.progressKey : Int(progress.fractionCompleted * 100),
-                        Notification.episodeKey : episodeViewModel]
+                        Notification.episodeKey : episode]
                     NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
                 }
                 .response { (response) in
                     //下載完需要更新剛剛存進Userdefaults的episodeViewModel資訊
                     var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
                     if let index = downloadEpisodes.firstIndex(where: {
-                        $0.title == episodeViewModel.title && $0.author == episodeViewModel.author
+                        $0.title == episode.title && $0.author == episode.author
                     }) {
                         downloadEpisodes[index].fileUrl = response.fileURL
                         downloadEpisodes[index].isWaitingForDownload = false
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
                     //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch
-                    let info: [String : Any] = [Notification.episodeKey : episodeViewModel]
+                    let info: [String : Any] = [Notification.episodeKey : episode]
                     NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
                 }
     }
