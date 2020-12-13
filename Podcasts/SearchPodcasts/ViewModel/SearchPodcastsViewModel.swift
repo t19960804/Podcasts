@@ -9,13 +9,7 @@
 import Foundation
 import UIKit
 
-//ViewModel的職責就是讓ViewController或是View變得更乾淨
-//不然邏輯混合在ViewController的生命週期,或是跟View混在一起,就不好測試了
-//ViewModel中會有兩種邏輯
-//1.Presentation Logic > 跟View相關的邏輯
-//2.Controller Logic > 跟View無關的邏輯(Fetch API / FileManager)
 class SearchPodcastsViewModel {
-    //用Data Binding(View與ViewModel之間的連結)實作Reactive Programming(讓View隨著state property的變化而變化)
     //Fetch Data
     var isSearching = false {
         didSet {
