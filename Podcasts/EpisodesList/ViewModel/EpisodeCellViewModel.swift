@@ -8,6 +8,7 @@
 
 import Foundation
 
+//POP > 拆分類別的責任,防止一個類別實作太多屬性與方法
 protocol EpisodeProtocol {
     var title: String { get set }
     var author: String? { get set }
