@@ -56,6 +56,7 @@ class EpisodesListController: UITableViewController {
         let currentEpisode = info?[Notification.episodeKey]
         let previousEpisode = info?[Notification.previousEpisodeKey]
         //https://stackoverflow.com/questions/42033735/failing-cast-in-swift-from-any-to-protocol
+        //https://appcoda.com.tw/any-anyobject/
         if let currentEpisode = currentEpisode as AnyObject as? EpisodeProtocol {
             if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
                 viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
