@@ -55,25 +55,14 @@ class EpisodesListController: UITableViewController {
         let info = notification.userInfo
         let currentEpisode = info?[Notification.episodeKey]
         let previousEpisode = info?[Notification.previousEpisodeKey]
-        //Classify currentEpisode
-        if let currentEpisode = currentEpisode as? EpisodeCellViewModel {
-            if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
-                viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        } else if let currentEpisode = currentEpisode as? DownloadEpisodeCellViewModel {
+        //https://stackoverflow.com/questions/42033735/failing-cast-in-swift-from-any-to-protocol
+        if let currentEpisode = currentEpisode as AnyObject as? EpisodeProtocol {
             if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
                 viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        //Classify previousEpisode
-        if let previousEpisode = previousEpisode as? EpisodeCellViewModel {
-            if let index = viewModel.getEpisodeIndex(episode: previousEpisode) {
-                viewModel.episodes[index].isPlaying = false
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        } else if let previousEpisode = previousEpisode as? DownloadEpisodeCellViewModel {
+        if let previousEpisode = previousEpisode as AnyObject as? EpisodeProtocol {
             if let index = viewModel.getEpisodeIndex(episode: previousEpisode) {
                 viewModel.episodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)

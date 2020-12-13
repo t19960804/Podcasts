@@ -33,25 +33,13 @@ class DownloadListController: UITableViewController {
         let info = notification.userInfo
         let currentEpisode = info?[Notification.episodeKey]
         let previousEpisode = info?[Notification.previousEpisodeKey]
-        //Classify currentEpisode
-        if let currentEpisode = currentEpisode as? EpisodeCellViewModel {
-            if let index = viewModel.getIndexOfEpisode(currentEpisode) {
-                viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        } else if let currentEpisode = currentEpisode as? DownloadEpisodeCellViewModel {
+        if let currentEpisode = currentEpisode as AnyObject as? EpisodeProtocol {
             if let index = viewModel.getIndexOfEpisode(currentEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        //Classify previousEpisode
-        if let previousEpisode = previousEpisode as? EpisodeCellViewModel {
-            if let index = viewModel.getIndexOfEpisode(previousEpisode) {
-                viewModel.downloadedEpisodes[index].isPlaying = false
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        } else if let previousEpisode = previousEpisode as? DownloadEpisodeCellViewModel {
+        if let previousEpisode = previousEpisode  as AnyObject as? EpisodeProtocol {
             if let index = viewModel.getIndexOfEpisode(previousEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)

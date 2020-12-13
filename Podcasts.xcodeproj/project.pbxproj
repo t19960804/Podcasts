@@ -132,7 +132,6 @@
 			children = (
 				0B8FEF2525720CFD00FAEA80 /* ViewModel */,
 				0B8FEF2425720CF800FAEA80 /* Contorller */,
-				0BC3924F2584E976006AB29B /* DownloadEpisodeCellViewModel.swift */,
 			);
 			path = DownloadList;
 			sourceTree = "<group>";
@@ -247,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				0B54E215256A5FCA00982BA5 /* DownloadListViewModel.swift */,
+				0BC3924F2584E976006AB29B /* DownloadEpisodeCellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
