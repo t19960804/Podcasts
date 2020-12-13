@@ -14,9 +14,9 @@ class EpisodePlayerViewModel {
     var isSeekingTime = false //防止拖動slider時,slider被update到currentTime
     
     
-    var previousEpisode: EpisodeCellViewModel?
+    var previousEpisode: EpisodeProtocol?
     
-    var currentEpisode: EpisodeCellViewModel? {
+    var currentEpisode: EpisodeProtocol? {
         didSet {
             guard let episodeViewModel = self.currentEpisode else { return }
             previousEpisode = oldValue
@@ -24,15 +24,15 @@ class EpisodePlayerViewModel {
             sliderValue = 0
             seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             setupAudioSession()//播放時再取得Audio使用權
-            if let fileUrl = episodeViewModel.fileUrl {
-                newEpisodeNeedToPlayObserver?(episodeViewModel,fileUrl.getTrueLocation())
+            if let downloadEpisode = episodeViewModel as? DownloadProtocol {
+                newEpisodeNeedToPlayObserver?(episodeViewModel,downloadEpisode.fileUrl?.getTrueLocation())
             } else {
                 newEpisodeNeedToPlayObserver?(episodeViewModel,episodeViewModel.audioUrl)
             }
         }
     }
     
-    var newEpisodeNeedToPlayObserver:((EpisodeCellViewModel,URL?)->Void)?
+    var newEpisodeNeedToPlayObserver:((EpisodeProtocol,URL?)->Void)?
     //MARK: - PlayerStateObserver
     var needToPausePlayer = false {
         didSet {
@@ -49,9 +49,9 @@ class EpisodePlayerViewModel {
     }
     var startToPlayEpisodeObserver: ((Bool)->Void)?
     //MARK: - EpisodeObserver
-    var episodesList = [EpisodeCellViewModel]()
+    var episodesList = [EpisodeProtocol]()
     
-    func playNextEpisode(currentEpisode: EpisodeCellViewModel?) -> Bool {
+    func playNextEpisode(currentEpisode: EpisodeProtocol?) -> Bool {
         guard let currentEpisode = currentEpisode else {
             return false
         }
@@ -71,7 +71,7 @@ class EpisodePlayerViewModel {
         return true
     }
     
-    func playPreviousEpisode(currentEpisode: EpisodeCellViewModel?) -> Bool {
+    func playPreviousEpisode(currentEpisode: EpisodeProtocol?) -> Bool {
         guard let currentEpisode = currentEpisode else {
             return false
         }

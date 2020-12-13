@@ -31,13 +31,27 @@ class DownloadListController: UITableViewController {
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let info = notification.userInfo
-        if let currentEpisode = info?[Notification.episodeKey] as? EpisodeCellViewModel {
+        let currentEpisode = info?[Notification.episodeKey]
+        let previousEpisode = info?[Notification.previousEpisodeKey]
+        //Classify currentEpisode
+        if let currentEpisode = currentEpisode as? EpisodeCellViewModel {
+            if let index = viewModel.getIndexOfEpisode(currentEpisode) {
+                viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            }
+        } else if let currentEpisode = currentEpisode as? DownloadEpisodeCellViewModel {
             if let index = viewModel.getIndexOfEpisode(currentEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
         }
-        if let previousEpisode = info?[Notification.previousEpisodeKey] as? EpisodeCellViewModel {
+        //Classify previousEpisode
+        if let previousEpisode = previousEpisode as? EpisodeCellViewModel {
+            if let index = viewModel.getIndexOfEpisode(previousEpisode) {
+                viewModel.downloadedEpisodes[index].isPlaying = false
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            }
+        } else if let previousEpisode = previousEpisode as? DownloadEpisodeCellViewModel {
             if let index = viewModel.getIndexOfEpisode(previousEpisode) {
                 viewModel.downloadedEpisodes[index].isPlaying = false
                 tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)

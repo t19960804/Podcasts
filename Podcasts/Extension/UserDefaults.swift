@@ -42,7 +42,7 @@ extension UserDefaults {
         }
     }
     
-    func saveDownloadEpisode(with episodes: [EpisodeCellViewModel]){
+    func saveDownloadEpisode(with episodes: [DownloadEpisodeCellViewModel]){
         do {
             let data = try JSONEncoder().encode(episodes)
             set(data, forKey: UserDefaults.downloadKey)
@@ -50,7 +50,7 @@ extension UserDefaults {
             print("Error - Encode object to data failed:\(error)")
         }
     }
-    func fetchDownloadedEpisodes() -> [EpisodeCellViewModel] {
+    func fetchDownloadedEpisodes() -> [DownloadEpisodeCellViewModel] {
         guard let downloadedEpisodesData = data(forKey: UserDefaults.downloadKey) else {
             print("Info - UserDefaults does not have downloadList")
             return []
@@ -58,7 +58,7 @@ extension UserDefaults {
         do {
             //Transform data to object
             //".self" represent the actual class type
-            let downloadedEpisodes = try JSONDecoder().decode([EpisodeCellViewModel].self, from: downloadedEpisodesData)
+            let downloadedEpisodes = try JSONDecoder().decode([DownloadEpisodeCellViewModel].self, from: downloadedEpisodesData)
             return downloadedEpisodes
         } catch {
             print("Error - Unarchive data to object failed:\(error)")

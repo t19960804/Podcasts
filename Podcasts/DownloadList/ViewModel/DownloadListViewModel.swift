@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 class DownloadListViewModel {
-    var downloadedEpisodes = [EpisodeCellViewModel]()
+    var downloadedEpisodes = [DownloadEpisodeCellViewModel]()
     
-    func getIndexOfEpisode(_ episode: EpisodeCellViewModel?) -> Int? {
+    func getIndexOfEpisode(_ episode: EpisodeProtocol?) -> Int? {
         guard let index = downloadedEpisodes.firstIndex(where: {
             $0.title == episode?.title && $0.author == episode?.author
         }) else {
@@ -33,7 +33,7 @@ class DownloadListViewModel {
             print("Error - Remove downloaded file failed:\(error)")
         }
     }
-    func removeEpisodeFromUserDefaults(episode: EpisodeCellViewModel?) {
+    func removeEpisodeFromUserDefaults(episode: EpisodeProtocol?) {
         if let index = getIndexOfEpisode(episode) {
             //先把狀態改為false並存起來,存完再打開
             //不然會把播放中的狀態存進去

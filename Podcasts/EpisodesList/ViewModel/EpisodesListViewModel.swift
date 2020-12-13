@@ -48,7 +48,7 @@ class EpisodesListViewModel {
             footerHeight = 0
         }
     }
-    func getEpisodeIndex(episode: EpisodeCellViewModel?) -> Int? {
+    func getEpisodeIndex(episode: EpisodeProtocol?) -> Int? {
         guard let index = episodes.firstIndex(where: {
             $0.title == episode?.title && $0.author == episode?.author
         })  else {
@@ -76,10 +76,10 @@ class EpisodesListViewModel {
     
     func downloadEpisode(index: Int){
         //Save episode
-        var episode = episodes[index]
-        episode.isWaitingForDownload = true
+        let episode = episodes[index]
+        let downloadEpisode = DownloadEpisodeCellViewModel(episode: episode)
         var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        downloadedEpisodes.append(episode)
+        downloadedEpisodes.append(downloadEpisode)
         UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
         //Download
         NetworkService.sharedInstance.downloadEpisode(with: episode)

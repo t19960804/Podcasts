@@ -9,18 +9,21 @@
 import UIKit
 
 class EpisodeCell: UITableViewCell {
-    var episodeViewModel: EpisodeCellViewModel! {
+    var episodeViewModel: EpisodeProtocol! {
         didSet {
             pubDateLabel.text = episodeViewModel.publishDateString
             titleLabel.text = episodeViewModel.title
             durationLabel.text = episodeViewModel.duration
             episodeImageView.sd_setImage(with: episodeViewModel.imageUrl)
             
-            if episodeViewModel.isWaitingForDownload {
-                self.durationLabel.text = "Waiting for download..."
-                self.isUserInteractionEnabled = false
-                self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+            if let dowmloadEpisode = episodeViewModel as? DownloadProtocol {
+                if dowmloadEpisode.isWaitingForDownload {
+                    self.durationLabel.text = "Waiting for download..."
+                    self.isUserInteractionEnabled = false
+                    self.contentView.backgroundColor = UIColor(white: 0.5, alpha: 0.2)
+                }
             }
+            
             //downloadedImageView
             let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
             let episodeWasDownloaded = downloadedEpisodes.contains(where: {

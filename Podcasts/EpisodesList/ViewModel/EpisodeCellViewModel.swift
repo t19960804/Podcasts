@@ -8,15 +8,22 @@
 
 import Foundation
 
-struct EpisodeCellViewModel: Codable {
-    let title: String
-    let author: String?
+protocol EpisodeProtocol {
+    var title: String { get set }
+    var author: String? { get set }
+    var imageUrl: URL? { get set }
+    var audioUrl: URL? { get set }
+    var publishDateString: String { get set }
+    var duration: String { get set }
+    var isPlaying: Bool { get set }
+}
+struct EpisodeCellViewModel: Codable, EpisodeProtocol {
+    var title: String
+    var author: String?
     var imageUrl: URL?
     var audioUrl: URL?
-    let publishDateString: String
-    let duration: String
-    var fileUrl: URL?
-    var isWaitingForDownload = false
+    var publishDateString: String
+    var duration: String
     var isPlaying = false
     
     //Dependency Injection

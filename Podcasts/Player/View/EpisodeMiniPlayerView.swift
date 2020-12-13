@@ -18,7 +18,7 @@ protocol EpisodeMiniPlayerViewDelegate: class {
 }
 class EpisodeMiniPlayerView: UIView {
     static let height: CGFloat = 70
-    var episodeViewModel: EpisodeCellViewModel! {
+    var episodeViewModel: EpisodeProtocol! {
         didSet {
             imageView.sd_setImage(with: episodeViewModel.imageUrl)
             titleLabel.text = episodeViewModel.title
