@@ -187,8 +187,8 @@ class EpisodesListTests: XCTestCase {
     }
 }
 //不要讓測試資料污染了UserDefaults
-//我們需要創建一個虛擬的UserDefaults
-//並創造與真實環境相同的function,好讓我們記錄一些狀態
+//我們創建一個虛擬環境(MockUserDefaults) + 與現實環境(UserDefaults)相同的Method
+//保證一切操作只在虛擬環境,而且驗證的到現實環境的邏輯
 class MockUserDefaults {
     static let standard = MockUserDefaults()
     static let mockDownloadKey = "mockDownloadKey"
