@@ -193,20 +193,30 @@ class MockUserDefaults {
     static let standard = MockUserDefaults()
     static let mockDownloadKey = "mockDownloadKey"
     static let mockFavoriteKey = "mockFavoriteKey"
-    private var dict = [String:Data]()
+    private var dict = [String:Any?]()
     private init(){
 
+    }
+    
+    func set(_ value: Any?, forKey defaultName: String) {
+        dict[defaultName] = value
+    }
+    func data(forKey defaultName: String) -> Data? {
+        if let data = dict[defaultName] as? Data {
+            return data
+        }
+        return nil
     }
     func saveDownloadEpisode(with episodes: [DownloadEpisodeCellViewModel]){
         do {
             let data = try JSONEncoder().encode(episodes)
-            dict[MockUserDefaults.mockDownloadKey] = data
+            set(data, forKey: MockUserDefaults.mockDownloadKey)
         } catch {
             print("Error - Encode object to data failed:\(error)")
         }
     }
     func fetchDownloadedEpisodes()  -> [DownloadEpisodeCellViewModel] {
-        guard let downloadedEpisodesData = dict[MockUserDefaults.mockDownloadKey] else {
+        guard let downloadedEpisodesData = data(forKey: MockUserDefaults.mockDownloadKey) else {
             print("Info - UserDefaults does not have downloadList")
             return []
         }
@@ -222,13 +232,13 @@ class MockUserDefaults {
     func saveFavoritePodcast(with favoriteList: [Podcast]){
         do {
             let data = try JSONEncoder().encode(favoriteList)
-            dict[MockUserDefaults.mockFavoriteKey] = data
+            set(data, forKey: MockUserDefaults.mockFavoriteKey)
         } catch {
             print("Error - Encode object to data failed:\(error)")
         }
     }
     func fetchFavoritePodcasts() -> [Podcast] {
-        guard let favoriteListData = dict[MockUserDefaults.mockFavoriteKey] else {
+        guard let favoriteListData = data(forKey: MockUserDefaults.mockFavoriteKey) else {
             print("Info - UserDefaults does not have favoriteList")
             return []
         }
