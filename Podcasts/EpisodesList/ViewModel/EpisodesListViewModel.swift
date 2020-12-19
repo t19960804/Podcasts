@@ -57,32 +57,30 @@ class EpisodesListViewModel {
         return index
     }
     
-    func isPodcastFavorited(podcast: Podcast) -> Bool {
-        let favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
-        let podcastDidFavorited = favoritePodcasts.contains(where: {
+    func isPodcastFavorited(favorites: [Podcast], podcast: Podcast) -> Bool {
+        let podcastDidFavorited = favorites.contains(where: {
              $0.trackName == podcast.trackName && $0.artistName == podcast.artistName
         })
         return podcastDidFavorited
     }
     
-    func isEpisodeDownloaded(index: Int) -> Bool {
-        let episode = episodes[index]
-        let downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        let episodeWasDownloaded = downloadedEpisodes.contains(where: {
+    func isEpisodeDownloaded(downloads: [DownloadEpisodeCellViewModel], episode: EpisodeCellViewModel) -> Bool {
+        let episodeWasDownloaded = downloads.contains(where: {
             $0.title == episode.title && $0.author == episode.author
         })
         return episodeWasDownloaded
     }
     
-    func downloadEpisode(index: Int){
-        //Save episode
-        let episode = episodes[index]
+    func downloadEpisode(episode: EpisodeCellViewModel){
+        saveDownloadEpisodeInUserDefaults(episode: episode)
+        NetworkService.sharedInstance.downloadEpisode(with: episode)
+    }
+    
+    func saveDownloadEpisodeInUserDefaults(episode: EpisodeCellViewModel){
         let downloadEpisode = DownloadEpisodeCellViewModel(episode: episode)
         var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
         downloadedEpisodes.append(downloadEpisode)
         UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
-        //Download
-        NetworkService.sharedInstance.downloadEpisode(with: episode)
     }
     
     func favoritePodcast(podcast: Podcast?){

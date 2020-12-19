@@ -12,28 +12,17 @@ import FeedKit
 @testable import Podcasts
 class EpisodesListTests: XCTestCase {
 
-    let viewModel = EpisodesListViewModel()
+    var viewModel: EpisodesListViewModel!
     
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    override func setUp() { //set initial state before each test method is run.
+        super.setUp()
+        viewModel = EpisodesListViewModel()
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    override func tearDown() { //perform cleanup after each test method completes.
+        super.tearDown()
+        viewModel = nil
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
+    //MARK: - Test EpisodeCellViewModel
     func testEpisodeCellViewModel_EmptyRSSFeedItem(){
         //測試item為空
         let item = RSSFeedItem()
@@ -43,7 +32,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel.author, "unknow author")
         XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
         XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
-        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 12,2020")
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 19,2020")
         XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
     func testEpisodeCellViewModel_MockRSSFeedItem(){
@@ -86,6 +75,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel2.publishDateString, "Feb 08,2018")
         XCTAssertEqual(episodeCellViewModel2.duration, "09:33")
     }
+    //MARK: - Test .calculateFooterHeight()
     func testTableViewFooterHeight_Searched_EmptyResult(){
         //FooterHeight > 顯示No Episodes!的Label
         //搜尋完沒有任何結果
@@ -111,20 +101,20 @@ class EpisodesListTests: XCTestCase {
         viewModel.calculateFooterHeight()
         XCTAssertEqual(viewModel.footerHeight, 0)
     }
-    func testGetEpisodeIndex_NilEpisode(){
-        //episode傳入nil
+    //MARK: - Test .getEpisodeIndex()
+    func testGetEpisodeIndex_EpisodeIsNil(){
         viewModel.episodes = []
         let index = viewModel.getEpisodeIndex(episode: nil)
         XCTAssertNil(index)
     }
-    func testGetEpisodeIndex_UnexistEpisode(){
-        //傳入不存在的Episode
+    func testGetEpisodeIndex_EpisodeIsUnexist(){
         viewModel.episodes = []
         let targetEpisode = EpisodeCellViewModel(title: "Test title",author: "Test author")
         let index = viewModel.getEpisodeIndex(episode: targetEpisode)
         XCTAssertNil(index)
     }
     func testGetEpisodeIndex_MockEpisode(){
+        //取得存在的Episode的index
         viewModel.episodes.append(EpisodeCellViewModel(title: "Ep1", author: "Tony"))
         viewModel.episodes.append(EpisodeCellViewModel(title: "Ep2", author: "Tony"))
         viewModel.episodes.append(EpisodeCellViewModel(title: "Ep3", author: "Tony"))
@@ -132,5 +122,123 @@ class EpisodesListTests: XCTestCase {
         let targetEpisode = EpisodeCellViewModel(title: "Ep2",author: "Tony")
         let index = viewModel.getEpisodeIndex(episode: targetEpisode)
         XCTAssertEqual(index, 1)
+    }
+    //MARK: - Test .isPodcastFavorited()
+    func testIsPodcastFavorited_EmptyFavorites(){
+        let favorites = [Podcast]()
+        let podcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: podcast)
+        XCTAssertFalse(isPodcastFavorited)
+    }
+    func testIsPodcastFavorited_PodcastNotFavorited(){
+        let podcast = Podcast(trackName: "Damn it", artistName: "BrianVoong", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let favorites = [podcast]
+        let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
+        XCTAssertFalse(isPodcastFavorited)
+    }
+    func testIsPodcastFavorited_PodcastWasFavorited(){
+        let podcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let favorites = [podcast]
+        let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
+        XCTAssertTrue(isPodcastFavorited)
+    }
+    //MARK: - Test .isEpisodeDownloaded()
+    func testIsEpisodeDownloaded_EmptyDownloads(){
+        let downloads = [DownloadEpisodeCellViewModel]()
+        let episode = EpisodeCellViewModel(title: "Test", author: "TonyLee")
+        let isEpisodeDownloaded = viewModel.isEpisodeDownloaded(downloads: downloads, episode: episode)
+        XCTAssertFalse(isEpisodeDownloaded, "err")
+    }
+    func testIsEpisodeDownloaded_EpisodeNotDownloaded(){
+        let episode = EpisodeCellViewModel(title: "Test", author: "BrianVoong")
+        let downloadedEpisode = DownloadEpisodeCellViewModel(episode: episode)
+        let downloads = [downloadedEpisode]
+        let targeteEpisode = EpisodeCellViewModel(title: "Test", author: "TonyLee")
+        let isEpisodeDownloaded = viewModel.isEpisodeDownloaded(downloads: downloads, episode: targeteEpisode)
+        XCTAssertFalse(isEpisodeDownloaded, "err")
+    }
+    func testIsEpisodeDownloaded_EpisodeWasDownloaded(){
+        let episode = EpisodeCellViewModel(title: "Test", author: "TonyLee")
+        let downloadedEpisode = DownloadEpisodeCellViewModel(episode: episode)
+        let downloads = [downloadedEpisode]
+        let targeteEpisode = EpisodeCellViewModel(title: "Test", author: "TonyLee")
+        let isEpisodeDownloaded = viewModel.isEpisodeDownloaded(downloads: downloads, episode: targeteEpisode)
+        XCTAssertTrue(isEpisodeDownloaded, "err")
+    }
+    //MARK: - Test .saveDownloadEpisodeInUserDefaults()
+    func testSaveDownloadEpisodeInUserDefaults(){
+        let vms = [DownloadEpisodeCellViewModel(episode: EpisodeCellViewModel(title: "title", author: "tlee")),
+                   DownloadEpisodeCellViewModel(episode: EpisodeCellViewModel(title: "title", author: "tlee")),
+                   DownloadEpisodeCellViewModel(episode: EpisodeCellViewModel(title: "title", author: "tlee"))]
+        MockUserDefaults.standard.saveDownloadEpisode(with: vms)
+        let fetchedVMS = MockUserDefaults.standard.fetchDownloadedEpisodes()
+        XCTAssertEqual(fetchedVMS.count, 3)
+    }
+    //MARK: - Test .favoritePodcast()
+    func testFavoritePodcast(){
+        let podcasts = [Podcast(trackName: "test", artistName: "test", artworkUrl600: "test", trackCount: 99, feedUrl: "test"),
+                        Podcast(trackName: "test", artistName: "test", artworkUrl600: "test", trackCount: 99, feedUrl: "test"),
+                        Podcast(trackName: "test", artistName: "test", artworkUrl600: "test", trackCount: 99, feedUrl: "test")]
+        MockUserDefaults.standard.saveFavoritePodcast(with: podcasts)
+        let favoritedPodcast = MockUserDefaults.standard.fetchFavoritePodcasts()
+        XCTAssertEqual(favoritedPodcast.count, 3)
+    }
+}
+//不要讓測試資料污染了UserDefaults
+//我們需要創建一個虛擬的UserDefaults
+//並創造與真實環境相同的function,好讓我們記錄一些狀態
+class MockUserDefaults {
+    static let standard = MockUserDefaults()
+    static let mockDownloadKey = "mockDownloadKey"
+    static let mockFavoriteKey = "mockFavoriteKey"
+    private var dict = [String:Data]()
+    private init(){
+
+    }
+    func saveDownloadEpisode(with episodes: [DownloadEpisodeCellViewModel]){
+        do {
+            let data = try JSONEncoder().encode(episodes)
+            dict[MockUserDefaults.mockDownloadKey] = data
+        } catch {
+            print("Error - Encode object to data failed:\(error)")
+        }
+    }
+    func fetchDownloadedEpisodes()  -> [DownloadEpisodeCellViewModel] {
+        guard let downloadedEpisodesData = dict[MockUserDefaults.mockDownloadKey] else {
+            print("Info - UserDefaults does not have downloadList")
+            return []
+        }
+        do {
+            let downloadedEpisodes = try JSONDecoder().decode([DownloadEpisodeCellViewModel].self, from: downloadedEpisodesData)
+            return downloadedEpisodes
+        } catch {
+            print("Error - Unarchive data to object failed:\(error)")
+            return []
+        }
+    }
+    
+    func saveFavoritePodcast(with favoriteList: [Podcast]){
+        do {
+            let data = try JSONEncoder().encode(favoriteList)
+            dict[MockUserDefaults.mockFavoriteKey] = data
+        } catch {
+            print("Error - Encode object to data failed:\(error)")
+        }
+    }
+    func fetchFavoritePodcasts() -> [Podcast] {
+        guard let favoriteListData = dict[MockUserDefaults.mockFavoriteKey] else {
+            print("Info - UserDefaults does not have favoriteList")
+            return []
+        }
+        do {
+            //Transform data to object
+            let favoritePodcasts = try JSONDecoder().decode([Podcast].self, from: favoriteListData)
+            return favoritePodcasts
+        } catch {
+            print("Error - Unarchive data to object failed:\(error)")
+            return []
+        }
     }
 }

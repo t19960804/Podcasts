@@ -72,7 +72,7 @@ class EpisodesListController: UITableViewController {
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
-        let podcastDidFavorited = viewModel.isPodcastFavorited(podcast: self.podcast)
+        let podcastDidFavorited = viewModel.isPodcastFavorited(favorites: UserDefaults.standard.fetchFavoritePodcasts(), podcast: self.podcast)
         navigationItem.rightBarButtonItem = podcastDidFavorited ? nil : favoriteBarButtonItem
     }
     fileprivate func setupConstraints(){
@@ -113,14 +113,15 @@ class EpisodesListController: UITableViewController {
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: viewModel.episodes)
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
-        let episodeWasDownloaded = viewModel.isEpisodeDownloaded(index: indexPath.row)
+        let episode = viewModel.episodes[indexPath.row]
+        let episodeWasDownloaded = viewModel.isEpisodeDownloaded(downloads: UserDefaults.standard.fetchDownloadedEpisodes(), episode: episode)
         if episodeWasDownloaded {
             return nil
         }
         
         let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
-            self.viewModel.downloadEpisode(index: indexPath.row)
+            let episode = self.viewModel.episodes[indexPath.row]
+            self.viewModel.downloadEpisode(episode: episode)
             //Reload cell to show downloadedImageView
             self.tableView.reloadRows(at: [indexPath], with: .none)
             //Update Badge
