@@ -32,7 +32,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel.author, "unknow author")
         XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
         XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
-        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 19,2020")
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 20,2020")
         XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
     func testEpisodeCellViewModel_MockRSSFeedItem(){
@@ -185,6 +185,50 @@ class EpisodesListTests: XCTestCase {
         let favoritedPodcast = MockUserDefaults.standard.fetchFavoritePodcasts()
         XCTAssertEqual(favoritedPodcast.count, 3)
     }
+    //MARK: - Test .parseXMLFromURL()
+    func testParseXMLFromURL_CompleteUrlString(){
+        // Create an expectation for a background download task.
+        let expectation = XCTestExpectation(description: "Try to parse XML from url")
+
+        let urlString = "https://feeds.soundcloud.com/users/soundcloud:users:114798578/sounds.rss"
+        var error: Error?
+        var episodesResult: [Episode]?
+        
+        viewModel.parseXMLFromURL(with: urlString) { (result) in
+            switch result {
+            case .failure(let err):
+                error = err
+            case .success(let episodes):
+                episodesResult = episodes
+            }
+            // Fulfill the expectation to indicate that the background task has finished successfully.
+            expectation.fulfill()
+        }
+        // Wait until the expectation is fulfilled, with a timeout of 10 seconds.
+        wait(for: [expectation], timeout: 10.0)
+        //expression參數 > 測試條件
+        //message參數 > 測試失敗的描述
+        XCTAssertNil(error, "Parse failed:\(error!)")
+        XCTAssertNotNil(episodesResult, "episodesResult is nil")
+    }
+    
+    func testParseXMLFromURL_EmptyUrlString(){
+        let urlString = ""
+        var error: Error?
+        var episodesResult: [Episode]?
+        
+        viewModel.parseXMLFromURL(with: urlString) { (result) in
+            switch result {
+            case .failure(let err):
+                error = err
+            case .success(let episodes):
+                episodesResult = episodes
+            }
+        }
+        XCTAssertNil(error, "error shold be nil, because parseXMLFromURL was not executed")
+        XCTAssertNil(episodesResult, "episodesResult shold be nil, because parseXMLFromURL was not executed")
+    }
+    
 }
 //不要讓測試資料污染了UserDefaults
 //我們創建一個虛擬環境(MockUserDefaults) + 與現實環境(UserDefaults)相同的Method

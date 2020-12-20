@@ -14,7 +14,16 @@ class EpisodesListController: UITableViewController {
         didSet {
             setupViewModel()
             navigationItem.title = podcast.trackName
-            viewModel.parseXMLFromURL(with: podcast.feedUrl ?? "")
+            viewModel.parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
+                switch result {
+                case .failure(let error):
+                    print("Error - Parse XML failed:\(error)")
+                    viewModel.episodes = []
+                case .success(let episodes):
+                    viewModel.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
+                }
+                viewModel.isSearching = false
+            }
         }
     }
     let searchingView = SearchingView()

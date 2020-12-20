@@ -22,22 +22,13 @@ class EpisodesListViewModel {
     var reloadControllerObserver: (()->Void)?
     
     
-    func parseXMLFromURL(with url: String) {
+    func parseXMLFromURL(with url: String, completion: @escaping (Result<[Episode],Error>) -> Void) {
         guard let feedURL = URL(string: url) else {
             print("Error - feedURL is nil")
             return
         }
         isSearching = true
-        NetworkService.sharedInstance.fetchEpisodes(url: feedURL) { (result) in
-            switch result {
-            case .failure(let error):
-                print("Error - Parse XML failed:\(error)")
-                self.episodes = []
-            case .success(let episodes):
-                self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
-            }
-            self.isSearching = false
-        }
+        NetworkService.sharedInstance.fetchEpisodes(url: feedURL, completion: completion)
     }
     
     var footerHeight: CGFloat = 0
