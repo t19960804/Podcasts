@@ -11,7 +11,25 @@ import UIKit
 
 class EpisodesListViewModel {
     var episodes = [EpisodeCellViewModel]()
-
+    
+    var podcastUpdateObserver: ((Podcast)->Void)?
+    
+    var podcast: Podcast! {
+        didSet {
+            podcastUpdateObserver?(podcast)
+            parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
+                switch result {
+                case .failure(let error):
+                    print("Error - Parse XML failed:\(error)")
+                    episodes = []
+                case .success(let episodes):
+                    self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
+                }
+                isSearching = false
+            }
+        }
+    }
+    
     var isSearching = false {
         didSet {
             isSearchingObserver?(isSearching)

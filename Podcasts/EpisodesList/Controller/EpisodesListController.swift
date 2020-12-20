@@ -10,22 +10,7 @@ import UIKit
 import FeedKit
 
 class EpisodesListController: UITableViewController {
-    var podcast: Podcast! {
-        didSet {
-            setupViewModel()
-            navigationItem.title = podcast.trackName
-            viewModel.parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
-                switch result {
-                case .failure(let error):
-                    print("Error - Parse XML failed:\(error)")
-                    viewModel.episodes = []
-                case .success(let episodes):
-                    viewModel.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
-                }
-                viewModel.isSearching = false
-            }
-        }
-    }
+
     let searchingView = SearchingView()
     let viewModel = EpisodesListViewModel()
     
@@ -37,6 +22,9 @@ class EpisodesListController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
     }
     func setupViewModel(){
+        viewModel.podcastUpdateObserver = { [weak self] podcast in
+            self?.navigationItem.title = podcast.trackName
+        }
         viewModel.isSearchingObserver = { [weak self] isSearching in
             DispatchQueue.main.async {
                 self?.searchingView.isHidden = !isSearching
@@ -81,7 +69,7 @@ class EpisodesListController: UITableViewController {
     }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
-        let podcastDidFavorited = viewModel.isPodcastFavorited(favorites: UserDefaults.standard.fetchFavoritePodcasts(), podcast: self.podcast)
+        let podcastDidFavorited = viewModel.isPodcastFavorited(favorites: UserDefaults.standard.fetchFavoritePodcasts(), podcast: viewModel.podcast)
         navigationItem.rightBarButtonItem = podcastDidFavorited ? nil : favoriteBarButtonItem
     }
     fileprivate func setupConstraints(){
@@ -92,7 +80,7 @@ class EpisodesListController: UITableViewController {
         searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     }
     @objc fileprivate func handleFavorite(){
-        viewModel.favoritePodcast(podcast: self.podcast)
+        viewModel.favoritePodcast(podcast: viewModel.podcast)
         let favoritesController = UIApplication.mainTabBarController?.favoritesController
         favoritesController?.tabBarItem.badgeValue = "New"
         navigationItem.rightBarButtonItem = nil
