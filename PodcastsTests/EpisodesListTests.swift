@@ -209,7 +209,7 @@ class EpisodesListTests: XCTestCase {
         //expression參數 > 測試條件
         //message參數 > 測試失敗的描述
         XCTAssertNil(error, "Parse failed:\(error!)")
-        XCTAssertNotNil(episodesResult, "episodesResult is nil")
+        XCTAssertNotNil(episodesResult, "Parse success, but episodesResult should not be nil")
     }
     
     func testParseXMLFromURL_EmptyUrlString(){
