@@ -32,7 +32,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel.author, "unknow author")
         XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
         XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
-        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 20,2020")
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 26,2020")
         XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
     func testEpisodeCellViewModel_MockRSSFeedItem(){
