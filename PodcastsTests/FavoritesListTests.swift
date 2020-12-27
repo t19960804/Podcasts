@@ -27,7 +27,9 @@ class FavoritesListTests: XCTestCase {
         XCTAssertEqual(height, 250)
     }
     func testCalculateHeightForHeader_HasPodcast() {
-        viewModel.favoritePodcasts = [Podcast(trackName: "", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: "")]
+        let podcast = Podcast(trackName: "", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: "")
+        let favoritePodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        viewModel.favoritePodcasts = [favoritePodcast]
         let height = viewModel.calculateHeightForHeader()
         XCTAssertEqual(height, 0)
     }

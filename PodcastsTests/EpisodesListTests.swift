@@ -32,7 +32,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel.author, "unknow author")
         XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
         XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
-        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 26,2020")
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 27,2020")
         XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
     func testEpisodeCellViewModel_MockRSSFeedItem(){
@@ -125,21 +125,23 @@ class EpisodesListTests: XCTestCase {
     }
     //MARK: - Test .isPodcastFavorited()
     func testIsPodcastFavorited_EmptyFavorites(){
-        let favorites = [Podcast]()
+        let favorites = [FavoritedPodcast]()
         let podcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
         let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: podcast)
         XCTAssertFalse(isPodcastFavorited)
     }
     func testIsPodcastFavorited_PodcastNotFavorited(){
         let podcast = Podcast(trackName: "Damn it", artistName: "BrianVoong", artworkUrl600: "", trackCount: 99, feedUrl: "")
-        let favorites = [podcast]
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        let favorites = [favoritedPodcast]
         let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
         let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
         XCTAssertFalse(isPodcastFavorited)
     }
     func testIsPodcastFavorited_PodcastWasFavorited(){
         let podcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
-        let favorites = [podcast]
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        let favorites = [favoritedPodcast]
         let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
         let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
         XCTAssertTrue(isPodcastFavorited)
