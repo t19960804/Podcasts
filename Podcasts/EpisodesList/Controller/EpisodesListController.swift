@@ -13,7 +13,14 @@ class EpisodesListController: UITableViewController {
 
     let searchingView = SearchingView()
     let viewModel = EpisodesListViewModel()
+    init() {
+        super.init(style: .plain)
+        setupViewModel()
+    }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)

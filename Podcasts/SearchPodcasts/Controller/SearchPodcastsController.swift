@@ -82,7 +82,6 @@ class SearchPodcastsController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = EpisodesListController()
         let podcast = viewModel.podcasts[indexPath.row]
-        controller.setupViewModel()
         controller.viewModel.podcast = podcast
         navigationController?.pushViewController(controller, animated: true)
     }
