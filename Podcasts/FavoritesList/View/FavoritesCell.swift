@@ -21,7 +21,7 @@ class FavoritesCell: UICollectionViewCell {
                                                  titleLabel,
                                                  artistNameLabel], axis: .vertical)
     var delegate: FavoritesCellDelegate?
-    var podcast: Podcast? {
+    var podcast: FavoritedPodcast? {
         didSet {
             imageView.sd_setImage(with: URL(string: podcast?.artworkUrl600 ?? ""))
             titleLabel.text = podcast?.trackName

@@ -80,7 +80,9 @@ class EpisodesListController: UITableViewController {
         searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     }
     @objc fileprivate func handleFavorite(){
-        viewModel.favoritePodcast(podcast: viewModel.podcast)
+        guard let podcast = viewModel.podcast as? Podcast else { return }
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        viewModel.favoritePodcast(podcast: favoritedPodcast)
         let favoritesController = UIApplication.mainTabBarController?.favoritesController
         favoritesController?.tabBarItem.badgeValue = "New"
         navigationItem.rightBarButtonItem = nil

@@ -12,9 +12,9 @@ import UIKit
 class EpisodesListViewModel {
     var episodes = [EpisodeCellViewModel]()
     
-    var podcastUpdateObserver: ((Podcast)->Void)?
+    var podcastUpdateObserver: ((PodcastProtocol)->Void)?
     
-    var podcast: Podcast! {
+    var podcast: PodcastProtocol! {
         didSet {
             podcastUpdateObserver?(podcast)
             parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
@@ -66,7 +66,7 @@ class EpisodesListViewModel {
         return index
     }
     
-    func isPodcastFavorited(favorites: [Podcast], podcast: Podcast) -> Bool {
+    func isPodcastFavorited(favorites: [FavoritedPodcast], podcast: PodcastProtocol) -> Bool {
         let podcastDidFavorited = favorites.contains(where: {
              $0.trackName == podcast.trackName && $0.artistName == podcast.artistName
         })
@@ -92,7 +92,7 @@ class EpisodesListViewModel {
         UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
     }
     
-    func favoritePodcast(podcast: Podcast?){
+    func favoritePodcast(podcast: FavoritedPodcast?){
         guard let podcast = podcast else { return }
         var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
         favoritePodcasts.append(podcast)

@@ -14,7 +14,7 @@ extension UserDefaults {
     //為什麼做save的時候不順便做fetch來減少外部使用的程式碼?
     //若在save裡面做fetch,如果想要對save做測試,發現失敗時會不知道是fetch出問題,還是save本身出問題
     //如果save就存粹的做save,fetch就存粹的做fetch,測試時就不會有上面的問題
-    func saveFavoritePodcast(with favoriteList: [Podcast]){
+    func saveFavoritePodcast(with favoriteList: [FavoritedPodcast]){
         do {
             //Transform object to data
             let data = try JSONEncoder().encode(favoriteList)
@@ -27,14 +27,14 @@ extension UserDefaults {
             print("Error - Encode object to data failed:\(error)")
         }
     }
-    func fetchFavoritePodcasts() -> [Podcast] {
+    func fetchFavoritePodcasts() -> [FavoritedPodcast] {
         guard let favoriteListData = data(forKey: UserDefaults.favoriteKey) else {
             print("Info - UserDefaults does not have favoriteList")
             return []
         }
         do {
             //Transform data to object
-            let favoritePodcasts = try JSONDecoder().decode([Podcast].self, from: favoriteListData)
+            let favoritePodcasts = try JSONDecoder().decode([FavoritedPodcast].self, from: favoriteListData)
             return favoritePodcasts
         } catch {
             print("Error - Unarchive data to object failed:\(error)")

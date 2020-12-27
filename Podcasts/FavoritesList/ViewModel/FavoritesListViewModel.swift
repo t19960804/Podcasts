@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 class FavoritesListViewModel {
-    var favoritePodcasts = [Podcast]()
+    var favoritePodcasts = [FavoritedPodcast]()
     
     //HeightForHeader
     func calculateHeightForHeader() -> CGFloat {
