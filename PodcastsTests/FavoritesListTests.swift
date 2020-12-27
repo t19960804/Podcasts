@@ -33,4 +33,22 @@ class FavoritesListTests: XCTestCase {
         let height = viewModel.calculateHeightForHeader()
         XCTAssertEqual(height, 0)
     }
+    func testGetPodcast(){
+        let podcast1 = FavoritedPodcast(podcast: Podcast(trackName: "1", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        let podcast2 = FavoritedPodcast(podcast: Podcast(trackName: "2", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        let podcast3 = FavoritedPodcast(podcast: Podcast(trackName: "3", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        
+        viewModel.favoritePodcasts = [podcast1,podcast2,podcast3]
+        let podcast = viewModel.getPodcast(at: 0)
+        XCTAssertEqual(podcast.trackName, "1")
+    }
+    func testNumberOfPodcast(){
+        let podcast1 = FavoritedPodcast(podcast: Podcast(trackName: "1", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        let podcast2 = FavoritedPodcast(podcast: Podcast(trackName: "2", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        let podcast3 = FavoritedPodcast(podcast: Podcast(trackName: "3", artistName: "", artworkUrl600: "", trackCount: 99, feedUrl: ""), favoriteDate: Date())
+        
+        viewModel.favoritePodcasts = [podcast1,podcast2,podcast3]
+        let number = viewModel.numberOfPodcast()
+        XCTAssertEqual(number, 3)
+    }
 }

@@ -17,4 +17,10 @@ class FavoritesListViewModel {
         let height: CGFloat = favoritePodcasts.isEmpty ? 250 : 0
         return height
     }
+    func getPodcast(at index: Int) -> FavoritedPodcast {
+       return favoritePodcasts[index]
+    }
+    func numberOfPodcast() -> Int {
+        return favoritePodcasts.count
+    }
 }

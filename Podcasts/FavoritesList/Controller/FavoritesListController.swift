@@ -46,12 +46,12 @@ class FavoritesListController: UICollectionViewController {
         layout.itemSize = .init(width: remainWidth / numberOfItemInRow , height: 0.31 * collectionView.frame.height)
     }
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.favoritePodcasts.count
+        return viewModel.numberOfPodcast()
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoritesCell.cellID, for: indexPath) as! FavoritesCell
-        cell.podcast = viewModel.favoritePodcasts[indexPath.item]
+        cell.podcast = viewModel.getPodcast(at: indexPath.item)
         cell.delegate = self
         return cell
     }
@@ -65,7 +65,7 @@ class FavoritesListController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let episodeController = EpisodesListController()
         episodeController.setupViewModel()
-        episodeController.viewModel.podcast = viewModel.favoritePodcasts[indexPath.item]
+        episodeController.viewModel.podcast = viewModel.getPodcast(at: indexPath.item)
         navigationController?.pushViewController(episodeController, animated: true)
     }
     required init?(coder aDecoder: NSCoder) {
