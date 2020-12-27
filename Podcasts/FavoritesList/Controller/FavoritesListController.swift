@@ -22,7 +22,7 @@ class FavoritesListController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
-        viewModel.favoritePodcasts.reverse()
+        viewModel.favoritePodcasts.sort { $0.favoriteDate > $1.favoriteDate }
         collectionView.reloadData()
         tabBarItem.badgeValue = nil
     }
