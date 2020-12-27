@@ -92,8 +92,7 @@ class EpisodesListViewModel {
         UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
     }
     
-    func favoritePodcast(podcast: FavoritedPodcast?){
-        guard let podcast = podcast else { return }
+    func favoritePodcast(podcast: FavoritedPodcast){
         var favoritePodcasts = UserDefaults.standard.fetchFavoritePodcasts()
         favoritePodcasts.append(podcast)
         UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
