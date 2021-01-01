@@ -97,4 +97,12 @@ class EpisodesListViewModel {
         favoritePodcasts.append(podcast)
         UserDefaults.standard.saveFavoritePodcast(with: favoritePodcasts)
     }
+    
+    func numberOfEpisodes() -> Int {
+        return episodes.count
+    }
+    
+    func getEpisode(at index: Int) -> EpisodeCellViewModel {
+        return episodes[index]
+    }
 }

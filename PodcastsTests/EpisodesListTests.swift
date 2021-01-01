@@ -32,7 +32,7 @@ class EpisodesListTests: XCTestCase {
         XCTAssertEqual(episodeCellViewModel.author, "unknow author")
         XCTAssertEqual(episodeCellViewModel.imageUrl, URL(string: "unknow imageURL"))
         XCTAssertEqual(episodeCellViewModel.audioUrl, URL(string: "unknow audioUrl"))
-        XCTAssertEqual(episodeCellViewModel.publishDateString, "Dec 27,2020")
+        XCTAssertEqual(episodeCellViewModel.publishDateString, "Jan 01,2021")
         XCTAssertEqual(episodeCellViewModel.duration, "16:39")
     }
     func testEpisodeCellViewModel_MockRSSFeedItem(){
@@ -231,6 +231,20 @@ class EpisodesListTests: XCTestCase {
         XCTAssertNil(episodesResult, "episodesResult shold be nil, because parseXMLFromURL was not executed")
     }
     
+    func testNumberOfEpisodes(){
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep1", author: "Tony"))
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep2", author: "Tony"))
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep3", author: "Tony"))
+        let numberOfEpisodes = viewModel.numberOfEpisodes()
+        XCTAssertEqual(numberOfEpisodes, 3)
+    }
+    func testGetEpisodeAtIndex(){
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep1", author: "Tony"))
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep2", author: "Tony"))
+        viewModel.episodes.append(EpisodeCellViewModel(title: "Ep3", author: "Tony"))
+        let episode = viewModel.getEpisode(at: 0)
+        XCTAssertEqual(episode.title, "Ep1")
+    }
 }
 //不要讓測試資料污染了UserDefaults
 //我們創建一個虛擬環境(MockUserDefaults) + 與現實環境(UserDefaults)相同的Method

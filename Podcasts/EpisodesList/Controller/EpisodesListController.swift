@@ -102,11 +102,11 @@ class EpisodesListController: UITableViewController {
         }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.episodes.count
+        return viewModel.numberOfEpisodes()
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
-        let episode = viewModel.episodes[indexPath.row]
+        let episode = viewModel.getEpisode(at: indexPath.row)
         cell.episodeViewModel = episode
         return cell
     }
@@ -114,19 +114,19 @@ class EpisodesListController: UITableViewController {
         return 150
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let episode = viewModel.episodes[indexPath.row]
+        let episode = viewModel.getEpisode(at: indexPath.row)
         let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: viewModel.episodes)
     }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let episode = viewModel.episodes[indexPath.row]
+        let episode = viewModel.getEpisode(at: indexPath.row)
         let episodeWasDownloaded = viewModel.isEpisodeDownloaded(downloads: UserDefaults.standard.fetchDownloadedEpisodes(), episode: episode)
         if episodeWasDownloaded {
             return nil
         }
         
         let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
-            let episode = self.viewModel.episodes[indexPath.row]
+            let episode = self.viewModel.getEpisode(at: indexPath.row)
             self.viewModel.downloadEpisode(episode: episode)
             //Reload cell to show downloadedImageView
             self.tableView.reloadRows(at: [indexPath], with: .none)
