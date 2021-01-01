@@ -18,7 +18,7 @@ protocol EpisodeProtocol {
     var duration: String { get set }
     var isPlaying: Bool { get set }
 }
-struct EpisodeCellViewModel: Codable, EpisodeProtocol {
+struct EpisodeCellViewModel: EpisodeProtocol, Codable {
     var title: String
     var author: String?
     var imageUrl: URL?
