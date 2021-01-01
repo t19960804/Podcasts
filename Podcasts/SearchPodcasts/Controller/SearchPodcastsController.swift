@@ -61,14 +61,13 @@ class SearchPodcastsController: UITableViewController {
         //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
         let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchController.searchBar.searchTextField)
         subscriber = publisher
-            .map { (($0.object as! UITextField).text ?? "") }
+            .map { (($0.object as! UISearchTextField).text ?? "") }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { _ in
-                
-            } receiveValue: { [weak self] in
+            .sink(receiveValue: {[weak self] in
                 self?.viewModel.fetchPodcasts(searchText: $0)
-            }
+            })
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.podcasts.count
