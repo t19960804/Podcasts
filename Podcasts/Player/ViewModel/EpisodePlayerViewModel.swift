@@ -18,16 +18,16 @@ class EpisodePlayerViewModel {
     
     var currentEpisode: EpisodeProtocol? {
         didSet {
-            guard let episodeViewModel = self.currentEpisode else { return }
+            guard let episode = self.currentEpisode else { return }
             previousEpisode = oldValue
             startToPlayEpisode = false
             sliderValue = 0
             seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             setupAudioSession()//播放時再取得Audio使用權
-            if let downloadEpisode = episodeViewModel as? DownloadProtocol {
-                newEpisodeNeedToPlayObserver?(episodeViewModel,downloadEpisode.fileUrl?.getTrueLocation())
+            if let downloadEpisode = episode as? DownloadProtocol {
+                newEpisodeNeedToPlayObserver?(episode,downloadEpisode.fileUrl?.getTrueLocation())
             } else {
-                newEpisodeNeedToPlayObserver?(episodeViewModel,episodeViewModel.audioUrl)
+                newEpisodeNeedToPlayObserver?(episode,episode.audioUrl)
             }
         }
     }

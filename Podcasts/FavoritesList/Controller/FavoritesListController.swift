@@ -63,9 +63,9 @@ class FavoritesListController: UICollectionViewController {
         return header
     }
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let episodeController = EpisodesListController()
-        episodeController.viewModel.podcast = viewModel.getPodcast(at: indexPath.item)
-        navigationController?.pushViewController(episodeController, animated: true)
+        let controller = EpisodesListController()
+        controller.viewModel.podcast = viewModel.getPodcast(at: indexPath.item)
+        navigationController?.pushViewController(controller, animated: true)
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
