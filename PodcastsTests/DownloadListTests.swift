@@ -7,27 +7,53 @@
 //
 
 import XCTest
-
+@testable import Podcasts
 class DownloadListTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    var viewModel: DownloadListViewModel!
+    
+    override func setUp() {
+        super.setUp()
+        viewModel = DownloadListViewModel()
+    }
+    override func tearDown() {
+        super.tearDown()
+        viewModel = nil
+    }
+    
+    func testGetIndexOfEpisode(){
+        let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
+        let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
+        let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
+        
+        viewModel.downloadedEpisodes = [episode1,episode2,episode3]
+        let index = viewModel.getIndexOfEpisode(episode1)
+        XCTAssertEqual(index, 0)
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testCalculateHeightForFooter(){
+        let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
+        let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
+        let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
+        viewModel.downloadedEpisodes = [episode1,episode2,episode3]
+        viewModel.calculateHeightForFooter()
+        XCTAssertEqual(viewModel.heightForFooter, 0)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    func testNumberOfEpisodes(){
+        let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
+        let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
+        let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
+        viewModel.downloadedEpisodes = [episode1,episode2,episode3]
+        XCTAssertEqual(viewModel.numberOfEpisodes(), 3)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func testGetEpisodeAtIndex(){
+        let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
+        let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
+        let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
+        viewModel.downloadedEpisodes = [episode1,episode2,episode3]
+        let index = viewModel.getIndexOfEpisode(episode1)
+        XCTAssertEqual(index, 0)
     }
-
 }

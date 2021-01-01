@@ -43,4 +43,15 @@ struct DownloadEpisodeCellViewModel: EpisodeProtocol, DownloadProtocol, Codable 
         self.duration = episode.duration
         self.isPlaying = episode.isPlaying
     }
+    
+    //For unit test
+    init(title: String, author: String) {
+        self.title = title
+        self.author = author
+        self.imageUrl = URL(string: "")
+        self.audioUrl = URL(string: "")
+        self.publishDateString = ""
+        self.duration = ""
+        self.isPlaying = false
+    }
 }
