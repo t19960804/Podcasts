@@ -13,7 +13,7 @@ protocol FavoritedPodcastProtocol {
 }
 
 struct FavoritedPodcast: Codable, PodcastProtocol, FavoritedPodcastProtocol {
-    var favoriteDate: Date
+    var favoriteDate: Date = Date()
     
     var trackName: String?
     
@@ -25,8 +25,7 @@ struct FavoritedPodcast: Codable, PodcastProtocol, FavoritedPodcastProtocol {
     
     var feedUrl: String?
     
-    init(podcast: Podcast, favoriteDate: Date) {
-        self.favoriteDate = favoriteDate
+    init(podcast: Podcast) {
         self.trackName = podcast.trackName
         self.artistName = podcast.artistName
         self.artworkUrl600 = podcast.artworkUrl600

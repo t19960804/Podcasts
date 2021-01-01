@@ -88,7 +88,7 @@ class EpisodesListController: UITableViewController {
     }
     @objc fileprivate func handleFavorite(){
         guard let podcast = viewModel.podcast as? Podcast else { return }
-        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast)
         viewModel.favoritePodcast(podcast: favoritedPodcast)
         let favoritesController = UIApplication.mainTabBarController?.favoritesController
         favoritesController?.tabBarItem.badgeValue = "New"
