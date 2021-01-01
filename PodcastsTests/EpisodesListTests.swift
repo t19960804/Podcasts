@@ -132,7 +132,7 @@ class EpisodesListTests: XCTestCase {
     }
     func testIsPodcastFavorited_PodcastNotFavorited(){
         let podcast = Podcast(trackName: "Damn it", artistName: "BrianVoong", artworkUrl600: "", trackCount: 99, feedUrl: "")
-        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast)
         let favorites = [favoritedPodcast]
         let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
         let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
@@ -140,7 +140,7 @@ class EpisodesListTests: XCTestCase {
     }
     func testIsPodcastFavorited_PodcastWasFavorited(){
         let podcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
-        let favoritedPodcast = FavoritedPodcast(podcast: podcast, favoriteDate: Date())
+        let favoritedPodcast = FavoritedPodcast(podcast: podcast)
         let favorites = [favoritedPodcast]
         let targetPodcast = Podcast(trackName: "Fuck", artistName: "TonyLee", artworkUrl600: "", trackCount: 99, feedUrl: "")
         let isPodcastFavorited = viewModel.isPodcastFavorited(favorites: favorites, podcast: targetPodcast)
