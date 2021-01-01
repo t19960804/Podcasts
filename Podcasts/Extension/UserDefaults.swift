@@ -58,7 +58,8 @@ extension UserDefaults {
         do {
             //Transform data to object
             //".self" represent the actual class type
-            let downloadedEpisodes = try JSONDecoder().decode([DownloadEpisodeCellViewModel].self, from: downloadedEpisodesData)
+            var downloadedEpisodes = try JSONDecoder().decode([DownloadEpisodeCellViewModel].self, from: downloadedEpisodesData)
+            downloadedEpisodes.sort(by: { $0.downloadDate > $1.downloadDate })
             return downloadedEpisodes
         } catch {
             print("Error - Unarchive data to object failed:\(error)")

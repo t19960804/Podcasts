@@ -24,8 +24,7 @@ class DownloadListController: UITableViewController {
         super.viewWillAppear(animated)
         tabBarItem.badgeValue = nil
         viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        viewModel.downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
-        checkIfEpisodeIsPlaying()//因為上面重新fetch,每一個episode的isPlaying都是false.所以要check
+        checkIfEpisodeIsPlaying()
         tableView.reloadData()
     }
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
@@ -55,7 +54,6 @@ class DownloadListController: UITableViewController {
     }
     @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
         viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        viewModel.downloadedEpisodes.reverse()//讓最新加入下載的Episode出現在最上面
         guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
             return
         }
@@ -79,11 +77,11 @@ class DownloadListController: UITableViewController {
         return 1
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.downloadedEpisodes.count
+        return viewModel.numberOfEpisodes()
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: EpisodeCell.cellID, for: indexPath) as! EpisodeCell
-        cell.episodeViewModel = viewModel.downloadedEpisodes[indexPath.row]
+        cell.episodeViewModel = viewModel.getEpisode(at: indexPath.row)
         cell.downloadedImageView.isHidden = true
         return cell
     }
@@ -93,7 +91,7 @@ class DownloadListController: UITableViewController {
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [self] (_, _) in
             //Remove episode file from FileManager and UserDefaults
-            let episode = viewModel.downloadedEpisodes[indexPath.row]
+            let episode = viewModel.getEpisode(at: indexPath.row)
             guard let fileUrl = episode.fileUrl?.getTrueLocation() else {
                 print("Error - Can't get true fileUrl")
                 return
@@ -109,7 +107,7 @@ class DownloadListController: UITableViewController {
         return [deleteAction]
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let episodeViewModel = viewModel.downloadedEpisodes[indexPath.row]
+        let episodeViewModel = viewModel.getEpisode(at: indexPath.row)
         let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episodeViewModel, episodesList: viewModel.downloadedEpisodes)
     }

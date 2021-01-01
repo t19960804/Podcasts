@@ -44,4 +44,10 @@ class DownloadListViewModel {
             UserDefaults.standard.saveDownloadEpisode(with: downloadedEpisodes)
         }
     }
+    func numberOfEpisodes() -> Int{
+        return downloadedEpisodes.count
+    }
+    func getEpisode(at index: Int) -> DownloadEpisodeCellViewModel {
+        return downloadedEpisodes[index]
+    }
 }

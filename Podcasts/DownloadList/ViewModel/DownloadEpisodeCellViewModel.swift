@@ -11,8 +11,11 @@ import Foundation
 protocol DownloadProtocol {
     var fileUrl: URL? { get set }
     var isWaitingForDownload: Bool { get set }
+    var downloadDate: Date { get set }
 }
 struct DownloadEpisodeCellViewModel: EpisodeProtocol, DownloadProtocol, Codable {
+    var downloadDate: Date = Date()
+    
     var fileUrl: URL?
     
     var isWaitingForDownload: Bool = true
