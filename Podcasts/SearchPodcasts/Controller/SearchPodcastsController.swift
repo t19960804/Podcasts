@@ -8,22 +8,25 @@
 
 import UIKit
 import Alamofire
+import Combine
 
 class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
-    var timer: Timer?
     let searchingView = SearchingView()
     let viewModel = SearchPodcastsViewModel()
+    var subscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setUpSearchController()
         setupConstraints()
-        searchBar(navigationItem.searchController!.searchBar, textDidChange: "Voong")
         setupObserver()
     }
-
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        subscriber?.cancel()
+    }
     fileprivate func setupTableView(){
         //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
         definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
@@ -31,7 +34,6 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
     }
     fileprivate func setupObserver(){
-        //ViewController更趨近View的角色,不處理狀態與抓資料,只根據它們的變化而變化
         viewModel.isSearchingObserver = { [weak self] isSearching in
             self?.searchingView.isHidden = !isSearching
         }
@@ -48,12 +50,25 @@ class SearchPodcastsController: UITableViewController {
     }
     fileprivate func setUpSearchController(){
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.delegate  = self
         searchController.searchBar.placeholder = "Search Podcasts..."
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false //固定searchBar
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
+        setupSearchBarPubSub(searchController)
+    }
+    fileprivate func setupSearchBarPubSub(_ searchController: UISearchController){
+        //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
+        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchController.searchBar.searchTextField)
+        subscriber = publisher
+            .map { (($0.object as! UITextField).text ?? "") }
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] in
+                self?.viewModel.fetchPodcasts(searchText: $0)
+            }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.podcasts.count
@@ -70,7 +85,6 @@ class SearchPodcastsController: UITableViewController {
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let input = navigationItem.searchController?.searchBar.text else { return nil }
         let label = UILabel(text: nil, font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
-        //若是邏輯包含在生命週期內,就不需要特別跳脫週期去用Observer,因為Observer內還需要特別去create header再做轉型,增加code複雜度
         viewModel.searchBarInputUpdate(input: input)
         label.text = viewModel.headerLabelString
         return label
@@ -85,14 +99,4 @@ class SearchPodcastsController: UITableViewController {
         controller.viewModel.podcast = podcast
         navigationController?.pushViewController(controller, animated: true)
     }
-}
-extension SearchPodcastsController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self](_) in
-            self?.viewModel.fetchPodcasts(searchText: searchText)
-        }
-    }
-    //function的型別 > 參數型別 + 回傳型別
-    //可將function當成參數傳入另一個function
 }
