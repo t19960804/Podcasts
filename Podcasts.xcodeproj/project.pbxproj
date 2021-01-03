@@ -10,6 +10,7 @@
 		0B19D303257CC358009A9854 /* EpisodesListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B19D302257CC358009A9854 /* EpisodesListTests.swift */; };
 		0B1EE821251F485E00DC6A16 /* DownloadListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadListController.swift */; };
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
+		0B2E33DC25A17EB100409476 /* SearchPodcastsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2E33DB25A17EB100409476 /* SearchPodcastsTests.swift */; };
 		0B33C63A24A5CC3200F09290 /* EpisodePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */; };
 		0B3B0795250C9ACA0087D63D /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3B0794250C9ACA0087D63D /* UserDefaults.swift */; };
 		0B46133824C402F30071DC80 /* LBTATools in Frameworks */ = {isa = PBXBuildFile; productRef = 0B46133724C402F30071DC80 /* LBTATools */; };
@@ -64,6 +65,7 @@
 		0B19D302257CC358009A9854 /* EpisodesListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListTests.swift; sourceTree = "<group>"; };
 		0B19D304257CC358009A9854 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B1EE820251F485E00DC6A16 /* DownloadListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadListController.swift; sourceTree = "<group>"; };
+		0B2E33DB25A17EB100409476 /* SearchPodcastsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPodcastsTests.swift; sourceTree = "<group>"; };
 		0B33C63924A5CC3200F09290 /* EpisodePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerView.swift; sourceTree = "<group>"; };
 		0B3B0794250C9ACA0087D63D /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		0B494E30259EFC3700AF0A5B /* DownloadListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadListTests.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 				0B19D302257CC358009A9854 /* EpisodesListTests.swift */,
 				0B84B688259748AF00D3AFE4 /* FavoritesListTests.swift */,
 				0B494E30259EFC3700AF0A5B /* DownloadListTests.swift */,
+				0B2E33DB25A17EB100409476 /* SearchPodcastsTests.swift */,
 				0B19D304257CC358009A9854 /* Info.plist */,
 			);
 			path = PodcastsTests;
@@ -502,6 +505,7 @@
 			files = (
 				0B19D303257CC358009A9854 /* EpisodesListTests.swift in Sources */,
 				0B494E31259EFC3700AF0A5B /* DownloadListTests.swift in Sources */,
+				0B2E33DC25A17EB100409476 /* SearchPodcastsTests.swift in Sources */,
 				0B84B689259748AF00D3AFE4 /* FavoritesListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
