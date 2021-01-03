@@ -311,7 +311,7 @@ class EpisodePlayerView: UIView {
     }
     @objc fileprivate func handleRewindAndForward(button: UIButton){
         let currentTime = podcastPlayer.currentTime()
-        viewModel.calculateSeekTime_RewindAndFastforward(currentTime: currentTime, button: button)
+        viewModel.calculateSeekTime_RewindAndFastforward(currentTime: currentTime, tag: button.tag)
         podcastPlayer.seek(to: viewModel.seekTime)
     }
     @objc fileprivate func handleSoundSliderValueChanged(slider: UISlider){

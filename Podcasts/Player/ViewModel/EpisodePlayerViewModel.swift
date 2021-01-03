@@ -125,8 +125,8 @@ class EpisodePlayerViewModel {
         self.seekTime = seekTime
     }
     
-    func calculateSeekTime_RewindAndFastforward(currentTime: CMTime, button: UIButton){
-        let deltaSeconds: Int64 = button.tag == 1 ? -15 : 15
+    func calculateSeekTime_RewindAndFastforward(currentTime: CMTime, tag: Int){
+        let deltaSeconds: Int64 = tag == 1 ? -15 : 15
         let deltaTime = CMTime(value: deltaSeconds, timescale: 1)
         let seekTime = CMTimeAdd(currentTime, deltaTime)
         self.seekTime = seekTime
