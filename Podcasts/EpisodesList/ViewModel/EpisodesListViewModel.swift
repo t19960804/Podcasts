@@ -20,7 +20,7 @@ class EpisodesListViewModel {
             parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
                 switch result {
                 case .failure(let error):
-                    print("Error - Parse XML failed:\(error)")
+                    print("Error - Parse XML failed:\(error.localizedDescription)")
                     episodes = []
                 case .success(let episodes):
                     self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }

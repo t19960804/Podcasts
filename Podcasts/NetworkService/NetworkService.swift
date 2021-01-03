@@ -61,6 +61,8 @@ class NetworkService {
                     //Feed > 資料來源
                     guard let rssFeed = feed.rssFeed else {
                         print("Error - rssFeed is nil")
+                        let customErr = NetworkServiceError.NilRSSFeed
+                        completion(.failure(customErr))
                         return
                     }
                     let episodes = rssFeed.getEpisodes()
@@ -97,17 +99,20 @@ class NetworkService {
                         downloadEpisodes[index].isWaitingForDownload = false
                     }
                     UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-                    //通知DownloadController重新fetch downloadEpisode,而不是只在ViewWillAppear才fetch
                     let info: [String : Any] = [Notification.episodeKey : episode]
                     NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
                 }
     }
 }
-
-//Closure跟Function差別
-//1.有無名字 > Closure沒有,Function有
-//2.能否獨立存在 > Closure需要被指派到變數或常數,或直接傳入Function,但Function可獨立存在
-//備註:兩個都能被指派到變/常數中
-
-
-//@escaping > 讓 closure 在 function 外繼續使用 (將傳進的closure指派給外部的變數供呼叫)
+//https://riptutorial.com/swift/example/28601/create-custom-error-with-localized-description
+enum NetworkServiceError: Error {
+    case NilRSSFeed
+}
+extension NetworkServiceError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .NilRSSFeed:
+            return NSLocalizedString("Description of nil rss feed", comment: "Nil feed")
+        }
+    }
+}
