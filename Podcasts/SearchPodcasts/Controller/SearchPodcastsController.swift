@@ -63,7 +63,7 @@ class SearchPodcastsController: UITableViewController {
         subscriber = publisher
             .map { (($0.object as! UISearchTextField).text ?? "") }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .removeDuplicates()
+            .removeDuplicates() //若0.5秒過後,element還是跟上一次一樣,就不往下傳element
             .receive(on: RunLoop.main)
             .sink(receiveValue: {[weak self] in
                 self?.viewModel.fetchPodcasts(searchText: $0)
