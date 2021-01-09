@@ -35,10 +35,14 @@ class SearchPodcastsController: UITableViewController {
     }
     fileprivate func setupObserver(){
         viewModel.isSearchingObserver = { [weak self] isSearching in
-            self?.searchingView.isHidden = !isSearching
+            DispatchQueue.main.async {
+                self?.searchingView.isHidden = !isSearching
+            }
         }
         viewModel.reloadController = { [weak self] podcasts in
-            self?.tableView.reloadData()
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
         }
     }
     fileprivate func setupConstraints(){

@@ -24,28 +24,42 @@ class NetworkService {
     
     func fetchPodcasts(searchText: String, completion: @escaping (Result<[Podcast],Error>) -> Void){
         //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
-        let url = "https://itunes.apple.com/search"
-        let extraParameters = ["term" : searchText,
-                               "media" : "podcast"]
-        //若輸入帶有空格的字串,會導致request失敗,須透過url encoding將"空格"轉換成"+"
-        //例如: Brian Voong > Brian+Voong
-        AF.request(url, method: .get, parameters: extraParameters, encoding: URLEncoding.default, headers: nil, interceptor: nil).response { (response) in
-            if let error = response.error {
+        let urlString = "https://itunes.apple.com/search"
+        //下面的寫法不需要對searchText做encoding,因為api自己會enocding,多做一次反而會錯
+        //空白鍵 > %20, % > %25
+        //也就是說將空白鍵做兩次encoding會變成%2520
+        let queryItems = [
+                URLQueryItem(name: "term", value: searchText),
+                URLQueryItem(name: "media", value: "podcast")
+        ]
+        guard var urlComps = URLComponents(string: urlString) else {
+            let customErr = NetworkServiceError.URLError
+            completion(.failure(customErr))
+            return
+        }
+        urlComps.queryItems = queryItems
+        guard let url = urlComps.url else {
+            let customErr = NetworkServiceError.URLError
+            completion(.failure(customErr))
+            return
+        }
+        URLSession.shared.dataTask(with: url) { (data, resp, err) in
+            if let error = err {
                 completion(.failure(error))
                 return
             }
-            guard let data = response.data else {
-                print("Request successly,but data has some problem")
+            guard let data = data else {
+                let customErr = NetworkServiceError.NilPodcastData
+                completion(.failure(customErr))
                 return
             }
             do {
-                //Transform JSON data to model object
                 let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
                 completion(.success(searchResult.results))
             } catch {
                 completion(.failure(error))
             }
-        }
+        }.resume()
     }
     func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
         //Qos > 執行任務的優先順序,等級越高越快被執行
@@ -107,12 +121,18 @@ class NetworkService {
 //https://riptutorial.com/swift/example/28601/create-custom-error-with-localized-description
 enum NetworkServiceError: Error {
     case NilRSSFeed
+    case NilPodcastData
+    case URLError
 }
 extension NetworkServiceError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .NilRSSFeed:
-            return NSLocalizedString("Description of nil rss feed", comment: "Nil feed")
+            return NSLocalizedString("Nil rss feed", comment: "Nil rss feed")
+        case .NilPodcastData:
+            return NSLocalizedString("Nil podcast data", comment: "Nil podcast data")
+        case .URLError:
+            return NSLocalizedString("URL err", comment: "URL error")
         }
     }
 }

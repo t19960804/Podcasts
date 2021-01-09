@@ -31,7 +31,7 @@ class SearchPodcastsViewModel {
         NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
             switch result {
             case .failure(let error):
-                print("Request data failed:\(error)")
+                print("Err - Request data failed: \(error.localizedDescription)")
                 self.podcasts = []
             case .success(let podcasts):
                 self.podcasts = podcasts
