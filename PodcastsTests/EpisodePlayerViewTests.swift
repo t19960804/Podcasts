@@ -32,6 +32,15 @@ class EpisodePlayerViewTests: XCTestCase {
         let curEp = viewModel.currentEpisode
         XCTAssertEqual(curEp?.title, "ep3")
     }
+    func testPlayNextEpisode_ReturnFirstEp(){
+        let ep1 = EpisodeCellViewModel(title: "ep1", author: "Tony")
+        let ep2 = EpisodeCellViewModel(title: "ep2", author: "Tony")
+        let ep3 = EpisodeCellViewModel(title: "ep3", author: "Tony")
+        viewModel.episodesList = [ep1,ep2,ep3]
+        let _ = viewModel.playNextEpisode(currentEpisode: ep3)
+        let curEp = viewModel.currentEpisode
+        XCTAssertEqual(curEp?.title, "ep1")
+    }
     func testPlayNextEpisode_NilEp(){
         let result = viewModel.playNextEpisode(currentEpisode: nil)
         let curEp = viewModel.currentEpisode
@@ -64,6 +73,15 @@ class EpisodePlayerViewTests: XCTestCase {
         let _ = viewModel.playPreviousEpisode(currentEpisode: ep2)
         let curEp = viewModel.currentEpisode
         XCTAssertEqual(curEp?.title, "ep1")
+    }
+    func testPlayPreviousEpisode_ReturnLastEp(){
+        let ep1 = EpisodeCellViewModel(title: "ep1", author: "Tony")
+        let ep2 = EpisodeCellViewModel(title: "ep2", author: "Tony")
+        let ep3 = EpisodeCellViewModel(title: "ep3", author: "Tony")
+        viewModel.episodesList = [ep1,ep2,ep3]
+        let _ = viewModel.playPreviousEpisode(currentEpisode: ep1)
+        let curEp = viewModel.currentEpisode
+        XCTAssertEqual(curEp?.title, "ep3")
     }
     func testPlayPreviousEpisode_NilEp(){
         let result = viewModel.playPreviousEpisode(currentEpisode: nil)

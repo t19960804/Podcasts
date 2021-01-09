@@ -30,7 +30,15 @@ class DownloadListTests: XCTestCase {
         let index = viewModel.getIndexOfEpisode(episode1)
         XCTAssertEqual(index, 0)
     }
-
+    func testGetIndexOfEpisode_NilEp(){
+        let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
+        let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
+        let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
+        
+        viewModel.downloadedEpisodes = [episode2,episode3]
+        let index = viewModel.getIndexOfEpisode(episode1)
+        XCTAssertEqual(index, nil)
+    }
     func testCalculateHeightForFooter(){
         let episode1 = DownloadEpisodeCellViewModel(title: "1", author: "test")
         let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
@@ -38,6 +46,12 @@ class DownloadListTests: XCTestCase {
         viewModel.downloadedEpisodes = [episode1,episode2,episode3]
         viewModel.calculateHeightForFooter()
         XCTAssertEqual(viewModel.heightForFooter, 0)
+    }
+    
+    func testCalculateHeightForFooter_EmptyDownloadedEpisodes(){
+        viewModel.downloadedEpisodes = []
+        viewModel.calculateHeightForFooter()
+        XCTAssertEqual(viewModel.heightForFooter, 200)
     }
     
     func testNumberOfEpisodes(){
@@ -53,7 +67,7 @@ class DownloadListTests: XCTestCase {
         let episode2 = DownloadEpisodeCellViewModel(title: "2", author: "test")
         let episode3 = DownloadEpisodeCellViewModel(title: "3", author: "test")
         viewModel.downloadedEpisodes = [episode1,episode2,episode3]
-        let index = viewModel.getIndexOfEpisode(episode1)
-        XCTAssertEqual(index, 0)
+        let ep = viewModel.getEpisode(at: 0)
+        XCTAssertEqual(ep.title, "1")
     }
 }
