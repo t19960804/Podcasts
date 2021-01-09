@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import FeedKit
+import Combine
 
 class NetworkService {
     static let sharedInstance = NetworkService() //static > 由於其他類別沒辦法初始化NetworkService,所以讓其他類別不需要初始化即可使用屬性
@@ -16,6 +17,7 @@ class NetworkService {
     private init(){//private > 防範其他的類別來初始化
         
     }
+    var subscriber: AnyCancellable?
     //@escaping > 讓closure在function執行完後可以呼叫(逃離function的生命週期)
     //由於@escaping的closure被呼叫時需要存取到變數 / 常數 / 函式,所以需要加上self.xxx
     //讓self的Reference count + 1,保證closure被呼叫前self不會被釋放掉
@@ -43,23 +45,21 @@ class NetworkService {
             completion(.failure(customErr))
             return
         }
-        URLSession.shared.dataTask(with: url) { (data, resp, err) in
-            if let error = err {
-                completion(.failure(error))
-                return
+        let publisher = URLSession.shared.dataTaskPublisher(for: url)
+        subscriber = publisher
+            .map { $0.data } //從(data, response)的tuple中取出data
+            .decode(type: SearchResult.self, decoder: JSONDecoder()) //將data轉自訂型別
+            .receive(on: DispatchQueue.main) //在Main Thread接收Publisher的element
+            .sink { (result) in
+                switch result {
+                case .failure(let error):
+                    completion(.failure(error))
+                case .finished:
+                    print("Success fetch podcast")
+                }
+            } receiveValue: {
+                completion(.success($0.results))
             }
-            guard let data = data else {
-                let customErr = NetworkServiceError.NilPodcastData
-                completion(.failure(customErr))
-                return
-            }
-            do {
-                let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
-                completion(.success(searchResult.results))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
     }
     func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
         //Qos > 執行任務的優先順序,等級越高越快被執行

@@ -25,7 +25,6 @@ class SearchPodcastsController: UITableViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        subscriber?.cancel()
     }
     fileprivate func setupTableView(){
         //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
@@ -35,14 +34,10 @@ class SearchPodcastsController: UITableViewController {
     }
     fileprivate func setupObserver(){
         viewModel.isSearchingObserver = { [weak self] isSearching in
-            DispatchQueue.main.async {
-                self?.searchingView.isHidden = !isSearching
-            }
+            self?.searchingView.isHidden = !isSearching
         }
         viewModel.reloadController = { [weak self] podcasts in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-            }
+            self?.tableView.reloadData()
         }
     }
     fileprivate func setupConstraints(){
