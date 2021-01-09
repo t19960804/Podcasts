@@ -62,13 +62,9 @@ class NetworkService {
             }
     }
     func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
-        //Qos > 執行任務的優先順序,等級越高越快被執行
-        //userInteractive > userInitiated > `default` > utility > background > unspecified
         DispatchQueue.global(qos: .background).async {
             let xmlParser = FeedParser(URL: url)//Parser會在Main Thread執行所以會造成UI卡頓
             xmlParser.parseAsync { (result) in
-                //Associated Value > 把值夾帶在enum case中
-                //https://hugolu.gitbooks.io/learn-swift/content/Advanced/Enum.html#associated_value
                 switch result {
                 case .success(let feed):
                     //RSS > 以XML為基礎的內容傳送機制
