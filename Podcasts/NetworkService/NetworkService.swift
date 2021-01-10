@@ -47,9 +47,11 @@ class NetworkService {
         }
         let publisher = URLSession.shared.dataTaskPublisher(for: url)
         subscriber = publisher
-            .map { $0.data } //從(data, response)的tuple中取出data
-            .decode(type: SearchResult.self, decoder: JSONDecoder()) //將data轉自訂型別
-            .receive(on: DispatchQueue.main) //在Main Thread接收Publisher的element
+            .map { $0.data }
+            .decode(type: SearchResult.self, decoder: JSONDecoder())
+            //Scheduler > 產生或接收data的Thread
+            //預設情況下,接收Data的Scheduler與產生Data的Scheduler是同一個
+            .receive(on: DispatchQueue.main)//從Background Thread切到Main Thread收資料
             .sink { (result) in
                 switch result {
                 case .failure(let error):
