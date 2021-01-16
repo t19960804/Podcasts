@@ -150,3 +150,9 @@ extension AVPlayer {
         return self.timeControlStatus == .playing
     }
 }
+
+extension FileManager {
+    var documentsFolderURL: URL {
+        return urls(for: .documentDirectory, in: .userDomainMask).first!
+    }
+}

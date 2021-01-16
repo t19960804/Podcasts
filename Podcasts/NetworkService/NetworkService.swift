@@ -86,12 +86,11 @@ class NetworkService {
 
     }
     private var observation: NSKeyValueObservation?
-    func downloadEpisode(with episode: EpisodeCellViewModel){
+    func downloadEpisode(with episode: EpisodeCellViewModel, completion: @escaping  (URL) -> Void){
         guard let url = episode.audioUrl else {
             print("Error - AudioUrl has some problem")
             return
         }
-        //Download episode to FileManager
         let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
             if let error = error {
                 print("Download file failed:\(error)")
@@ -103,31 +102,9 @@ class NetworkService {
                 print("Err - Download file success, but url is nil")
                 return
             }
-            do {
-                //Step1: 從temp檔取得Data
-                let data = try Data(contentsOf: tmpFileUrl)
-                //Step2: 取得Document資料夾路徑
-                let pathOfDocument = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                //Step3: Document path + 要新建的檔名
-                let url = pathOfDocument.appendingPathComponent("\(episode.title).mp3")
-                //Step4: 將Data寫進Url
-                //https://cdfq152313.github.io/post/2016-10-11/
-                try! data.write(to: url)
-                //Step5: 更新Userdefaults並發送通知
-                var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-                if let index = downloadEpisodes.firstIndex(where: {
-                    $0.title == episode.title && $0.author == episode.author
-                }) {
-                    downloadEpisodes[index].fileUrl = url
-                    downloadEpisodes[index].isWaitingForDownload = false
-                }
-                UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-                let info: [String : Any] = [Notification.episodeKey : episode]
-                NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
-            } catch {
-                print("Err - Get data from tmpFile url failed")
-            }
+            completion(tmpFileUrl)
         }
+        //Observe progress
         //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
         observation = task.progress.observe(\.fractionCompleted) { progress, _ in
             let info: [String : Any] = [
