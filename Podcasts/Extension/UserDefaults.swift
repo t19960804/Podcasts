@@ -29,7 +29,6 @@ extension UserDefaults {
     }
     func fetchFavoritePodcasts() -> [FavoritedPodcast] {
         guard let favoriteListData = data(forKey: UserDefaults.favoriteKey) else {
-            print("Info - UserDefaults does not have favoriteList")
             return []
         }
         do {

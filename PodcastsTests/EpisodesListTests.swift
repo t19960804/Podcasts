@@ -302,7 +302,6 @@ class MockUserDefaults {
     }
     func fetchFavoritePodcasts() -> [Podcast] {
         guard let favoriteListData = data(forKey: MockUserDefaults.mockFavoriteKey) else {
-            print("Info - UserDefaults does not have favoriteList")
             return []
         }
         do {
