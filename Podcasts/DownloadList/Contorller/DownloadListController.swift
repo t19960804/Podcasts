@@ -62,18 +62,23 @@ class DownloadListController: UITableViewController {
         }
         guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }
         //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
-        let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-        cell?.durationLabel.text = episodeViewModel.duration
-        cell?.isUserInteractionEnabled = true
-        cell?.contentView.backgroundColor = .clear
+        DispatchQueue.main.async {
+            let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+            cell?.durationLabel.text = episodeViewModel.duration
+            cell?.isUserInteractionEnabled = true
+            cell?.contentView.backgroundColor = .clear
+        }
+        
     }
     @objc fileprivate func handleProgressUpdate(notification: Notification){
         guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
             return
         }
         guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }
-        let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-        cell?.durationLabel.text = "Downloading...\(progress)%"
+        DispatchQueue.main.async {
+            let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+            cell?.durationLabel.text = "Downloading...\(progress)%"
+        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {

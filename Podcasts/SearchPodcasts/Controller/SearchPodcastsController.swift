@@ -22,6 +22,8 @@ class SearchPodcastsController: UITableViewController {
         setUpSearchController()
         setupConstraints()
         setupObserver()
+        
+        viewModel.fetchPodcasts(searchText: "Voong")
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)

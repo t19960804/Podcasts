@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 import FeedKit
 import Combine
 
@@ -86,34 +85,58 @@ class NetworkService {
         }
 
     }
+    private var observation: NSKeyValueObservation?
     func downloadEpisode(with episode: EpisodeCellViewModel){
         guard let url = episode.audioUrl else {
             print("Error - AudioUrl has some problem")
             return
         }
         //Download episode to FileManager
-        let destination = DownloadRequest.suggestedDownloadDestination()
+        let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
+            if let error = error {
+                print("Download file failed:\(error)")
+                return
+            }
+            //載下來的data會存在.tmp檔,還需要將data取出寫成.mp3檔
+            //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
+            guard let tmpFileUrl = url else {
+                print("Err - Download file success, but url is nil")
+                return
+            }
+            do {
+                //Step1: 從temp檔取得Data
+                let data = try Data(contentsOf: tmpFileUrl)
+                //Step2: 取得Document資料夾路徑
+                let pathOfDocument = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                //Step3: Document path + 要新建的檔名
+                let url = pathOfDocument.appendingPathComponent("\(episode.title).mp3")
+                //Step4: 將Data寫進Url
+                //https://cdfq152313.github.io/post/2016-10-11/
+                try! data.write(to: url)
+                //Step5: 更新Userdefaults並發送通知
+                var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+                if let index = downloadEpisodes.firstIndex(where: {
+                    $0.title == episode.title && $0.author == episode.author
+                }) {
+                    downloadEpisodes[index].fileUrl = url
+                    downloadEpisodes[index].isWaitingForDownload = false
+                }
+                UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
+                let info: [String : Any] = [Notification.episodeKey : episode]
+                NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
+            } catch {
+                print("Err - Get data from tmpFile url failed")
+            }
+        }
+        //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
+        observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+            let info: [String : Any] = [
+                Notification.progressKey : Int(progress.fractionCompleted * 100),
+                Notification.episodeKey : episode]
+            NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
+        }
 
-        AF.download(url, to: destination)
-                .downloadProgress { progress in
-                    let info: [String : Any] = [
-                        Notification.progressKey : Int(progress.fractionCompleted * 100),
-                        Notification.episodeKey : episode]
-                    NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
-                }
-                .response { (response) in
-                    //下載完需要更新剛剛存進Userdefaults的episodeViewModel資訊
-                    var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-                    if let index = downloadEpisodes.firstIndex(where: {
-                        $0.title == episode.title && $0.author == episode.author
-                    }) {
-                        downloadEpisodes[index].fileUrl = response.fileURL
-                        downloadEpisodes[index].isWaitingForDownload = false
-                    }
-                    UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-                    let info: [String : Any] = [Notification.episodeKey : episode]
-                    NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
-                }
+        task.resume()
     }
 }
 //https://riptutorial.com/swift/example/28601/create-custom-error-with-localized-description
