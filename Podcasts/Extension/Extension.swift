@@ -61,7 +61,7 @@ extension UIStackView {
 
 extension UIApplication {
     static var mainTabBarController: MainTabBarController? {
-        return shared.keyWindow?.rootViewController as? MainTabBarController
+        return shared.windows.filter {$0.isKeyWindow}.first?.rootViewController as? MainTabBarController
     }
 }
 

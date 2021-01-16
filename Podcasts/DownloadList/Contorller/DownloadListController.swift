@@ -96,8 +96,8 @@ class DownloadListController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
-    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [self] (_, _) in
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [self]  (_, _, _) in
             //Remove episode file from FileManager and UserDefaults
             let episode = viewModel.getEpisode(at: indexPath.row)
             guard let fileUrl = episode.fileUrl?.getTrueLocation() else {
@@ -112,7 +112,8 @@ class DownloadListController: UITableViewController {
             let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.currentEpisode
             viewModel.removeEpisodeFromUserDefaults(episode: currentEpisodePlaying)
         }
-        return [deleteAction]
+        let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction])
+        return swipeActions
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let episodeViewModel = viewModel.getEpisode(at: indexPath.row)

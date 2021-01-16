@@ -11,7 +11,7 @@ import UIKit
 class SearchingView: UIView {
     
     let activityIndicatorView: UIActivityIndicatorView = {
-        let av = UIActivityIndicatorView(style: .whiteLarge)
+        let av = UIActivityIndicatorView(style: .large)
         av.color = .purple
         av.translatesAutoresizingMaskIntoConstraints = false
         av.startAnimating()

@@ -118,14 +118,12 @@ class EpisodesListController: UITableViewController {
         let tabBarController = UIApplication.mainTabBarController
         tabBarController?.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: viewModel.episodes)
     }
-    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let episode = viewModel.getEpisode(at: indexPath.row)
         let episodeWasDownloaded = viewModel.isEpisodeDownloaded(downloads: UserDefaults.standard.fetchDownloadedEpisodes(), episode: episode)
-        if episodeWasDownloaded {
-            return nil
-        }
+        if episodeWasDownloaded { return nil }
         
-        let downloadAction = UITableViewRowAction(style: .normal, title: "Download") { (_, _) in
+        let downloadAction = UIContextualAction(style: .normal, title: "Download") { [self]  (_, _, _) in
             let episode = self.viewModel.getEpisode(at: indexPath.row)
             self.viewModel.downloadEpisode(episode: episode)
             //Reload cell to show downloadedImageView
@@ -134,7 +132,8 @@ class EpisodesListController: UITableViewController {
             let downloadController = UIApplication.mainTabBarController?.downloadController
             downloadController?.tabBarItem.badgeValue = "New"
         }
-        return [downloadAction]
+        let swipeActions = UISwipeActionsConfiguration(actions: [downloadAction])
+        return swipeActions
     }
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let label = UILabel(text: "No Episodes!", font: .boldSystemFont(ofSize: 20), textColor: .purple, textAlignment: .center, numberOfLines: 0)
