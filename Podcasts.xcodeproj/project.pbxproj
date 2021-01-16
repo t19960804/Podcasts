@@ -23,7 +23,6 @@
 		0B5086B924B03FE800AD3E39 /* EpisodeMiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5086B824B03FE800AD3E39 /* EpisodeMiniPlayerView.swift */; };
 		0B5363372598498000DD1E1B /* FavoritedPodcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5363362598498000DD1E1B /* FavoritedPodcast.swift */; };
 		0B54E216256A5FCA00982BA5 /* DownloadListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B54E215256A5FCA00982BA5 /* DownloadListViewModel.swift */; };
-		0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0B5BE49924135FAF00AFABD1 /* Alamofire */; };
 		0B5BF31625034ECD00BBA1D6 /* FavoritesListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5BF31525034ECD00BBA1D6 /* FavoritesListController.swift */; };
 		0B5BF31E2503533A00BBA1D6 /* FavoritesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5BF31D2503533A00BBA1D6 /* FavoritesCell.swift */; };
 		0B5E922C244AD5DA00448003 /* EpisodeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E922B244AD5DA00448003 /* EpisodeCell.swift */; };
@@ -123,7 +122,6 @@
 				0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */,
 				0B46133824C402F30071DC80 /* LBTATools in Frameworks */,
 				0BBD6A1B24359F0B000FB9CB /* SDWebImage in Frameworks */,
-				0B5BE49A24135FAF00AFABD1 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,7 +427,6 @@
 			);
 			name = Podcasts;
 			packageProductDependencies = (
-				0B5BE49924135FAF00AFABD1 /* Alamofire */,
 				0BBD6A1A24359F0B000FB9CB /* SDWebImage */,
 				0B4BC69C24386F7000912277 /* FeedKit */,
 				0B46133724C402F30071DC80 /* LBTATools */,
@@ -468,7 +465,6 @@
 			);
 			mainGroup = 0BC9DF432408BECB00142424;
 			packageReferences = (
-				0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				0BBD6A1924359F0B000FB9CB /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				0B4BC69B24386F7000912277 /* XCRemoteSwiftPackageReference "FeedKit" */,
 				0B46133624C402F30071DC80 /* XCRemoteSwiftPackageReference "LBTATools" */,
@@ -833,14 +829,6 @@
 				minimumVersion = 9.1.0;
 			};
 		};
-		0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.2;
-			};
-		};
 		0BBD6A1924359F0B000FB9CB /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
@@ -866,11 +854,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0B4BC69B24386F7000912277 /* XCRemoteSwiftPackageReference "FeedKit" */;
 			productName = FeedKit;
-		};
-		0B5BE49924135FAF00AFABD1 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0B5BE49824135FAF00AFABD1 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
 		};
 		0BBD6A1A24359F0B000FB9CB /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
