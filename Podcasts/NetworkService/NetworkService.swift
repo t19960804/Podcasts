@@ -10,18 +10,16 @@ import Foundation
 import FeedKit
 import Combine
 
+//為何不用struct來設計Singleton?
+//因為struct為value type,代表其他人對於Singleton的操作可能不會反映到Singleton
+//這樣就違反了Singleton的唯一性,因為每個人看到的Singleton的狀態都不一致
 class NetworkService {
-    static let sharedInstance = NetworkService() //static > 由於其他類別沒辦法初始化NetworkService,所以讓其他類別不需要初始化即可使用屬性
     
-    private init(){//private > 防範其他的類別來初始化
+    static let sharedInstance = NetworkService()
+    private init(){
         
     }
     var subscriber: AnyCancellable?
-    //@escaping > 讓closure在function執行完後可以呼叫(逃離function的生命週期)
-    //由於@escaping的closure被呼叫時需要存取到變數 / 常數 / 函式,所以需要加上self.xxx
-    //讓self的Reference count + 1,保證closure被呼叫前self不會被釋放掉
-    //https://www.jianshu.com/p/9fb444e88d26
-    //https://medium.com/%E5%BD%BC%E5%BE%97%E6%BD%98%E7%9A%84-swift-ios-app-%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E8%A7%A3%E7%AD%94%E9%9B%86/%E8%AE%93-closure-%E5%9C%A8-function-%E5%A4%96%E7%B9%BC%E7%BA%8C%E4%BD%BF%E7%94%A8%E7%9A%84-escaping-40d50b17f75b
     
     func fetchPodcasts(searchText: String, completion: @escaping (Result<[Podcast],Error>) -> Void){
         //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
