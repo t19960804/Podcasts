@@ -10,11 +10,11 @@ import UIKit
 import Combine
 
 class SearchPodcastsController: UITableViewController {
-    let cellID = "cellID"
-    let searchingView = SearchingView()
-    let viewModel = SearchPodcastsViewModel()
-    var searchTextFieldSubscriber: AnyCancellable?
-    var isSearchingSubscriber: AnyCancellable?
+    private let cellID = "cellID"
+    private let searchingView = SearchingView()
+    private let viewModel = SearchPodcastsViewModel()
+    private var searchTextFieldSubscriber: AnyCancellable?
+    private var isSearchingSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,7 +66,7 @@ class SearchPodcastsController: UITableViewController {
         isSearchingSubscriber = publisher
             .map { !$0 }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.isHidden, on: searchingView)
+            .assign(to: \.isHidden, on: searchingView) //回傳AnyCancellable,代表訂閱關係成立,這段關係可以隨時被Cancel
     }
     fileprivate func setupSearchTextFieldSubscriber(){
         //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
