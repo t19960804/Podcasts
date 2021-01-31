@@ -13,7 +13,8 @@ class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
     let searchingView = SearchingView()
     let viewModel = SearchPodcastsViewModel()
-    var searchPodcastSubscriber: AnyCancellable?
+    var searchTextFieldSubscriber: AnyCancellable?
+    var isSearchingSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,11 +27,13 @@ class SearchPodcastsController: UITableViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupSearchBarPubSub()
+        setupIsSearchingSubscriber()
+        setupSearchTextFieldSubscriber()
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        searchPodcastSubscriber?.cancel()
+        searchTextFieldSubscriber?.cancel()
+        isSearchingSubscriber?.cancel()
     }
     fileprivate func setupTableView(){
         //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
@@ -39,9 +42,6 @@ class SearchPodcastsController: UITableViewController {
         tableView.eliminateExtraSeparators()
     }
     fileprivate func setupObserver(){
-        viewModel.isSearchingObserver = { [weak self] isSearching in
-            self?.searchingView.isHidden = !isSearching
-        }
         viewModel.reloadController = { [weak self] podcasts in
             self?.tableView.reloadData()
         }
@@ -61,10 +61,17 @@ class SearchPodcastsController: UITableViewController {
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
     }
-    fileprivate func setupSearchBarPubSub(){
+    fileprivate func setupIsSearchingSubscriber(){
+        let publisher = viewModel.$isSearching
+        isSearchingSubscriber = publisher
+            .map { !$0 }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, on: searchingView)
+    }
+    fileprivate func setupSearchTextFieldSubscriber(){
         //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
         let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: navigationItem.searchController?.searchBar.searchTextField)
-        searchPodcastSubscriber = publisher
+        searchTextFieldSubscriber = publisher
             .map { (($0.object as! UISearchTextField).text ?? "") }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .removeDuplicates() //若0.5秒過後,element還是跟上一次一樣,就不往下傳element

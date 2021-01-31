@@ -6,22 +6,19 @@
 //  Copyright © 2020 t19960804. All rights reserved.
 //
 
-import Foundation
 import UIKit
+import Combine
 
 class SearchPodcastsViewModel {
     //Fetch Data
-    var isSearching = false {
-        didSet {
-            isSearchingObserver?(isSearching)
-        }
-    }
+    //讓Property變成Publisher
+    @Published var isSearching = false
+    
     var podcasts = [Podcast]() {
         didSet {
            reloadController?(podcasts)
         }
     }
-    var isSearchingObserver: ((Bool) -> ())?
     var reloadController: (([Podcast]) -> ())?
     
     func fetchPodcasts(searchText: String){
