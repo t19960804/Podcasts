@@ -13,7 +13,7 @@ class SearchPodcastsController: UITableViewController {
     let cellID = "cellID"
     let searchingView = SearchingView()
     let viewModel = SearchPodcastsViewModel()
-    var subscriber: AnyCancellable?
+    var searchPodcastSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +24,13 @@ class SearchPodcastsController: UITableViewController {
         
         viewModel.fetchPodcasts(searchText: "Voong")
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupSearchBarPubSub()
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        searchPodcastSubscriber?.cancel()
     }
     fileprivate func setupTableView(){
         //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
@@ -55,12 +60,11 @@ class SearchPodcastsController: UITableViewController {
         navigationItem.hidesSearchBarWhenScrolling = false //固定searchBar
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
-        setupSearchBarPubSub(searchController)
     }
-    fileprivate func setupSearchBarPubSub(_ searchController: UISearchController){
+    fileprivate func setupSearchBarPubSub(){
         //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
-        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchController.searchBar.searchTextField)
-        subscriber = publisher
+        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: navigationItem.searchController?.searchBar.searchTextField)
+        searchPodcastSubscriber = publisher
             .map { (($0.object as! UISearchTextField).text ?? "") }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .removeDuplicates() //若0.5秒過後,element還是跟上一次一樣,就不往下傳element
