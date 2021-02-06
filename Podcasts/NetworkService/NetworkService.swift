@@ -48,6 +48,8 @@ class NetworkService {
             .decode(type: SearchResult.self, decoder: JSONDecoder())
             //Scheduler > 產生或接收data的Thread
             //預設情況下,接收Data的Scheduler與產生Data的Scheduler是同一個
+            //https://www.jianshu.com/p/f671b7acc2c2
+            //https://www.vadimbulavin.com/understanding-schedulers-in-swift-combine-framework/
             .receive(on: DispatchQueue.main)//從Background Thread切到Main Thread收資料
             .sink { (result) in
                 switch result {

@@ -13,13 +13,7 @@ class SearchPodcastsViewModel {
     //Fetch Data
     //讓Property變成Publisher
     @Published var isSearching = false
-    
-    var podcasts = [Podcast]() {
-        didSet {
-           reloadController?(podcasts)
-        }
-    }
-    var reloadController: (([Podcast]) -> ())?
+    @Published var podcasts = [Podcast]()
     
     func fetchPodcasts(searchText: String){
         isSearching = true

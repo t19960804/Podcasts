@@ -15,13 +15,13 @@ class SearchPodcastsController: UITableViewController {
     private let viewModel = SearchPodcastsViewModel()
     private var searchTextFieldSubscriber: AnyCancellable?
     private var isSearchingSubscriber: AnyCancellable?
+    private var podcastsDataSourceSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setUpSearchController()
         setupConstraints()
-        setupObserver()
         
         viewModel.fetchPodcasts(searchText: "Voong")
     }
@@ -29,22 +29,19 @@ class SearchPodcastsController: UITableViewController {
         super.viewWillAppear(animated)
         setupIsSearchingSubscriber()
         setupSearchTextFieldSubscriber()
+        setupPodcastsDataSourceSubscriber()
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         searchTextFieldSubscriber?.cancel()
         isSearchingSubscriber?.cancel()
+        podcastsDataSourceSubscriber?.cancel()
     }
     fileprivate func setupTableView(){
         //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
         definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
-    }
-    fileprivate func setupObserver(){
-        viewModel.reloadController = { [weak self] podcasts in
-            self?.tableView.reloadData()
-        }
     }
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)
@@ -61,6 +58,14 @@ class SearchPodcastsController: UITableViewController {
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
     }
+    fileprivate func setupPodcastsDataSourceSubscriber(){
+        let publisher = viewModel.$podcasts
+        podcastsDataSourceSubscriber = publisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                self?.tableView.reloadData()
+            })
+    }
     fileprivate func setupIsSearchingSubscriber(){
         let publisher = viewModel.$isSearching
         isSearchingSubscriber = publisher
@@ -69,13 +74,12 @@ class SearchPodcastsController: UITableViewController {
             .assign(to: \.isHidden, on: searchingView) //回傳AnyCancellable,代表訂閱關係成立,這段關係可以隨時被Cancel
     }
     fileprivate func setupSearchTextFieldSubscriber(){
-        //https://stackoverflow.com/questions/60241335/somehow-combine-with-search-controller-not-working-any-idea
         let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: navigationItem.searchController?.searchBar.searchTextField)
         searchTextFieldSubscriber = publisher
             .map { (($0.object as! UISearchTextField).text ?? "") }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .removeDuplicates() //若0.5秒過後,element還是跟上一次一樣,就不往下傳element
-            .receive(on: RunLoop.main)
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: {[weak self] in
                 self?.viewModel.fetchPodcasts(searchText: $0)
             })
