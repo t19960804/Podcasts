@@ -42,12 +42,8 @@ class EpisodePlayerViewModel {
     }
     var needToPausePlayerObserver: ((Bool,UIImage)->Void)?
     
-    var startToPlayEpisode = false {
-        didSet {
-            startToPlayEpisodeObserver?(startToPlayEpisode)
-        }
-    }
-    var startToPlayEpisodeObserver: ((Bool)->Void)?
+    @Published var startToPlayEpisode = false
+
     //MARK: - EpisodeObserver
     var episodesList = [EpisodeProtocol]()
     

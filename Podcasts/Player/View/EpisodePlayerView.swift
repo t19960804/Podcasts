@@ -77,6 +77,7 @@ class EpisodePlayerView: UIView {
     private var sliderValueSubscriber: AnyCancellable?
     private var volumeSubscriber: AnyCancellable?
     private var seekTimeSubscriber: AnyCancellable?
+    private var startToPlayEpisodeSubscriber: AnyCancellable?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -116,15 +117,11 @@ class EpisodePlayerView: UIView {
             self?.miniPlayerView.playerControlButton.setImage(image, for: .normal)
         }
         
-        viewModel.startToPlayEpisodeObserver = { [weak self] startToPlay in
-            self?.commandCenter.nextTrackCommand.isEnabled = startToPlay
-            self?.commandCenter.previousTrackCommand.isEnabled = startToPlay
-        }
-        
         sliderValueSubscriber = viewModel.$sliderValue
             .map{Float($0)}
             .receive(on: DispatchQueue.main)
             .assign(to: \.value, on: timeSlider)
+        
         volumeSubscriber = viewModel.$volume
             .receive(on: DispatchQueue.main)
             .assign(to: \.volume, on: podcastPlayer)
@@ -134,12 +131,19 @@ class EpisodePlayerView: UIView {
             .map{$0.getFormattedString()}
             .receive(on: DispatchQueue.main)
             .assign(to: \.text, on: timeLabel_LowerBound)
+        
+        startToPlayEpisodeSubscriber = viewModel.$startToPlayEpisode
+            .sink { [weak self](startToPlay) in
+                self?.commandCenter.nextTrackCommand.isEnabled = startToPlay
+                self?.commandCenter.previousTrackCommand.isEnabled = startToPlay
+            }
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
         sliderValueSubscriber?.cancel()
         volumeSubscriber?.cancel()
         seekTimeSubscriber?.cancel()
+        startToPlayEpisodeSubscriber?.cancel()
     }
     //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

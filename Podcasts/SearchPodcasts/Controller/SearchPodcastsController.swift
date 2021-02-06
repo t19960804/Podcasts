@@ -61,9 +61,10 @@ class SearchPodcastsController: UITableViewController {
         let publisher = viewModel.$podcasts
         podcastsDataSourceSubscriber = publisher
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                self?.tableView.reloadData()
-            })
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.tableView.reloadData()
+            }
     }
     fileprivate func setupIsSearchingSubscriber(){
         let publisher = viewModel.$isSearching
@@ -79,9 +80,10 @@ class SearchPodcastsController: UITableViewController {
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .removeDuplicates() //若0.5秒過後,element還是跟上一次一樣,就不往下傳element
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: {[weak self] in
-                self?.viewModel.fetchPodcasts(searchText: $0)
-            })
+            .sink { [weak self] in
+                guard let self = self else { return }
+                self.viewModel.fetchPodcasts(searchText: $0)
+            }
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.podcasts.count

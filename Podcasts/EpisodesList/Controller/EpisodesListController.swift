@@ -72,12 +72,12 @@ class EpisodesListController: UITableViewController {
         //但使用到weak / unowned宣告時還是得加self.xxx
         isSearchingSubscriber = publisher
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] (isSearching) in
+            .sink { [weak self] (isSearching) in
                 guard let self = self else { return }
                 self.searchingView.isHidden = !isSearching
                 self.checkIfEpisodeIsPlaying()
                 self.tableView.reloadData()
-            })
+            }
     }
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
