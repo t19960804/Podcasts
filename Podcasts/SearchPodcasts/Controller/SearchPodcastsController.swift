@@ -38,7 +38,6 @@ class SearchPodcastsController: UITableViewController {
         podcastsDataSourceSubscriber?.cancel()
     }
     fileprivate func setupTableView(){
-        //https://stackoverflow.com/questions/37352057/getting-black-screen-on-using-tab-bar-while-searching-using-searchcontroller/37357242#37357242
         definesPresentationContext = true//https://www.jianshu.com/p/b065413cbf57
         tableView.register(PodcastCell.self, forCellReuseIdentifier: cellID)
         tableView.eliminateExtraSeparators()
@@ -54,7 +53,7 @@ class SearchPodcastsController: UITableViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.placeholder = "Search Podcasts..."
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false //固定searchBar
+        navigationItem.hidesSearchBarWhenScrolling = false
         //search時TableView的背景顏色是否變成灰底的
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
     }
@@ -104,7 +103,6 @@ class SearchPodcastsController: UITableViewController {
         return label
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        //https://stackoverflow.com/questions/29144793/ios-swift-viewforheaderinsection-not-being-called
         return viewModel.calculateHeightForHeader()
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
