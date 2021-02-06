@@ -6,7 +6,7 @@
 //  Copyright © 2020 t19960804. All rights reserved.
 //
 
-import Foundation
+import Combine
 import UIKit
 
 class EpisodesListViewModel {
@@ -30,15 +30,7 @@ class EpisodesListViewModel {
         }
     }
     
-    var isSearching = false {
-        didSet {
-            isSearchingObserver?(isSearching)
-            reloadControllerObserver?()
-        }
-    }
-    var isSearchingObserver: ((Bool)->Void)?
-    var reloadControllerObserver: (()->Void)?
-    
+    @Published var isSearching = false
     
     func parseXMLFromURL(with url: String, completion: @escaping (Result<[Episode],Error>) -> Void) {
         guard let feedURL = URL(string: url) else {

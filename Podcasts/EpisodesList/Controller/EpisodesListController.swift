@@ -8,11 +8,14 @@
 
 import UIKit
 import FeedKit
+import Combine
 
 class EpisodesListController: UITableViewController {
 
     let searchingView = SearchingView()
     let viewModel = EpisodesListViewModel()
+    private var isSearchingSubscriber: AnyCancellable?
+    
     init() {
         super.init(style: .plain)
         setupViewModel()
@@ -32,17 +35,6 @@ class EpisodesListController: UITableViewController {
         viewModel.podcastUpdateObserver = { [weak self] podcast in
             self?.navigationItem.title = podcast.trackName
         }
-        viewModel.isSearchingObserver = { [weak self] isSearching in
-            DispatchQueue.main.async {
-                self?.searchingView.isHidden = !isSearching
-            }
-        }
-        viewModel.reloadControllerObserver = {
-            DispatchQueue.main.async { [self] in //Swift5.3改動 > 顯性的表明capture後,不用在block中隱性的加上self.xxx表明capture
-                checkIfEpisodeIsPlaying()
-                tableView.reloadData()
-            }
-        }
     }
     fileprivate func setupTableView(){
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
@@ -53,6 +45,24 @@ class EpisodesListController: UITableViewController {
         checkIfPodcastDidFavorited()
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
+        setupIsSearchingSubscriber()
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        isSearchingSubscriber?.cancel()
+    }
+    fileprivate func setupIsSearchingSubscriber(){
+        let publisher = viewModel.$isSearching
+        //Swift5.3改動 > 顯性的用capture list表明capture後,不用在block中隱性的加上self.xxx表明capture
+        //但使用到weak / unowned宣告時還是得加self.xxx
+        isSearchingSubscriber = publisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] (isSearching) in
+                guard let self = self else { return }
+                self.searchingView.isHidden = !isSearching
+                self.checkIfEpisodeIsPlaying()
+                self.tableView.reloadData()
+            })
     }
     @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
