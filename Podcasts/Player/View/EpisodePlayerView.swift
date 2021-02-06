@@ -10,6 +10,7 @@ import UIKit
 import AVKit
 import MediaPlayer
 import MarqueeLabel
+import Combine
 
 class EpisodePlayerView: UIView {
 
@@ -73,6 +74,9 @@ class EpisodePlayerView: UIView {
     let commandCenter = MPRemoteCommandCenter.shared()
 
     let viewModel = EpisodePlayerViewModel()
+    private var sliderValueSubscriber: AnyCancellable?
+    private var volumeSubscriber: AnyCancellable?
+    private var seekTimeSubscriber: AnyCancellable?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -112,25 +116,30 @@ class EpisodePlayerView: UIView {
             self?.miniPlayerView.playerControlButton.setImage(image, for: .normal)
         }
         
-        viewModel.sliderValueUpdateObserver = { [weak self] newValue in
-            self?.timeSlider.value = newValue
-        }
-        
-        viewModel.lowerBoundTimeLabelUpdateObserver = { [weak self] timeString in
-            self?.timeLabel_LowerBound.text = timeString
-        }
-        
-        viewModel.volumeUpdateObserver = { [weak self] value in
-            self?.podcastPlayer.volume = value
-        }
-        
         viewModel.startToPlayEpisodeObserver = { [weak self] startToPlay in
             self?.commandCenter.nextTrackCommand.isEnabled = startToPlay
             self?.commandCenter.previousTrackCommand.isEnabled = startToPlay
         }
+        
+        sliderValueSubscriber = viewModel.$sliderValue
+            .map{Float($0)}
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.value, on: timeSlider)
+        volumeSubscriber = viewModel.$volume
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.volume, on: podcastPlayer)
+        viewModel.volume = 1
+        
+        seekTimeSubscriber = viewModel.$seekTime
+            .map{$0.getFormattedString()}
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: timeLabel_LowerBound)
     }
     deinit {
         NotificationCenter.default.removeObserver(self)
+        sliderValueSubscriber?.cancel()
+        volumeSubscriber?.cancel()
+        seekTimeSubscriber?.cancel()
     }
     //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

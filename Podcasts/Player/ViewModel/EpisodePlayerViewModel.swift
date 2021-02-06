@@ -6,7 +6,7 @@
 //  Copyright © 2020 t19960804. All rights reserved.
 //
 
-import Foundation
+import Combine
 import UIKit
 import AVKit
 
@@ -91,15 +91,8 @@ class EpisodePlayerViewModel {
         return true
     }
     //MARK: - SliderObserver
-    var sliderValue: Float64 = 0 {
-        didSet {
-            let floatValue = Float(sliderValue)
-            sliderValueUpdateObserver?(floatValue)
-        }
-    }
-    
-    var sliderValueUpdateObserver: ((Float)->Void)?
-    
+    @Published var sliderValue: Float64 = 0
+
     func updateTimeSliderValue(currentTime: CMTime, duration: CMTime){
         let currentSeconds = currentTime.toSeconds()
         let totalSeconds = duration.toSeconds()
@@ -107,14 +100,8 @@ class EpisodePlayerViewModel {
         sliderValue = progressPercent
     }
     //MARK: - SeekTimeObserver
-    var seekTime = CMTime(seconds: 1, preferredTimescale: 1000){
-        didSet {
-            let timeString = seekTime.getFormattedString()
-            lowerBoundTimeLabelUpdateObserver?(timeString)
-        }
-    }
-    var lowerBoundTimeLabelUpdateObserver: ((String)->Void)?
-    
+    @Published var seekTime = CMTime(seconds: 1, preferredTimescale: 1000)
+
     func calculateSeekTime_TimeSilderDragged(ratio: Float, duration: CMTime){
         let durationInSeconds = duration.toSeconds()
         //總秒數乘以Slider的值(0 - 1),做為要快 / 倒轉的秒數
@@ -132,12 +119,7 @@ class EpisodePlayerViewModel {
         self.seekTime = seekTime
     }
     
-    var volume: Float = 0.0 {
-        didSet {
-          volumeUpdateObserver?(volume)
-        }
-    }
-    var volumeUpdateObserver: ((Float)->Void)?
+    @Published var volume: Float = 0.0
 
     //MARK: - Other
     //若沒有加入此Function,有時背景播放會無效
