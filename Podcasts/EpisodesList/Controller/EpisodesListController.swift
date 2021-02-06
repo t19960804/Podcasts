@@ -11,11 +11,12 @@ import FeedKit
 import Combine
 
 class EpisodesListController: UITableViewController {
-
-    let searchingView = SearchingView()
-    let viewModel = EpisodesListViewModel()
+    
+    private let searchingView = SearchingView()
+    private let viewModel = EpisodesListViewModel()
     private var isSearchingSubscriber: AnyCancellable?
     
+    //MARK: - Init method
     init() {
         super.init(style: .plain)
         setupViewModel()
@@ -24,21 +25,13 @@ class EpisodesListController: UITableViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    //MARK: - ViewController LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTableView()
         setupConstraints()
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
-    }
-    func setupViewModel(){
-        viewModel.podcastUpdateObserver = { [weak self] podcast in
-            self?.navigationItem.title = podcast.trackName
-        }
-    }
-    fileprivate func setupTableView(){
-        tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
-        tableView.eliminateExtraSeparators()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -51,6 +44,28 @@ class EpisodesListController: UITableViewController {
         super.viewWillDisappear(animated)
         isSearchingSubscriber?.cancel()
     }
+    //MARK: - Constraints
+    fileprivate func setupConstraints(){
+        view.addSubview(searchingView)
+        searchingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        searchingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
+        searchingView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+    }
+    //MARK: - Other Methods
+    func updatePodcast(with podcast: PodcastProtocol){
+        viewModel.podcast = podcast
+    }
+    fileprivate func setupViewModel(){
+        viewModel.podcastUpdateObserver = { [weak self] podcast in
+            self?.navigationItem.title = podcast.trackName
+        }
+    }
+    fileprivate func setupTableView(){
+        tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
+        tableView.eliminateExtraSeparators()
+    }
+    
     fileprivate func setupIsSearchingSubscriber(){
         let publisher = viewModel.$isSearching
         //Swift5.3改動 > 顯性的用capture list表明capture後,不用在block中隱性的加上self.xxx表明capture
@@ -89,13 +104,6 @@ class EpisodesListController: UITableViewController {
         let podcastDidFavorited = viewModel.isPodcastFavorited(favorites: UserDefaults.standard.fetchFavoritePodcasts(), podcast: viewModel.podcast)
         navigationItem.rightBarButtonItem = podcastDidFavorited ? nil : favoriteBarButtonItem
     }
-    fileprivate func setupConstraints(){
-        view.addSubview(searchingView)
-        searchingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        searchingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 20).isActive = true
-        searchingView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        searchingView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-    }
     @objc fileprivate func handleFavorite(){
         guard let podcast = viewModel.podcast as? Podcast else { return }
         let favoritedPodcast = FavoritedPodcast(podcast: podcast)
@@ -111,6 +119,7 @@ class EpisodesListController: UITableViewController {
             viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
+    //MARK: - TableView LifeCycle
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfEpisodes()
     }
