@@ -13,17 +13,34 @@ class DownloadListController: UITableViewController {
     
     let viewModel = DownloadListViewModel()
     private var progressUpdateSubscriber: AnyCancellable?
+    private var episodeDownloadDoneSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
         setupProgressUpdateSubscriber()
+        setupEpisodeDownloadDoneSubscriber()
         setupNotificationCenter()
     }
     fileprivate func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+    }
+    fileprivate func setupEpisodeDownloadDoneSubscriber(){
+        let publisher = NotificationCenter.default.publisher(for: .episodeDownloadDone)
+        episodeDownloadDoneSubscriber = publisher
+            .map{$0.userInfo?[Notification.episodeKey] as! EpisodeCellViewModel}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] episodeViewModel in
+                guard let self = self else { return }
+                self.viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+                guard let index = self.viewModel.getIndexOfEpisode(episodeViewModel) else { return }
+                //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
+                let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+                cell?.durationLabel.text = episodeViewModel.duration
+                cell?.isUserInteractionEnabled = true
+                cell?.contentView.backgroundColor = .clear
+            }
     }
     fileprivate func setupProgressUpdateSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .progressUpdate)
@@ -67,31 +84,6 @@ class DownloadListController: UITableViewController {
         let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.currentEpisode
         if let index = viewModel.getIndexOfEpisode(currentEpisodePlaying) {
             viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-        }
-    }
-    @objc fileprivate func handleEpisdoeDownloadDone(notification: Notification){
-        viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        guard let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
-            return
-        }
-        guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }
-        //不可以用cell.episodeViewModel = episodeViewModel,這種做法需要搭配.reloadData()
-        DispatchQueue.main.async {
-            let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-            cell?.durationLabel.text = episodeViewModel.duration
-            cell?.isUserInteractionEnabled = true
-            cell?.contentView.backgroundColor = .clear
-        }
-        
-    }
-    @objc fileprivate func handleProgressUpdate(notification: Notification){
-        guard let progress = notification.userInfo?[Notification.progressKey] as? Int, let episodeViewModel = notification.userInfo?[Notification.episodeKey] as? EpisodeCellViewModel else {
-            return
-        }
-        guard let index = viewModel.getIndexOfEpisode(episodeViewModel) else { return }
-        DispatchQueue.main.async {
-            let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
-            cell?.durationLabel.text = "Downloading...\(progress)%"
         }
     }
 
