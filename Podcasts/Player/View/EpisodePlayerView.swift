@@ -78,6 +78,8 @@ class EpisodePlayerView: UIView {
     private var volumeSubscriber: AnyCancellable?
     private var seekTimeSubscriber: AnyCancellable?
     private var startToPlayEpisodeSubscriber: AnyCancellable?
+    private var needToPausePlayerSubscriber: AnyCancellable?
+    private var currentEpisodeSubscriber: AnyCancellable?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,32 +93,41 @@ class EpisodePlayerView: UIView {
         setupInterruptionNotification()
         podcastPlayer.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
         
-        viewModel.newEpisodeNeedToPlayObserver = { [weak self] (episode, url) in
-            guard let self = self else { return }
-            self.episodeImageView.sd_setImage(with: episode.imageUrl) { (image, _, _, _) in
-                MPNowPlayingInfoCenter.default().setInfo(title: episode.title, artist: episode.author, image: image)
+        currentEpisodeSubscriber = viewModel.$currentEpisode
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] episode in
+                guard let self = self else { return }
+                guard let episode = episode else { return }
+                self.episodeImageView.sd_setImage(with: episode.imageUrl) { (image, _, _, _) in
+                    MPNowPlayingInfoCenter.default().setInfo(title: episode.title, artist: episode.author, image: image)
+                }
+                self.titleLabel.text = episode.title
+                self.authorLabel.text = episode.author
+                self.timeLabel_UpperBound.text = episode.duration
+                self.miniPlayerView.episodeViewModel = episode
+                if let downloadEpisode = episode as? DownloadProtocol {
+                    self.playAudio(with: downloadEpisode.fileUrl?.getTrueLocation())
+                } else {
+                    self.playAudio(with: episode.audioUrl)
+                }
             }
-            self.titleLabel.text = episode.title
-            self.authorLabel.text = episode.author
-            self.timeLabel_UpperBound.text = episode.duration
-            self.miniPlayerView.episodeViewModel = episode
-            self.playAudio(with: url)
-        }
-        
-        viewModel.needToPausePlayerObserver = { [weak self] (needToPause, image) in
-            if needToPause {
-                self?.podcastPlayer.pause()
-            } else {
-                self?.podcastPlayer.play()
+        needToPausePlayerSubscriber = viewModel.$needToPausePlayer
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] needToPause in
+                guard let self = self else { return }
+                if needToPause {
+                    self.podcastPlayer.pause()
+                } else {
+                    self.podcastPlayer.play()
+                }
+                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
+                    let transForm: CGAffineTransform = needToPause ? .init(scaleX: 0.8, y: 0.8) : .identity
+                        self.episodeImageView.transform = transForm
+                })
+                let image = needToPause ? #imageLiteral(resourceName: "play") : #imageLiteral(resourceName: "pause")
+                self.playerControlButton.setImage(image, for: .normal)
+                self.miniPlayerView.playerControlButton.setImage(image, for: .normal)
             }
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
-                let transForm: CGAffineTransform = needToPause ? .init(scaleX: 0.8, y: 0.8) : .identity
-                    self?.episodeImageView.transform = transForm
-            })
-            self?.playerControlButton.setImage(image, for: .normal)
-            self?.miniPlayerView.playerControlButton.setImage(image, for: .normal)
-        }
-        
         sliderValueSubscriber = viewModel.$sliderValue
             .map{Float($0)}
             .receive(on: DispatchQueue.main)
@@ -134,8 +145,9 @@ class EpisodePlayerView: UIView {
         
         startToPlayEpisodeSubscriber = viewModel.$startToPlayEpisode
             .sink { [weak self](startToPlay) in
-                self?.commandCenter.nextTrackCommand.isEnabled = startToPlay
-                self?.commandCenter.previousTrackCommand.isEnabled = startToPlay
+                guard let self = self else { return }
+                self.commandCenter.nextTrackCommand.isEnabled = startToPlay
+                self.commandCenter.previousTrackCommand.isEnabled = startToPlay
             }
     }
     deinit {
@@ -144,6 +156,8 @@ class EpisodePlayerView: UIView {
         volumeSubscriber?.cancel()
         seekTimeSubscriber?.cancel()
         startToPlayEpisodeSubscriber?.cancel()
+        needToPausePlayerSubscriber?.cancel()
+        currentEpisodeSubscriber?.cancel()
     }
     //Detect if player was paused or not
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

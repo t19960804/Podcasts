@@ -16,32 +16,19 @@ class EpisodePlayerViewModel {
     
     var previousEpisode: EpisodeProtocol?
     
-    var currentEpisode: EpisodeProtocol? {
+    @Published var currentEpisode: EpisodeProtocol? {
         didSet {
-            guard let episode = self.currentEpisode else { return }
             previousEpisode = oldValue
             startToPlayEpisode = false
             sliderValue = 0
             seekTime = CMTime(seconds: 0, preferredTimescale: 1000)
             setupAudioSession()//播放時再取得Audio使用權
-            if let downloadEpisode = episode as? DownloadProtocol {
-                newEpisodeNeedToPlayObserver?(episode,downloadEpisode.fileUrl?.getTrueLocation())
-            } else {
-                newEpisodeNeedToPlayObserver?(episode,episode.audioUrl)
-            }
         }
     }
     
-    var newEpisodeNeedToPlayObserver:((EpisodeProtocol,URL?)->Void)?
     //MARK: - PlayerStateObserver
-    var needToPausePlayer = false {
-        didSet {
-            let image = needToPausePlayer ? UIImage(named: "play") : UIImage(named: "pause")
-            needToPausePlayerObserver?(needToPausePlayer,image ?? UIImage())
-        }
-    }
-    var needToPausePlayerObserver: ((Bool,UIImage)->Void)?
-    
+    @Published var needToPausePlayer = false
+
     @Published var startToPlayEpisode = false
 
     //MARK: - EpisodeObserver
