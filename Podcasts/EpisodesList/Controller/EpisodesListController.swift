@@ -15,11 +15,11 @@ class EpisodesListController: UITableViewController {
     private let searchingView = SearchingView()
     private let viewModel = EpisodesListViewModel()
     private var isSearchingSubscriber: AnyCancellable?
+    private var podcastUpdateSubscriber: AnyCancellable?
     
     //MARK: - Init method
     init() {
         super.init(style: .plain)
-        setupViewModel()
     }
     
     required init?(coder: NSCoder) {
@@ -39,10 +39,12 @@ class EpisodesListController: UITableViewController {
         //Reload data to check if we need hide downloaded image view
         tableView.reloadData()
         setupIsSearchingSubscriber()
+        setupPodcastUpdateSubscriber()
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         isSearchingSubscriber?.cancel()
+        podcastUpdateSubscriber?.cancel()
     }
     //MARK: - Constraints
     fileprivate func setupConstraints(){
@@ -56,16 +58,17 @@ class EpisodesListController: UITableViewController {
     func updatePodcast(with podcast: PodcastProtocol){
         viewModel.podcast = podcast
     }
-    fileprivate func setupViewModel(){
-        viewModel.podcastUpdateObserver = { [weak self] podcast in
-            self?.navigationItem.title = podcast.trackName
-        }
-    }
     fileprivate func setupTableView(){
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
     }
-    
+    fileprivate func setupPodcastUpdateSubscriber(){
+        let publisher = viewModel.$podcast
+        podcastUpdateSubscriber = publisher
+            .map{$0?.trackName}
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.title, on: navigationItem)
+    }
     fileprivate func setupIsSearchingSubscriber(){
         let publisher = viewModel.$isSearching
         //Swift5.3改動 > 顯性的用capture list表明capture後,不用在block中隱性的加上self.xxx表明capture

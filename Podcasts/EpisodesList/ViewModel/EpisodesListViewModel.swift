@@ -12,11 +12,9 @@ import UIKit
 class EpisodesListViewModel {
     var episodes = [EpisodeCellViewModel]()
     
-    var podcastUpdateObserver: ((PodcastProtocol)->Void)?
     
-    var podcast: PodcastProtocol! {
+    @Published var podcast: PodcastProtocol! {
         didSet {
-            podcastUpdateObserver?(podcast)
             parseXMLFromURL(with: podcast.feedUrl ?? "") { [self] (result) in
                 switch result {
                 case .failure(let error):
