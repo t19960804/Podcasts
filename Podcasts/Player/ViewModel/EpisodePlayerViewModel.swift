@@ -17,7 +17,7 @@ class EpisodePlayerViewModel {
     var previousEpisode: EpisodeProtocol?
     
     @Published var currentEpisode: EpisodeProtocol? {
-        didSet {
+        didSet { //didSet會早於.sink觸發
             previousEpisode = oldValue
             startToPlayEpisode = false
             sliderValue = 0
