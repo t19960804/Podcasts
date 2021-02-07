@@ -7,21 +7,35 @@
 //
 
 import UIKit
+import Combine
 
 class DownloadListController: UITableViewController {
     
     let viewModel = DownloadListViewModel()
+    private var progressUpdateSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
+        setupProgressUpdateSubscriber()
         setupNotificationCenter()
     }
     fileprivate func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handleProgressUpdate(notification:)), name: .progressUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleEpisdoeDownloadDone(notification:)), name: .episodeDownloadDone, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+    }
+    fileprivate func setupProgressUpdateSubscriber(){
+        let publisher = NotificationCenter.default.publisher(for: .progressUpdate)
+        progressUpdateSubscriber = publisher
+            .map{($0.userInfo?[Notification.progressKey] as! Int,$0.userInfo?[Notification.episodeKey] as! EpisodeCellViewModel)}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (progress, episodeViewModel) in
+                guard let self = self else { return }
+                guard let index = self.viewModel.getIndexOfEpisode(episodeViewModel) else { return }
+                let cell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? EpisodeCell
+                cell?.durationLabel.text = "Downloading...\(progress)%"
+            }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
