@@ -14,6 +14,7 @@ class DownloadListController: UITableViewController {
     let viewModel = DownloadListViewModel()
     private var progressUpdateSubscriber: AnyCancellable?
     private var episodeDownloadDoneSubscriber: AnyCancellable?
+    private var playerStateUpdateSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,10 +22,30 @@ class DownloadListController: UITableViewController {
         tableView.eliminateExtraSeparators()
         setupProgressUpdateSubscriber()
         setupEpisodeDownloadDoneSubscriber()
-        setupNotificationCenter()
+        setupPlayerStateUpdateSubscriber()
     }
-    fileprivate func setupNotificationCenter(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+    fileprivate func setupPlayerStateUpdateSubscriber(){
+        let publisher = NotificationCenter.default.publisher(for: .playerStateUpdate)
+        playerStateUpdateSubscriber = publisher
+            .map{($0.userInfo?[Notification.episodeKey] as AnyObject as? EpisodeProtocol,
+                  $0.userInfo?[Notification.previousEpisodeKey] as AnyObject as? EpisodeProtocol)}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                guard let tabbarController = UIApplication.mainTabBarController else { return }
+                if let currentEpisode = $0 {
+                    if let index = self.viewModel.getIndexOfEpisode(currentEpisode) {
+                        self.viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
+                }
+                if let previousEpisode = $1 {
+                    if let index = self.viewModel.getIndexOfEpisode(previousEpisode) {
+                        self.viewModel.downloadedEpisodes[index].isPlaying = false
+                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
+                }
+            }
     }
     fileprivate func setupEpisodeDownloadDoneSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .episodeDownloadDone)
