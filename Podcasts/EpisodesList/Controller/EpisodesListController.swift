@@ -16,6 +16,7 @@ class EpisodesListController: UITableViewController {
     private let viewModel = EpisodesListViewModel()
     private var isSearchingSubscriber: AnyCancellable?
     private var podcastUpdateSubscriber: AnyCancellable?
+    private var playerStateUpdateSubscriber: AnyCancellable?
     
     //MARK: - Init method
     init() {
@@ -31,7 +32,7 @@ class EpisodesListController: UITableViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTableView()
         setupConstraints()
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePlayerStateUpdate(notification:)), name: .playerStateUpdate, object: nil)
+        setupPlayerStateUpdateSubscriber()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -62,46 +63,6 @@ class EpisodesListController: UITableViewController {
         tableView.register(EpisodeCell.self, forCellReuseIdentifier: EpisodeCell.cellID)
         tableView.eliminateExtraSeparators()
     }
-    fileprivate func setupPodcastUpdateSubscriber(){
-        let publisher = viewModel.$podcast
-        podcastUpdateSubscriber = publisher
-            .map{$0?.trackName}
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.title, on: navigationItem)
-    }
-    fileprivate func setupIsSearchingSubscriber(){
-        let publisher = viewModel.$isSearching
-        //Swift5.3改動 > 顯性的用capture list表明capture後,不用在block中隱性的加上self.xxx表明capture
-        //但使用到weak / unowned宣告時還是得加self.xxx
-        isSearchingSubscriber = publisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] (isSearching) in
-                guard let self = self else { return }
-                self.searchingView.isHidden = !isSearching
-                self.checkIfEpisodeIsPlaying()
-                self.tableView.reloadData()
-            }
-    }
-    @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
-        guard let tabbarController = UIApplication.mainTabBarController else { return }
-        let info = notification.userInfo
-        let currentEpisode = info?[Notification.episodeKey]
-        let previousEpisode = info?[Notification.previousEpisodeKey]
-        //https://stackoverflow.com/questions/42033735/failing-cast-in-swift-from-any-to-protocol
-        //https://appcoda.com.tw/any-anyobject/
-        if let currentEpisode = currentEpisode as AnyObject as? EpisodeProtocol {
-            if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
-                viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        }
-        if let previousEpisode = previousEpisode as AnyObject as? EpisodeProtocol {
-            if let index = viewModel.getEpisodeIndex(episode: previousEpisode) {
-                viewModel.episodes[index].isPlaying = false
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        }
-    }
     fileprivate func checkIfPodcastDidFavorited(){
         let favoriteBarButtonItem = UIBarButtonItem(title: "Favorite", style: .plain, target: self, action: #selector(handleFavorite))
         let podcastDidFavorited = viewModel.isPodcastFavorited(favorites: UserDefaults.standard.fetchFavoritePodcasts(), podcast: viewModel.podcast)
@@ -122,6 +83,48 @@ class EpisodesListController: UITableViewController {
             viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
+    //MARK: - Setup Subscriber
+    fileprivate func setupPlayerStateUpdateSubscriber(){
+        let publisher = NotificationCenter.default.publisher(for: .playerStateUpdate)
+        playerStateUpdateSubscriber = publisher
+            .map{($0.userInfo?[Notification.episodeKey] as AnyObject as? EpisodeProtocol,
+                  $0.userInfo?[Notification.previousEpisodeKey] as AnyObject as? EpisodeProtocol)}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (currentEpisode, previousEpisode) in
+                guard let self = self else { return }
+                guard let tabbarController = UIApplication.mainTabBarController else { return }
+                if let index = self.viewModel.getEpisodeIndex(episode: currentEpisode) {
+                    self.viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                }
+            
+                if let index = self.viewModel.getEpisodeIndex(episode: previousEpisode) {
+                    self.viewModel.episodes[index].isPlaying = false
+                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                }
+            }
+    }
+    fileprivate func setupPodcastUpdateSubscriber(){
+        let publisher = viewModel.$podcast
+        podcastUpdateSubscriber = publisher
+            .map{$0?.trackName}
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.title, on: navigationItem)
+    }
+    fileprivate func setupIsSearchingSubscriber(){
+        let publisher = viewModel.$isSearching
+        //Swift5.3改動 > 顯性的用capture list表明capture後,不用在block中隱性的加上self.xxx表明capture
+        //但使用到weak / unowned宣告時還是得加self.xxx
+        isSearchingSubscriber = publisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (isSearching) in
+                guard let self = self else { return }
+                self.searchingView.isHidden = !isSearching
+                self.checkIfEpisodeIsPlaying()
+                self.tableView.reloadData()
+            }
+    }
+
     //MARK: - TableView LifeCycle
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfEpisodes()

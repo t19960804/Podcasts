@@ -24,6 +24,14 @@ class DownloadListController: UITableViewController {
         setupEpisodeDownloadDoneSubscriber()
         setupPlayerStateUpdateSubscriber()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarItem.badgeValue = nil
+        viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+        checkIfEpisodeIsPlaying()
+        tableView.reloadData()
+    }
+    //MARK: Setup Subscriber
     fileprivate func setupPlayerStateUpdateSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .playerStateUpdate)
         playerStateUpdateSubscriber = publisher
@@ -71,31 +79,8 @@ class DownloadListController: UITableViewController {
                 cell?.durationLabel.text = "Downloading...\(progress)%"
             }
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tabBarItem.badgeValue = nil
-        viewModel.downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-        checkIfEpisodeIsPlaying()
-        tableView.reloadData()
-    }
-    @objc fileprivate func handlePlayerStateUpdate(notification: Notification){
-        guard let tabbarController = UIApplication.mainTabBarController else { return }
-        let info = notification.userInfo
-        let currentEpisode = info?[Notification.episodeKey]
-        let previousEpisode = info?[Notification.previousEpisodeKey]
-        if let currentEpisode = currentEpisode as AnyObject as? EpisodeProtocol {
-            if let index = viewModel.getIndexOfEpisode(currentEpisode) {
-                viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        }
-        if let previousEpisode = previousEpisode  as AnyObject as? EpisodeProtocol {
-            if let index = viewModel.getIndexOfEpisode(previousEpisode) {
-                viewModel.downloadedEpisodes[index].isPlaying = false
-                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            }
-        }
-    }
+
+    //MARK: Other Methods
     fileprivate func checkIfEpisodeIsPlaying(){
         guard let tabbarController = UIApplication.mainTabBarController else { return }
         let currentEpisodePlaying = tabbarController.episodePlayerView.viewModel.currentEpisode
@@ -103,7 +88,7 @@ class DownloadListController: UITableViewController {
             viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
         }
     }
-
+    //MARK: TableView LifeCycle
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
