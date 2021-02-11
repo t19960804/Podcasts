@@ -32,6 +32,7 @@ class NetworkService {
         ]
         guard var urlComps = URLComponents(string: urlString) else {
             let customErr = NetworkServiceError.URLError
+            //Fail > A publisher that immediately terminates with the specified error.
             return Fail(error: customErr).eraseToAnyPublisher()
         }
         urlComps.queryItems = queryItems
@@ -45,9 +46,9 @@ class NetworkService {
             .decode(type: SearchResult.self, decoder: JSONDecoder())
             //Scheduler > 產生或接收data的Thread
             //預設情況下,接收Data的Scheduler與產生Data的Scheduler是同一個
-            //https://www.jianshu.com/p/f671b7acc2c2
-            //https://www.vadimbulavin.com/understanding-schedulers-in-swift-combine-framework/
             .receive(on: DispatchQueue.main)//從Background Thread切到Main Thread收資料
+            //AnyPublisher > 將另一個Publisher再次包裝來達成type erasure的Publisher
+            //.eraseToAnyPublisher() > 將型別中間的Operator抹除, 但是仍保留 Operator 的功能(簡化型別)
             .eraseToAnyPublisher()
     }
     func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
