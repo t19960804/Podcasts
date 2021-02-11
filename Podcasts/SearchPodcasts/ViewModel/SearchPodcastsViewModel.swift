@@ -14,21 +14,26 @@ class SearchPodcastsViewModel {
     //讓Property變成Publisher
     @Published var isSearching = false
     @Published var podcasts = [Podcast]()
+    private var fetchPodcastsSubscriber: AnyCancellable?
     
     func fetchPodcasts(searchText: String){
         isSearching = true
         podcasts = []
-        
-        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
-            switch result {
-            case .failure(let error):
-                print("Err - Request data failed: \(error.localizedDescription)")
+        let publisher = NetworkService.sharedInstance.fetchPodcasts(searchText: searchText)
+        fetchPodcastsSubscriber = publisher
+            .map(\.results)
+            .eraseToAnyPublisher()
+            .mapError { [unowned self] (error) -> Error in // 有error就不會到.sink
+                print("Err - Fetch podcasts failed: \(error.localizedDescription)")
                 self.podcasts = []
-            case .success(let podcasts):
-                self.podcasts = podcasts
+                self.isSearching = false
+                return error
             }
-            self.isSearching = false
-        }
+            .sink(receiveCompletion: { _ in },
+                  receiveValue: { [unowned self] podcasts in
+                    self.podcasts = podcasts
+                    self.isSearching = false
+            })
     }
     //SearchBar
     var headerLabelString = ""

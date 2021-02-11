@@ -19,9 +19,8 @@ class NetworkService {
     private init(){
         
     }
-    var subscriber: AnyCancellable?
     
-    func fetchPodcasts(searchText: String, completion: @escaping (Result<[Podcast],Error>) -> Void){
+    func fetchPodcasts(searchText: String) -> AnyPublisher<SearchResult, Error> {
         //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
         let urlString = "https://itunes.apple.com/search"
         //下面的寫法不需要對searchText做encoding,因為api自己會enocding,多做一次反而會錯
@@ -33,17 +32,15 @@ class NetworkService {
         ]
         guard var urlComps = URLComponents(string: urlString) else {
             let customErr = NetworkServiceError.URLError
-            completion(.failure(customErr))
-            return
+            return Fail(error: customErr).eraseToAnyPublisher()
         }
         urlComps.queryItems = queryItems
         guard let url = urlComps.url else {
             let customErr = NetworkServiceError.URLError
-            completion(.failure(customErr))
-            return
+            return Fail(error: customErr).eraseToAnyPublisher()
         }
         let publisher = URLSession.shared.dataTaskPublisher(for: url)
-        subscriber = publisher
+        return publisher
             .map { $0.data }
             .decode(type: SearchResult.self, decoder: JSONDecoder())
             //Scheduler > 產生或接收data的Thread
@@ -51,16 +48,7 @@ class NetworkService {
             //https://www.jianshu.com/p/f671b7acc2c2
             //https://www.vadimbulavin.com/understanding-schedulers-in-swift-combine-framework/
             .receive(on: DispatchQueue.main)//從Background Thread切到Main Thread收資料
-            .sink { (result) in
-                switch result {
-                case .failure(let error):
-                    completion(.failure(error))
-                case .finished:
-                    print("Success fetch podcast")
-                }
-            } receiveValue: {
-                completion(.success($0.results))
-            }
+            .eraseToAnyPublisher()
     }
     func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
         DispatchQueue.global(qos: .background).async {
