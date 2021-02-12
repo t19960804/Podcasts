@@ -42,11 +42,6 @@ class EpisodesListController: UITableViewController {
         setupIsSearchingSubscriber()
         setupPodcastUpdateSubscriber()
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        isSearchingSubscriber?.cancel()
-        podcastUpdateSubscriber?.cancel()
-    }
     //MARK: - Constraints
     fileprivate func setupConstraints(){
         view.addSubview(searchingView)

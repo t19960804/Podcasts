@@ -51,6 +51,11 @@ class NetworkService {
             //.eraseToAnyPublisher() > 將型別中間的Operator抹除, 但是仍保留 Operator 的功能(簡化型別)
             .eraseToAnyPublisher()
     }
+    //Replace Completion-Handler Closures with Futures
+    //Future > A publisher that performs some work and then asynchronously signals success or failure.
+    //Promise >  A closure that receives the element produced by the future
+    //The promise closure receives one parameter: a Result that contains either a single element published by a Future, or an error.
+    
     func fetchEpisodes(url: URL) -> Future<[Episode],Error> {
         return Future() { promise in
             DispatchQueue.global(qos: .background).async {
