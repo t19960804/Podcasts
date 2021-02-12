@@ -77,12 +77,13 @@ class EpisodesListViewModel {
         saveDownloadEpisodeInUserDefaults(episode: episode)
         NetworkService.sharedInstance.downloadEpisode(with: episode) { (tmpFileUrl) in
             do {
+                //寫檔
                 let data = try Data(contentsOf: tmpFileUrl)
                 let pathOfDocument = FileManager.default.documentsFolderURL
                 let url = pathOfDocument.appendingPathComponent("\(episode.title).mp3")
                 //https://cdfq152313.github.io/post/2016-10-11/
                 try! data.write(to: url)
-                //更新Userdefaults並發送通知
+                //更新Userdefaults
                 var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
                 if let index = downloadEpisodes.firstIndex(where: {
                     $0.title == episode.title && $0.author == episode.author
@@ -91,8 +92,6 @@ class EpisodesListViewModel {
                     downloadEpisodes[index].isWaitingForDownload = false
                 }
                 UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-                let info: [String : Any] = [Notification.episodeKey : episode]
-                NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
             } catch {
                 print("Err - Get data from tmpFile url failed")
             }

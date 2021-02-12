@@ -99,6 +99,8 @@ class NetworkService {
                 return
             }
             completion(tmpFileUrl)
+            let info = [Notification.episodeKey : episode]
+            NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
         }
         //Observe progress
         //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
