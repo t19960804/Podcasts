@@ -22,14 +22,12 @@ class SearchPodcastsViewModel {
         let publisher = NetworkService.sharedInstance.fetchPodcasts(searchText: searchText)
         fetchPodcastsSubscriber = publisher
             .map(\.results)
-            //mapError > Converts any failure from the upstream publisher into a new error.
-            //Return a publisher that replaces any upstream failure with a new error
+            //.mapError > 將Error轉換成其他類型的Error
             //map > 轉換每個element
-            .mapError { [unowned self] (error) -> Error in // 有error就不會到.sink
+            //.catch > 捕捉到Error時回傳預設值
+            .catch { (error) -> Just<[Podcast]> in
                 print("Err - Fetch podcasts failed: \(error.localizedDescription)")
-                self.podcasts = []
-                self.isSearching = false
-                return error
+                return Just([])
             }
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [unowned self] podcasts in

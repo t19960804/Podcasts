@@ -30,11 +30,9 @@ class EpisodesListViewModel {
         isSearching = true
         let publisher = NetworkService.sharedInstance.fetchEpisodes(url: feedURL)
         fetchEpisodesSubscriber = publisher
-            .mapError { [unowned self] (error) -> Error in
+            .catch { (error) -> Just<[Episode]> in
                 print("Error - Parse XML failed:\(error.localizedDescription)")
-                episodes = []
-                isSearching = false
-                return error
+                return Just([])
             }
             .sink(receiveCompletion: {_ in }) { [unowned self] (episodes) in
                 self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
