@@ -51,27 +51,29 @@ class NetworkService {
             //.eraseToAnyPublisher() > 將型別中間的Operator抹除, 但是仍保留 Operator 的功能(簡化型別)
             .eraseToAnyPublisher()
     }
-    func fetchEpisodes(url: URL, completion: @escaping (Result<[Episode],Error>) -> Void){
-        DispatchQueue.global(qos: .background).async {
-            let xmlParser = FeedParser(URL: url)//Parser會在Main Thread執行所以會造成UI卡頓
-            xmlParser.parseAsync { (result) in
-                switch result {
-                case .success(let feed):
-                    //RSS > 以XML為基礎的內容傳送機制
-                    //Feed > 資料來源
-                    guard let rssFeed = feed.rssFeed else {
-                        print("Error - rssFeed is nil")
-                        let customErr = NetworkServiceError.NilRSSFeed
-                        completion(.failure(customErr))
-                        return
+    func fetchEpisodes(url: URL) -> Future<[Episode],Error> {
+        return Future() { promise in
+            DispatchQueue.global(qos: .background).async {
+                let xmlParser = FeedParser(URL: url)//Parser在Main Thread執行會造成UI lag
+                xmlParser.parseAsync { (result) in
+                    switch result {
+                    case .success(let feed):
+                        //RSS > 以XML為基礎的內容傳送機制
+                        //Feed > 資料來源
+                        guard let rssFeed = feed.rssFeed else {
+                            let customErr = NetworkServiceError.NilRSSFeed
+                            promise(Result.failure(customErr))
+                            return
+                        }
+                        let episodes = rssFeed.getEpisodes()
+                        promise(Result.success(episodes))
+                    case .failure(let error):
+                        promise(Result.failure(error))
                     }
-                    let episodes = rssFeed.getEpisodes()
-                    completion(.success(episodes))
-                case .failure(let error):
-                    completion(.failure(error))
                 }
             }
         }
+        
 
     }
     private var observation: NSKeyValueObservation?
