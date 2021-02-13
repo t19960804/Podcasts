@@ -70,18 +70,24 @@ class EpisodesListViewModel {
         })
         return episodeWasDownloaded
     }
+    private var downloadEpisodeSubscriber: AnyCancellable?
     
     func downloadEpisode(episode: EpisodeCellViewModel){
         saveDownloadEpisodeInUserDefaults(episode: episode)
-        NetworkService.sharedInstance.downloadEpisode(with: episode) { (tmpFileUrl) in
-            do {
-                //寫檔
-                let data = try Data(contentsOf: tmpFileUrl)
+        let publisher = NetworkService.sharedInstance.downloadEpisode(with: episode)
+        downloadEpisodeSubscriber = publisher
+            .tryMap { try Data(contentsOf: $0) }
+            .map { (data) -> (Data, URL) in
                 let pathOfDocument = FileManager.default.documentsFolderURL
                 let url = pathOfDocument.appendingPathComponent("\(episode.title).mp3")
-                //https://cdfq152313.github.io/post/2016-10-11/
-                try! data.write(to: url)
-                //更新Userdefaults
+                return (data,url)
+            }
+            .tryMap { [unowned self] in
+                try self.tryToWriteDataToURL(data: $0, url: $1) //寫檔
+            }
+            .sink { (result) in
+                print("Info - Write data result:\(result)")
+            } receiveValue: { (url) in //更新Userdefaults
                 var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
                 if let index = downloadEpisodes.firstIndex(where: {
                     $0.title == episode.title && $0.author == episode.author
@@ -90,12 +96,16 @@ class EpisodesListViewModel {
                     downloadEpisodes[index].isWaitingForDownload = false
                 }
                 UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-            } catch {
-                print("Err - Get data from tmpFile url failed")
             }
+    }
+    fileprivate func tryToWriteDataToURL(data: Data, url: URL) throws -> URL {
+        do {
+            try data.write(to: url)//https://cdfq152313.github.io/post/2016-10-11/
+            return url
+        } catch {
+            throw error
         }
     }
-    
     func saveDownloadEpisodeInUserDefaults(episode: EpisodeCellViewModel){
         let downloadEpisode = DownloadEpisodeCellViewModel(episode: episode)
         var downloadedEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()

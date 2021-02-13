@@ -63,8 +63,6 @@ class NetworkService {
                 xmlParser.parseAsync { (result) in
                     switch result {
                     case .success(let feed):
-                        //RSS > 以XML為基礎的內容傳送機制
-                        //Feed > 資料來源
                         guard let rssFeed = feed.rssFeed else {
                             let customErr = NetworkServiceError.NilRSSFeed
                             promise(Result.failure(customErr))
@@ -82,36 +80,40 @@ class NetworkService {
 
     }
     private var observation: NSKeyValueObservation?
-    func downloadEpisode(with episode: EpisodeCellViewModel, completion: @escaping  (URL) -> Void){
-        guard let url = episode.audioUrl else {
-            print("Error - AudioUrl has some problem")
-            return
-        }
-        let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
-            if let error = error {
-                print("Download file failed:\(error)")
+    func downloadEpisode(with episode: EpisodeCellViewModel) -> Future<URL, Error> {
+        return Future { [unowned self] (promise) in
+            guard let url = episode.audioUrl else {
+                print("Error - AudioUrl has some problem")
                 return
             }
-            //載下來的data會存在.tmp檔,還需要將data取出寫成.mp3檔
-            //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
-            guard let tmpFileUrl = url else {
-                print("Err - Download file success, but url is nil")
-                return
+            let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
+                if let error = error {
+                    print("Download file failed:\(error)")
+                    promise(Result.failure(error))
+                    return
+                }
+                //載下來的data會存在.tmp檔,還需要將data取出寫成.mp3檔
+                //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
+                guard let tmpFileUrl = url else {
+                    print("Err - Download file success, but url is nil")
+                    return
+                }
+                promise(Result.success(tmpFileUrl))
+                let info = [Notification.episodeKey : episode]
+                NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
             }
-            completion(tmpFileUrl)
-            let info = [Notification.episodeKey : episode]
-            NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
-        }
-        //Observe progress
-        //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
-        observation = task.progress.observe(\.fractionCompleted) { progress, _ in
-            let info: [String : Any] = [
-                Notification.progressKey : Int(progress.fractionCompleted * 100),
-                Notification.episodeKey : episode]
-            NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
-        }
+            //Observe progress
+            //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
+            observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+                let info: [String : Any] = [
+                    Notification.progressKey : Int(progress.fractionCompleted * 100),
+                    Notification.episodeKey : episode]
+                NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
+            }
 
-        task.resume()
+            task.resume()
+        }
+        
     }
 }
 //https://riptutorial.com/swift/example/28601/create-custom-error-with-localized-description
