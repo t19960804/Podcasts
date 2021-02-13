@@ -76,6 +76,7 @@ class EpisodesListViewModel {
         saveDownloadEpisodeInUserDefaults(episode: episode)
         let publisher = NetworkService.sharedInstance.downloadEpisode(with: episode)
         downloadEpisodeSubscriber = publisher
+            //.tryMap > 可以throw error的.map
             .tryMap { try Data(contentsOf: $0) }
             .map { (data) -> (Data, URL) in
                 let pathOfDocument = FileManager.default.documentsFolderURL
