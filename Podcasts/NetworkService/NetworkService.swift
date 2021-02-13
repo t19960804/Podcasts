@@ -63,8 +63,7 @@ class NetworkService {
                     switch result {
                     case .success(let feed):
                         guard let rssFeed = feed.rssFeed else {
-                            let customErr = NetworkServiceError.NilRSSFeed
-                            promise(Result.failure(customErr))
+                            promise(Result.failure(NetworkServiceError.NilRSSFeed))
                             return
                         }
                         let episodes = rssFeed.getEpisodes()
@@ -83,6 +82,7 @@ class NetworkService {
         return Future { [unowned self] (promise) in
             guard let url = episode.audioUrl else {
                 print("Error - AudioUrl has some problem")
+                promise(Result.failure(NetworkServiceError.URLError))
                 return
             }
             let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
@@ -95,6 +95,7 @@ class NetworkService {
                 //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
                 guard let tmpFileUrl = url else {
                     print("Err - Download file success, but url is nil")
+                    promise(Result.failure(NetworkServiceError.URLError))
                     return
                 }
                 promise(Result.success(tmpFileUrl))
