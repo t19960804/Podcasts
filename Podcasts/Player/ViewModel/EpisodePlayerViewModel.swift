@@ -29,6 +29,7 @@ class EpisodePlayerViewModel {
     //MARK: - PlayerStateObserver
     @Published var needToPausePlayer = false
     //將邏輯處理完後用另一個Publisher包裝,給ViewController / View做subscribe
+    //Never > A publisher whose Failure is of type Never indicates that the publisher can never fail
     lazy var needToPausePlayerPublihser: AnyPublisher<(Bool, UIImage), Never> = {
     return $needToPausePlayer
         .map{ (needToPause) -> (Bool, UIImage) in

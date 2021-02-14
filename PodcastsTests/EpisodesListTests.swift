@@ -199,16 +199,16 @@ class EpisodesListTests: XCTestCase {
         var error: Error?
         var episodesResult: [Episode]?
         
-        viewModel.parseXMLFromURL(with: urlString) { (result) in
-            switch result {
-            case .failure(let err):
-                error = err
-            case .success(let episodes):
-                episodesResult = episodes
-            }
-            // Fulfill the expectation to indicate that the background task has finished successfully.
-            expectation.fulfill()
-        }
+//        viewModel.parseXMLFromURL(with: urlString) { (result) in
+//            switch result {
+//            case .failure(let err):
+//                error = err
+//            case .success(let episodes):
+//                episodesResult = episodes
+//            }
+//            // Fulfill the expectation to indicate that the background task has finished successfully.
+//            expectation.fulfill()
+//        }
         // Wait until the expectation is fulfilled, with a timeout of 10 seconds.
         wait(for: [expectation], timeout: 10.0)
         //expression參數 > 測試條件
@@ -222,14 +222,14 @@ class EpisodesListTests: XCTestCase {
         var error: Error?
         var episodesResult: [Episode]?
         
-        viewModel.parseXMLFromURL(with: urlString) { (result) in
-            switch result {
-            case .failure(let err):
-                error = err
-            case .success(let episodes):
-                episodesResult = episodes
-            }
-        }
+//        viewModel.parseXMLFromURL(with: urlString) { (result) in
+//            switch result {
+//            case .failure(let err):
+//                error = err
+//            case .success(let episodes):
+//                episodesResult = episodes
+//            }
+//        }
         XCTAssertNil(error, "error shold be nil, because parseXMLFromURL was not executed")
         XCTAssertNil(episodesResult, "episodesResult shold be nil, because parseXMLFromURL was not executed")
     }

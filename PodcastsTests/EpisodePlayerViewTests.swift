@@ -8,20 +8,26 @@
 
 import XCTest
 import AVKit
+import Combine
 
 @testable import Podcasts
 
 class EpisodePlayerViewTests: XCTestCase {
 
     var viewModel: EpisodePlayerViewModel!
+    var subscribers: Set<AnyCancellable>!
     
     override func setUp() {
         super.setUp()
         viewModel = EpisodePlayerViewModel()
+        subscribers = Set<AnyCancellable>()
     }
     override func tearDown() {
         super.tearDown()
         viewModel = nil
+        //清空subscriber,subscriber被deinit,自動呼叫cancel
+        //https://stackoverflow.com/questions/59002502/ios-swift-combine-cancel-a-setanycancellable
+        subscribers.removeAll()
     }
     func testPlayNextEpisode(){
         let ep1 = EpisodeCellViewModel(title: "ep1", author: "Tony")
@@ -131,17 +137,21 @@ class EpisodePlayerViewTests: XCTestCase {
         XCTAssertEqual(viewModel.seekTime, targetTime2)
     }
     func testNeedToPausePlayerObserver_NeedtoPlay(){
-        viewModel.needToPausePlayerObserver = { (needToPausePlayer,image) in
-            XCTAssertEqual(needToPausePlayer, false)
-            XCTAssertEqual(image, UIImage(named: "pause"))
-        }
         viewModel.needToPausePlayer = false
+        viewModel.needToPausePlayerPublihser
+            .sink { (needToPause, image) in
+                XCTAssertFalse(needToPause)
+                XCTAssertEqual(image, UIImage(named: "pause"))
+            }
+            .store(in: &subscribers)//Stores cancellable instance in the specified set
     }
     func testNeedToPausePlayerObserver_NeedtoPause(){
-        viewModel.needToPausePlayerObserver = { (needToPausePlayer,image) in
-            XCTAssertEqual(needToPausePlayer, true)
-            XCTAssertEqual(image, UIImage(named: "play"))
-        }
         viewModel.needToPausePlayer = true
+        viewModel.needToPausePlayerPublihser
+            .sink { (needToPause, image) in
+                XCTAssertTrue(needToPause)
+                XCTAssertEqual(image, UIImage(named: "play"))
+            }
+            .store(in: &subscribers)//Stores cancellable instance in the specified set
     }
 }
