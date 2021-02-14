@@ -28,7 +28,15 @@ class EpisodePlayerViewModel {
     
     //MARK: - PlayerStateObserver
     @Published var needToPausePlayer = false
-
+    //將邏輯處理完後用另一個Publisher包裝,給ViewController / View做subscribe
+    lazy var needToPausePlayerPublihser: AnyPublisher<(Bool, UIImage), Never> = {
+    return $needToPausePlayer
+        .map{ (needToPause) -> (Bool, UIImage) in
+            let image = needToPause ? #imageLiteral(resourceName: "play") : #imageLiteral(resourceName: "pause")
+            return (needToPause, image)
+        }
+        .eraseToAnyPublisher()
+    }()
     @Published var startToPlayEpisode = false
 
     //MARK: - EpisodeObserver

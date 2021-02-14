@@ -111,22 +111,20 @@ class EpisodePlayerView: UIView {
                     self.playAudio(with: episode.audioUrl)
                 }
             }
-        needToPausePlayerSubscriber = viewModel.$needToPausePlayer
+        needToPausePlayerSubscriber = viewModel.needToPausePlayerPublihser
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] needToPause in
-                guard let self = self else { return }
+            .sink { [unowned self] (needToPause, image) in
                 if needToPause {
-                    self.podcastPlayer.pause()
+                    podcastPlayer.pause()
                 } else {
-                    self.podcastPlayer.play()
+                    podcastPlayer.play()
                 }
                 UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0.7, options: .curveEaseOut, animations: {
                     let transForm: CGAffineTransform = needToPause ? .init(scaleX: 0.8, y: 0.8) : .identity
-                        self.episodeImageView.transform = transForm
+                        episodeImageView.transform = transForm
                 })
-                let image = needToPause ? #imageLiteral(resourceName: "play") : #imageLiteral(resourceName: "pause")
-                self.playerControlButton.setImage(image, for: .normal)
-                self.miniPlayerView.playerControlButton.setImage(image, for: .normal)
+                playerControlButton.setImage(image, for: .normal)
+                miniPlayerView.playerControlButton.setImage(image, for: .normal)
             }
         sliderValueSubscriber = viewModel.$sliderValue
             .map{Float($0)}
