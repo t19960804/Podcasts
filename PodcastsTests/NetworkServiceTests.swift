@@ -7,15 +7,20 @@
 //
 
 import XCTest
+import Combine
+
 @testable import Podcasts
 
 class NetworkServiceTests: XCTestCase {
-
+    var subscribers: Set<AnyCancellable>!
+    
     override func setUp() {
         super.setUp()
+        subscribers = Set<AnyCancellable>()
     }
     override func tearDown() {
         super.tearDown()
+        subscribers.removeAll()
     }
     //MARK: - FetchPodcasts
     func testFetchPodcasts_CompleteSearchText(){
@@ -25,15 +30,21 @@ class NetworkServiceTests: XCTestCase {
         var error: Error?
         var podcastsResult: [Podcast]?
         
-//        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
-//            switch result {
-//            case .failure(let err):
-//                error = err
-//            case .success(let podcasts):
-//                podcastsResult = podcasts
-//            }
-//            expectation.fulfill()
-//        }
+        let publisher = NetworkService.sharedInstance.fetchPodcasts(searchText: searchText)
+        publisher
+            .sink { (completion) in
+                switch completion {
+                case .failure(let err):
+                    error = err
+                case .finished:
+                    break
+                }
+                expectation.fulfill()
+            } receiveValue: { (searchResult) in
+                podcastsResult = searchResult.results
+            }
+            .store(in: &subscribers)
+
         wait(for: [expectation], timeout: 10.0)
         XCTAssertNil(error, "Fetch podcast failed:\(error!)")
         XCTAssertNotNil(podcastsResult, "Fetch podcast success, but podcastsResult should not be nil")
@@ -45,15 +56,21 @@ class NetworkServiceTests: XCTestCase {
         var error: Error?
         var podcastsResult: [Podcast]?
         
-//        NetworkService.sharedInstance.fetchPodcasts(searchText: searchText) { (result) in
-//            switch result {
-//            case .failure(let err):
-//                error = err
-//            case .success(let podcasts):
-//                podcastsResult = podcasts
-//            }
-//            expectation.fulfill()
-//        }
+        let publisher = NetworkService.sharedInstance.fetchPodcasts(searchText: searchText)
+        publisher
+            .sink { (completion) in
+                switch completion {
+                case .failure(let err):
+                    error = err
+                case .finished:
+                    break
+                }
+                expectation.fulfill()
+            } receiveValue: { (searchResult) in
+                podcastsResult = searchResult.results
+            }
+            .store(in: &subscribers)
+
         wait(for: [expectation], timeout: 10.0)
         XCTAssertNil(error, "Fetch podcast failed:\(error!)")
         XCTAssertNotNil(podcastsResult, "Fetch podcast success, but podcastsResult should not be nil")
@@ -65,15 +82,22 @@ class NetworkServiceTests: XCTestCase {
         let urlString = "https://feeds.soundcloud.com/users/soundcloud:users:114798578/sounds.rss"
         var error: Error?
         var episodesResult: [Episode]?
-//        NetworkService.sharedInstance.fetchEpisodes(url: URL(string: urlString)!) { (result) in
-//            switch result {
-//            case .failure(let err):
-//                error = err
-//            case .success(let episodes):
-//                episodesResult = episodes
-//            }
-//            expectation.fulfill()
-//        }
+        
+        let publisher = NetworkService.sharedInstance.fetchEpisodes(url: URL(string: urlString)!)
+        publisher
+            .sink { (completion) in
+                switch completion {
+                case .failure(let err):
+                    error = err
+                case .finished:
+                    break
+                }
+                expectation.fulfill()
+            } receiveValue: { (episodes) in
+                episodesResult = episodes
+            }
+            .store(in: &subscribers)
+
         wait(for: [expectation], timeout: 10.0)
         XCTAssertNil(error, "Fetch episodes failed:\(error!)")
         XCTAssertNotNil(episodesResult, "Fetch success, but episodesResult should not be nil")
