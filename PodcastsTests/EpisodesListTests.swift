@@ -8,19 +8,23 @@
 
 import XCTest
 import FeedKit
+import Combine
 
 @testable import Podcasts
 class EpisodesListTests: XCTestCase {
 
     var viewModel: EpisodesListViewModel!
+    var subscribers: Set<AnyCancellable>!
     
     override func setUp() { //set initial state before each test method is run.
         super.setUp()
         viewModel = EpisodesListViewModel()
+        subscribers = Set<AnyCancellable>()
     }
     override func tearDown() { //perform cleanup after each test method completes.
         super.tearDown()
         viewModel = nil
+        subscribers.removeAll()
     }
     //MARK: - Test EpisodeCellViewModel
     func testEpisodeCellViewModel_EmptyRSSFeedItem(){
@@ -196,42 +200,34 @@ class EpisodesListTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Try to parse XML from url")
 
         let urlString = "https://feeds.soundcloud.com/users/soundcloud:users:114798578/sounds.rss"
-        var error: Error?
-        var episodesResult: [Episode]?
+        var episodesResult = [EpisodeCellViewModel]()
         
-//        viewModel.parseXMLFromURL(with: urlString) { (result) in
-//            switch result {
-//            case .failure(let err):
-//                error = err
-//            case .success(let episodes):
-//                episodesResult = episodes
-//            }
-//            // Fulfill the expectation to indicate that the background task has finished successfully.
-//            expectation.fulfill()
-//        }
+        let publisher = viewModel.parseXMLFromURL(with: urlString)
+        publisher
+            .sink { (episodes) in
+                episodesResult = episodes
+                expectation.fulfill()// Fulfill the expectation to indicate that the background task has finished
+            }
+            .store(in: &subscribers)
+
         // Wait until the expectation is fulfilled, with a timeout of 10 seconds.
         wait(for: [expectation], timeout: 10.0)
         //expression參數 > 測試條件
         //message參數 > 測試失敗的描述
-        XCTAssertNil(error, "Parse failed:\(error!)")
-        XCTAssertNotNil(episodesResult, "Parse success, but episodesResult should not be nil")
+        XCTAssertFalse(episodesResult.isEmpty, "URL is valid, so episodes should not be empty")
     }
     
     func testParseXMLFromURL_EmptyUrlString(){
         let urlString = ""
-        var error: Error?
-        var episodesResult: [Episode]?
+        var episodesResult = [EpisodeCellViewModel]()
         
-//        viewModel.parseXMLFromURL(with: urlString) { (result) in
-//            switch result {
-//            case .failure(let err):
-//                error = err
-//            case .success(let episodes):
-//                episodesResult = episodes
-//            }
-//        }
-        XCTAssertNil(error, "error shold be nil, because parseXMLFromURL was not executed")
-        XCTAssertNil(episodesResult, "episodesResult shold be nil, because parseXMLFromURL was not executed")
+        let publisher = viewModel.parseXMLFromURL(with: urlString)
+        publisher
+            .sink { (episodes) in
+                episodesResult = episodes
+            }
+            .store(in: &subscribers)
+        XCTAssertTrue(episodesResult.isEmpty, "URL is empty, so episodes should empty too")
     }
     
     func testNumberOfEpisodes(){

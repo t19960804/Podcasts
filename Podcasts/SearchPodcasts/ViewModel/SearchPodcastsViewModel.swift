@@ -25,6 +25,7 @@ class SearchPodcastsViewModel {
             //.mapError > 將Error轉換成其他類型的Error
             //.map > 轉換每個element
             //.catch > 捕捉到Error時回傳預設值
+            //Just > init from a value then provides a single result (no error)
             .catch { (error) -> Just<[Podcast]> in
                 print("Err - Fetch podcasts failed: \(error.localizedDescription)")
                 return Just([])
