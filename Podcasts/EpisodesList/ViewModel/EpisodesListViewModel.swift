@@ -15,29 +15,32 @@ class EpisodesListViewModel {
     
     @Published var podcast: PodcastProtocol! {
         didSet {
-            parseXMLFromURL(with: podcast.feedUrl ?? "")
+            let publisher = parseXMLFromURL(with: podcast.feedUrl ?? "")
+            fetchEpisodesSubscriber = publisher
+                .sink(receiveCompletion: {_ in }) { [unowned self] (episodes) in
+                    self.episodes = episodes
+                    isSearching = false
+                }
         }
     }
     
     @Published var isSearching = false
     private var fetchEpisodesSubscriber: AnyCancellable?
     
-    func parseXMLFromURL(with url: String) {
+    func parseXMLFromURL(with url: String) -> AnyPublisher<[EpisodeCellViewModel], Never> {
         guard let feedURL = URL(string: url) else {
             print("Error - feedURL is nil")
-            return
+            return Just([]).eraseToAnyPublisher()
         }
         isSearching = true
         let publisher = NetworkService.sharedInstance.fetchEpisodes(url: feedURL)
-        fetchEpisodesSubscriber = publisher
+        return publisher
             .catch { (error) -> Just<[Episode]> in
                 print("Error - Parse XML failed:\(error.localizedDescription)")
                 return Just([])
             }
-            .sink(receiveCompletion: {_ in }) { [unowned self] (episodes) in
-                self.episodes = episodes.map { EpisodeCellViewModel(episode: $0) }
-                isSearching = false
-            }
+            .map { $0.map { EpisodeCellViewModel(episode: $0) } }
+            .eraseToAnyPublisher()
     }
     
     var footerHeight: CGFloat = 0
