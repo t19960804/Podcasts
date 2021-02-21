@@ -16,12 +16,21 @@ import Combine
 class NetworkService {
     
     static let sharedInstance = NetworkService()
+    private var session: URLSessionProtocol = URLSession.shared
     private init(){
         
     }
-    
+    func replaceSession(with session: URLSessionProtocol){
+        self.session = session
+    }
     func fetchPodcasts(searchText: String) -> AnyPublisher<SearchResult, Error> {
-        //requst url 範例: https://itunes.apple.com/search?term=jack+johnson&media=music
+        if searchText.isEmpty {
+            let result = SearchResult(resultCount: 0, results: [])
+            let publisher = Just(result)
+            return publisher
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
         let urlString = "https://itunes.apple.com/search"
         //下面的寫法不需要對searchText做encoding,因為api自己會enocding,多做一次反而會錯
         //空白鍵 > %20, % > %25
@@ -40,7 +49,7 @@ class NetworkService {
             let customErr = NetworkServiceError.URLError
             return Fail(error: customErr).eraseToAnyPublisher()
         }
-        let publisher = URLSession.shared.dataTaskPublisher(for: url)
+        let publisher = session.dataTaskPublisher(for: url)
         return publisher
             .map { $0.data }
             .decode(type: SearchResult.self, decoder: JSONDecoder())
@@ -132,5 +141,16 @@ extension NetworkServiceError: LocalizedError {
         case .URLError:
             return NSLocalizedString("URL err", comment: "URL error")
         }
+    }
+}
+
+protocol URLSessionProtocol {
+    typealias APIResponse = URLSession.DataTaskPublisher.Output
+    typealias APIError = URLSession.DataTaskPublisher.Failure
+    func dataTaskPublisher(for url: URL) -> AnyPublisher<APIResponse, APIError>
+}
+extension URLSession: URLSessionProtocol {
+    func dataTaskPublisher(for url: URL) -> AnyPublisher<APIResponse, APIError> {
+        return URLSession.DataTaskPublisher(request: URLRequest(url: url), session: self).eraseToAnyPublisher()
     }
 }

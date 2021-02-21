@@ -13,10 +13,12 @@ import Combine
 
 class NetworkServiceTests: XCTestCase {
     var subscribers: Set<AnyCancellable>!
+    let mockURLSession = MockURLSession()
     
     override func setUp() {
         super.setUp()
         subscribers = Set<AnyCancellable>()
+        NetworkService.sharedInstance.replaceSession(with: mockURLSession)
     }
     override func tearDown() {
         super.tearDown()
@@ -101,5 +103,16 @@ class NetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
         XCTAssertNil(error, "Fetch episodes failed:\(error!)")
         XCTAssertNotNil(episodesResult, "Fetch success, but episodesResult should not be nil")
+    }
+}
+
+struct MockURLSession: URLSessionProtocol {
+    func dataTaskPublisher(for url: URL) -> AnyPublisher<APIResponse, APIError> {
+        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+        let path = Bundle.main.path(forResource: "PodcastData", ofType: "json")
+        let url = URL(fileURLWithPath: path!)
+        let data = try! Data(contentsOf: url)
+        return Result.Publisher((data: data, response: response))
+            .eraseToAnyPublisher()
     }
 }
