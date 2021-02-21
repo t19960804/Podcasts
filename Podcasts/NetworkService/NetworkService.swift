@@ -26,9 +26,9 @@ class NetworkService {
     func fetchPodcasts(searchText: String) -> AnyPublisher<SearchResult, Error> {
         if searchText.isEmpty {
             let result = SearchResult(resultCount: 0, results: [])
-            let publisher = Just(result)
+            let publisher = Just(result)//Just produces Never, not Error
             return publisher
-                .setFailureType(to: Error.self)
+                .setFailureType(to: Error.self)//set the error type of a publisher that cannot fail.
                 .eraseToAnyPublisher()
         }
         let urlString = "https://itunes.apple.com/search"
