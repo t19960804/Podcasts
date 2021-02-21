@@ -41,7 +41,6 @@ class NetworkService {
         ]
         guard var urlComps = URLComponents(string: urlString) else {
             let customErr = NetworkServiceError.URLError
-            //Fail > A publisher that immediately terminates with the specified error.
             return Fail(error: customErr).eraseToAnyPublisher()
         }
         urlComps.queryItems = queryItems
@@ -55,8 +54,7 @@ class NetworkService {
             .decode(type: SearchResult.self, decoder: JSONDecoder())
             //Scheduler > 產生或接收data的Thread
             //預設情況下,接收Data的Scheduler與產生Data的Scheduler是同一個
-            .receive(on: DispatchQueue.main)//從Background Thread切到Main Thread收資料
-            //AnyPublisher > 將另一個Publisher再次包裝來達成type erasure的Publisher
+            .receive(on: DispatchQueue.main)
             //.eraseToAnyPublisher() > 將型別中間的Operator抹除, 但是仍保留 Operator 的功能(簡化型別)
             .eraseToAnyPublisher()
     }
@@ -67,7 +65,7 @@ class NetworkService {
     func fetchEpisodes(url: URL) -> Future<[Episode],Error> {
         return Future() { promise in
             DispatchQueue.global(qos: .background).async {
-                let xmlParser = FeedParser(URL: url)//Parser在Main Thread執行會造成UI lag
+                let xmlParser = FeedParser(URL: url)
                 xmlParser.parseAsync { (result) in
                     switch result {
                     case .success(let feed):
