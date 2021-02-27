@@ -61,12 +61,12 @@ class NetworkService {
     //Replace Completion-Handler Closures with Futures
     //Future > A publisher that performs some work and then asynchronously signals success or failure.
     //Promise >  A closure that receives the element produced by the future
-    
-    func fetchEpisodes(url: URL) -> Future<[Episode],Error> {
+    private var xmlParser: RSSFeedParseProtocol?
+    func fetchEpisodes(parser: RSSFeedParseProtocol) -> Future<[Episode],Error> {
+        self.xmlParser = parser
         return Future() { promise in
             DispatchQueue.global(qos: .background).async {
-                let xmlParser = FeedParser(URL: url)
-                xmlParser.parseAsync { (result) in
+                self.xmlParser?.parse { (result) in
                     switch result {
                     case .success(let feed):
                         guard let rssFeed = feed.rssFeed else {
@@ -150,5 +150,13 @@ protocol URLSessionProtocol {
 extension URLSession: URLSessionProtocol {
     func dataTaskPublisher(for url: URL) -> AnyPublisher<APIResponse, APIError> {
         return URLSession.DataTaskPublisher(request: URLRequest(url: url), session: self).eraseToAnyPublisher()
+    }
+}
+protocol RSSFeedParseProtocol {
+    func parse(result: @escaping (Result<Feed, ParserError>) -> Void)
+}
+extension FeedParser: RSSFeedParseProtocol {
+    func parse(result: @escaping (Result<Feed, ParserError>) -> Void) {
+        self.parseAsync(result: result)
     }
 }

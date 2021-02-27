@@ -8,6 +8,7 @@
 
 import Combine
 import UIKit
+import FeedKit
 
 class EpisodesListViewModel {
     var episodes = [EpisodeCellViewModel]()
@@ -33,7 +34,8 @@ class EpisodesListViewModel {
             return Just([]).eraseToAnyPublisher()
         }
         isSearching = true
-        let publisher = NetworkService.sharedInstance.fetchEpisodes(url: feedURL)
+        let parser = FeedParser(URL: feedURL)
+        let publisher = NetworkService.sharedInstance.fetchEpisodes(parser: parser)
         return publisher
             .catch { (error) -> Just<[Episode]> in
                 print("Error - Parse XML failed:\(error.localizedDescription)")

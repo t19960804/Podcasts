@@ -8,6 +8,7 @@
 
 import XCTest
 import Combine
+import FeedKit
 
 @testable import Podcasts
 
@@ -84,8 +85,8 @@ class NetworkServiceTests: XCTestCase {
         let urlString = "https://feeds.soundcloud.com/users/soundcloud:users:114798578/sounds.rss"
         var error: Error?
         var episodesResult: [Episode]?
-        
-        let publisher = NetworkService.sharedInstance.fetchEpisodes(url: URL(string: urlString)!)
+        let parser = MockFeedParser(URL: URL(string: urlString)!)
+        let publisher = NetworkService.sharedInstance.fetchEpisodes(parser: parser)
         publisher
             .sink { (completion) in
                 switch completion {
@@ -103,6 +104,7 @@ class NetworkServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
         XCTAssertNil(error, "Fetch episodes failed:\(error!)")
         XCTAssertNotNil(episodesResult, "Fetch success, but episodesResult should not be nil")
+        XCTAssert(episodesResult?.count == 3)
     }
 }
 
@@ -114,5 +116,26 @@ struct MockURLSession: URLSessionProtocol {
         let data = try! Data(contentsOf: url)
         return Result.Publisher((data: data, response: response))
             .eraseToAnyPublisher()
+    }
+}
+struct MockFeedParser: RSSFeedParseProtocol {
+    private var url: URL?
+    public init(URL: URL) {
+        self.url = URL
+    }
+    func parse(result: @escaping (Result<Feed, ParserError>) -> Void) {
+        let rssFeed = RSSFeed()
+        let feed = Feed.rss(rssFeed)
+        let item1 = RSSFeedItem()
+        item1.author = "Brian Voong"
+        item1.title = "My Experiences in Computer Science Vs Real World"
+        let item2 = RSSFeedItem()
+        item2.author = "Brian Voong"
+        item2.title = "How and When I Got My Start in Programming"
+        let item3 = RSSFeedItem()
+        item3.author = "Brian Voong"
+        item3.title = "Storyboard vs Code SpeedRun"
+        feed.rssFeed?.items = [item1,item2,item3]
+        result(Result.success(feed))
     }
 }
