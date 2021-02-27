@@ -217,7 +217,11 @@ class EpisodesListTests: XCTestCase {
         XCTAssertFalse(episodesResult.isEmpty, "URL is valid, so episodes should not be empty")
         XCTAssert(episodesResult.count == 3)
     }
-    
+    func testParseXMLFromURL_EmptyUrlString(){
+        viewModel.podcast = Podcast(trackName: "test", artistName: "test", artworkUrl600: "test", trackCount: 0, feedUrl: nil)
+        XCTAssertTrue(viewModel.episodes.isEmpty)
+        XCTAssertFalse(viewModel.isSearching)
+    }
     func testNumberOfEpisodes(){
         viewModel.episodes.append(EpisodeCellViewModel(title: "Ep1", author: "Tony"))
         viewModel.episodes.append(EpisodeCellViewModel(title: "Ep2", author: "Tony"))

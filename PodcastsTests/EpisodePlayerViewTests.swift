@@ -154,4 +154,15 @@ class EpisodePlayerViewTests: XCTestCase {
             }
             .store(in: &subscribers)//Stores cancellable instance in the specified set
     }
+    func testHandleInteruption_Happen(){
+        let info = [AVAudioSessionInterruptionTypeKey : AVAudioSession.InterruptionType.began.rawValue]
+        let notification = Notification(name: Notification.Name(rawValue: "Interuption"), object: nil, userInfo: info)
+        viewModel.handleInteruption(notification: notification)
+        XCTAssertTrue(viewModel.needToPausePlayer)
+    }
+    func testHandleInteruption_NotHappen(){
+        let notification = Notification(name: Notification.Name(rawValue: "Interuption"), object: nil, userInfo: nil)
+        viewModel.handleInteruption(notification: notification)
+        XCTAssertFalse(viewModel.needToPausePlayer)
+    }
 }
