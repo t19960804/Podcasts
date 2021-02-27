@@ -201,8 +201,8 @@ class EpisodesListTests: XCTestCase {
 
         let urlString = "https://feeds.soundcloud.com/users/soundcloud:users:114798578/sounds.rss"
         var episodesResult = [EpisodeCellViewModel]()
-        
-        let publisher = viewModel.parseXMLFromURL(with: urlString)
+        let parser = MockFeedParser(URL: URL(string: urlString)!)
+        let publisher = viewModel.parseXMLFromURL(parser: parser)
         publisher
             .sink { (episodes) in
                 episodesResult = episodes
@@ -215,19 +215,7 @@ class EpisodesListTests: XCTestCase {
         //expression參數 > 測試條件
         //message參數 > 測試失敗的描述
         XCTAssertFalse(episodesResult.isEmpty, "URL is valid, so episodes should not be empty")
-    }
-    
-    func testParseXMLFromURL_EmptyUrlString(){
-        let urlString = ""
-        var episodesResult = [EpisodeCellViewModel]()
-        
-        let publisher = viewModel.parseXMLFromURL(with: urlString)
-        publisher
-            .sink { (episodes) in
-                episodesResult = episodes
-            }
-            .store(in: &subscribers)
-        XCTAssertTrue(episodesResult.isEmpty, "URL is empty, so episodes should empty too")
+        XCTAssert(episodesResult.count == 3)
     }
     
     func testNumberOfEpisodes(){

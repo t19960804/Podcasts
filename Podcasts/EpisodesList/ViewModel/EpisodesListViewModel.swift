@@ -16,7 +16,14 @@ class EpisodesListViewModel {
     
     @Published var podcast: PodcastProtocol! {
         didSet {
-            let publisher = parseXMLFromURL(with: podcast.feedUrl ?? "")
+            guard let url = URL(string: podcast.feedUrl ?? "") else {
+                print("Error - feedURL is nil")
+                self.episodes = []
+                isSearching = false
+                return
+            }
+            let parser = FeedParser(URL: url)
+            let publisher = parseXMLFromURL(parser: parser)
             fetchEpisodesSubscriber = publisher
                 .sink(receiveCompletion: {_ in }) { [unowned self] (episodes) in
                     self.episodes = episodes
@@ -28,13 +35,8 @@ class EpisodesListViewModel {
     @Published var isSearching = false
     private var fetchEpisodesSubscriber: AnyCancellable?
     
-    func parseXMLFromURL(with url: String) -> AnyPublisher<[EpisodeCellViewModel], Never> {
-        guard let feedURL = URL(string: url) else {
-            print("Error - feedURL is nil")
-            return Just([]).eraseToAnyPublisher()
-        }
+    func parseXMLFromURL(parser: RSSFeedParseProtocol) -> AnyPublisher<[EpisodeCellViewModel], Never> {
         isSearching = true
-        let parser = FeedParser(URL: feedURL)
         let publisher = NetworkService.sharedInstance.fetchEpisodes(parser: parser)
         return publisher
             .catch { (error) -> Just<[Episode]> in
