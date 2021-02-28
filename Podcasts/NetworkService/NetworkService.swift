@@ -9,15 +9,27 @@
 import Foundation
 import FeedKit
 import Combine
+import UIKit
 
 //為何不用struct來設計Singleton?
 //因為struct為value type,代表其他人對於Singleton的操作可能不會反映到Singleton
 //這樣就違反了Singleton的唯一性,因為每個人看到的Singleton的狀態都不一致
-class NetworkService {
+class NetworkService: NSObject {
     
     static let sharedInstance = NetworkService()
     private var session: URLSessionProtocol = URLSession.shared
-    private init(){
+    private var downlodingEpisode: EpisodeCellViewModel?
+
+    //URLSession for background download
+    private lazy var backgroundUrlSession: URLSession = {
+        let config = URLSessionConfiguration.background(withIdentifier: "MySession")
+        config.isDiscretionary = true
+        config.sessionSendsLaunchEvents = true
+        //Provide a delegate, to receive events from the background transfer.
+        return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+    }()
+    
+    private override init(){
         
     }
     func replaceSession(with session: URLSessionProtocol){
@@ -85,42 +97,25 @@ class NetworkService {
 
     }
     private var observation: NSKeyValueObservation?
-    func downloadEpisode(with episode: EpisodeCellViewModel) -> Future<URL, Error> {
-        return Future { [unowned self] (promise) in
-            guard let url = episode.audioUrl else {
-                print("Error - AudioUrl has some problem")
-                promise(Result.failure(NetworkServiceError.URLError))
-                return
-            }
-            let task = URLSession.shared.downloadTask(with: url) { (url, response, error) in
-                if let error = error {
-                    print("Download file failed:\(error)")
-                    promise(Result.failure(error))
-                    return
-                }
-                //載下來的data會存在.tmp檔,還需要將data取出寫成.mp3檔
-                //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
-                guard let tmpFileUrl = url else {
-                    print("Err - Download file success, but url is nil")
-                    promise(Result.failure(NetworkServiceError.URLError))
-                    return
-                }
-                promise(Result.success(tmpFileUrl))
-                let info = [Notification.episodeKey : episode]
-                NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
-            }
-            //Observe progress
-            //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
-            observation = task.progress.observe(\.fractionCompleted) { progress, _ in
-                let info: [String : Any] = [
-                    Notification.progressKey : Int(progress.fractionCompleted * 100),
-                    Notification.episodeKey : episode]
-                NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
-            }
-
-            task.resume()
+    func downloadEpisode(with episode: EpisodeCellViewModel) {
+        guard let url = episode.audioUrl else {
+            print("Error - AudioUrl has some problem")
+            return
         }
-        
+        downlodingEpisode = episode
+        let task = backgroundUrlSession.downloadTask(with: url)
+        task.countOfBytesClientExpectsToSend = 200 // 最大上傳200Byte
+        task.countOfBytesClientExpectsToReceive = 500 * 1024 // 最大下載500KB
+        //Observe progress
+        //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
+        observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+            let info: [String : Any] = [
+                Notification.progressKey : Int(progress.fractionCompleted * 100),
+                Notification.episodeKey : episode]
+            NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
+        }
+
+        task.resume()
     }
 }
 //https://riptutorial.com/swift/example/28601/create-custom-error-with-localized-description
@@ -158,5 +153,46 @@ protocol RSSFeedParseProtocol {
 extension FeedParser: RSSFeedParseProtocol {
     func parse(result: @escaping (Result<Feed, ParserError>) -> Void) {
         self.parseAsync(result: result)
+    }
+}
+
+
+extension NetworkService: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("the file is fully downloaded:\(location)")
+        do {
+            //載下來的data會存在.tmp檔,需要將data取出寫成.mp3檔
+            //https://stackoverflow.com/questions/50383343/urlsession-download-from-remote-url-fail-cfnetworkdownload-gn6wzc-tmp-appeared
+            let data = try Data(contentsOf: location)
+            let pathOfDocument = FileManager.default.documentsFolderURL
+            let url = pathOfDocument.appendingPathComponent("\(downlodingEpisode!.title).mp3")
+            //https://cdfq152313.github.io/post/2016-10-11/
+            try! data.write(to: url)
+            //更新Userdefaults並發送通知
+            var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+            if let index = downloadEpisodes.firstIndex(where: {
+                $0.title == downlodingEpisode!.title && $0.author == downlodingEpisode!.author
+            }) {
+                downloadEpisodes[index].fileUrl = url
+                downloadEpisodes[index].isWaitingForDownload = false
+            }
+            UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
+            let info = [Notification.episodeKey : downlodingEpisode!]
+            NotificationCenter.default.post(name: .episodeDownloadDone, object: nil, userInfo: info)
+        } catch {
+            print("Err - Get data from tmpFile url failed")
+        }
+    }
+}
+extension NetworkService: URLSessionDelegate {
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        DispatchQueue.main.async { //urlSessionDidFinishEvents(forBackgroundURLSession:)有可能會在back ground thread執行,所以要切換到main thread
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                let backgroundCompletionHandler =
+                appDelegate.backgroundCompletionHandler else {
+                    return
+            }
+            backgroundCompletionHandler()
+        }
     }
 }

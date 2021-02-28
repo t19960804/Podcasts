@@ -77,34 +77,10 @@ class EpisodesListViewModel {
         })
         return episodeWasDownloaded
     }
-    private var downloadEpisodeSubscriber: AnyCancellable?
     
     func downloadEpisode(episode: EpisodeCellViewModel){
         saveDownloadEpisodeInUserDefaults(episode: episode)
-        let publisher = NetworkService.sharedInstance.downloadEpisode(with: episode)
-        downloadEpisodeSubscriber = publisher
-            //.tryMap > 可以throw error的.map
-            .tryMap { try Data(contentsOf: $0) }
-            .map { (data) -> (Data, URL) in
-                let pathOfDocument = FileManager.default.documentsFolderURL
-                let url = pathOfDocument.appendingPathComponent("\(episode.title).mp3")
-                return (data,url)
-            }
-            .tryMap { [unowned self] in
-                try self.tryToWriteDataToURL(data: $0, url: $1) //寫檔
-            }
-            .sink { (result) in
-                print("Info - Write data result:\(result)")
-            } receiveValue: { (url) in //更新Userdefaults
-                var downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
-                if let index = downloadEpisodes.firstIndex(where: {
-                    $0.title == episode.title && $0.author == episode.author
-                }) {
-                    downloadEpisodes[index].fileUrl = url
-                    downloadEpisodes[index].isWaitingForDownload = false
-                }
-                UserDefaults.standard.saveDownloadEpisode(with: downloadEpisodes)
-            }
+        NetworkService.sharedInstance.downloadEpisode(with: episode)
     }
     fileprivate func tryToWriteDataToURL(data: Data, url: URL) throws -> URL {
         do {
