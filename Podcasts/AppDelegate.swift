@@ -10,7 +10,7 @@ import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     var backgroundCompletionHandler: (() -> Void)?
@@ -29,13 +29,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge, .carPlay], completionHandler: { (granted, error) in
             if granted {
                 print("Info-允許接受通知")
+                UNUserNotificationCenter.current().delegate = self
             } else {
                 print("Info-不允許接受通知")
             }
         })
         return true
     }
-
+    //點擊通知觸發的事件
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let content = response.notification.request.content
+        completionHandler()
+        guard let tabbarController = UIApplication.mainTabBarController else { return }
+        let episodeData = content.userInfo[UNUserNotificationCenter.episodeDataKey]! as! Data
+        let episode = try! JSONDecoder().decode(EpisodeCellViewModel.self, from: episodeData)
+        let downloadEpisodes = UserDefaults.standard.fetchDownloadedEpisodes()
+        tabbarController.maximizePodcastPlayerView(episodeViewModel: episode, episodesList: downloadEpisodes)
+    }
     // MARK: UISceneSession Lifecycle
 
     @available(iOS 13.0, *)

@@ -109,6 +109,9 @@ extension Notification {
     static let progressKey = "progress"
     static let previousEpisodeKey = "previousEpisodeKey"
 }
+extension UNUserNotificationCenter {
+    static let episodeDataKey = "episodeData"
+}
 extension URL {
     func getTrueLocation() -> URL? {
         //每一次重新啟動App,資料夾的路徑會有所變動

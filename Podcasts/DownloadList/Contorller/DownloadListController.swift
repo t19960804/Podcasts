@@ -77,6 +77,8 @@ class DownloadListController: UITableViewController {
 //                let imageURL: URL = Bundle.main.url(forResource: "appicon", withExtension: "png")!
 //                let attachment = try! UNNotificationAttachment(identifier: "image", url: imageURL, options: nil)
 //                content.attachments = [attachment]
+        let data = try! JSONEncoder().encode(episode)
+        content.userInfo = [UNUserNotificationCenter.episodeDataKey : data]
         
         let request = UNNotificationRequest(identifier: "notification", content: content, trigger: nil)
         
