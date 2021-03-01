@@ -23,7 +23,6 @@ class NetworkService: NSObject {
     //URLSession for background download
     private lazy var backgroundUrlSession: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: "MySession")
-        config.isDiscretionary = true
         config.sessionSendsLaunchEvents = true
         //Provide a delegate, to receive events from the background transfer.
         return URLSession(configuration: config, delegate: self, delegateQueue: nil)
@@ -96,7 +95,6 @@ class NetworkService: NSObject {
         
 
     }
-    private var observation: NSKeyValueObservation?
     func downloadEpisode(with episode: EpisodeCellViewModel) {
         guard let url = episode.audioUrl else {
             print("Error - AudioUrl has some problem")
@@ -106,15 +104,6 @@ class NetworkService: NSObject {
         let task = backgroundUrlSession.downloadTask(with: url)
         task.countOfBytesClientExpectsToSend = 200 // 最大上傳200Byte
         task.countOfBytesClientExpectsToReceive = 500 * 1024 // 最大下載500KB
-        //Observe progress
-        //https://stackoverflow.com/questions/30543806/get-progress-from-datataskwithurl-in-swift/54204979#54204979
-        observation = task.progress.observe(\.fractionCompleted) { progress, _ in
-            let info: [String : Any] = [
-                Notification.progressKey : Int(progress.fractionCompleted * 100),
-                Notification.episodeKey : episode]
-            NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
-        }
-
         task.resume()
     }
 }
@@ -182,6 +171,14 @@ extension NetworkService: URLSessionDownloadDelegate {
         } catch {
             print("Err - Get data from tmpFile url failed")
         }
+    }
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData byteWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+        let info: [String : Any] = [
+            Notification.progressKey : Int(progress * 100),
+            Notification.episodeKey : downlodingEpisode!
+        ]
+        NotificationCenter.default.post(name: .progressUpdate, object: nil, userInfo: info)
     }
 }
 extension NetworkService: URLSessionDelegate {
