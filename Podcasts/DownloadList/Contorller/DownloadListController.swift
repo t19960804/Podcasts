@@ -65,7 +65,24 @@ class DownloadListController: UITableViewController {
                 cell?.durationLabel.text = episodeViewModel.duration
                 cell?.isUserInteractionEnabled = true
                 cell?.contentView.backgroundColor = .clear
+                self.sendLocalNotification(episode: episodeViewModel)
             }
+    }
+    fileprivate func sendLocalNotification(episode: EpisodeCellViewModel){
+        let content = UNMutableNotificationContent()
+        content.title = "\(episode.author ?? "unknow")-\(episode.title)"
+        content.subtitle = "下載完成"
+        content.sound = UNNotificationSound.default
+        // 設置通知的圖片
+//                let imageURL: URL = Bundle.main.url(forResource: "appicon", withExtension: "png")!
+//                let attachment = try! UNNotificationAttachment(identifier: "image", url: imageURL, options: nil)
+//                content.attachments = [attachment]
+        
+        let request = UNNotificationRequest(identifier: "notification", content: content, trigger: nil)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {error in
+            print("成功建立通知...")
+        })
     }
     fileprivate func setupProgressUpdateSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .progressUpdate)

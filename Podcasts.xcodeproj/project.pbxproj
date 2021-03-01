@@ -10,6 +10,7 @@
 		0B19D303257CC358009A9854 /* EpisodesListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B19D302257CC358009A9854 /* EpisodesListTests.swift */; };
 		0B1EE821251F485E00DC6A16 /* DownloadListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1EE820251F485E00DC6A16 /* DownloadListController.swift */; };
 		0B2CFDA724DEB6930075BAC9 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 0B2CFDA624DEB6930075BAC9 /* MarqueeLabel */; };
+		0B2DFC9E25ECBEE20098EDF0 /* appicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B2DFC9D25ECBEE10098EDF0 /* appicon.png */; };
 		0B2E33DC25A17EB100409476 /* SearchPodcastsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2E33DB25A17EB100409476 /* SearchPodcastsTests.swift */; };
 		0B2E33E225A1858400409476 /* EpisodePlayerViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2E33E125A1858400409476 /* EpisodePlayerViewTests.swift */; };
 		0B2E33E825A1AD3100409476 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2E33E725A1AD3100409476 /* NetworkServiceTests.swift */; };
@@ -67,6 +68,7 @@
 		0B19D302257CC358009A9854 /* EpisodesListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListTests.swift; sourceTree = "<group>"; };
 		0B19D304257CC358009A9854 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B1EE820251F485E00DC6A16 /* DownloadListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadListController.swift; sourceTree = "<group>"; };
+		0B2DFC9D25ECBEE10098EDF0 /* appicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = appicon.png; path = Assets.xcassets/appicon.imageset/appicon.png; sourceTree = "<group>"; };
 		0B2E33DB25A17EB100409476 /* SearchPodcastsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPodcastsTests.swift; sourceTree = "<group>"; };
 		0B2E33E125A1858400409476 /* EpisodePlayerViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodePlayerViewTests.swift; sourceTree = "<group>"; };
 		0B2E33E725A1AD3100409476 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
@@ -348,6 +350,7 @@
 				0BC9DF532408BECB00142424 /* ContentView.swift */,
 				0BC9DF572408BECC00142424 /* Preview Content */,
 				0B5E273B25E233790089B526 /* PodcastData.json */,
+				0B2DFC9D25ECBEE10098EDF0 /* appicon.png */,
 			);
 			path = Podcasts;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 				0BC9DF592408BECC00142424 /* Preview Assets.xcassets in Resources */,
 				0BC9DF562408BECC00142424 /* Assets.xcassets in Resources */,
 				0B5E273C25E233790089B526 /* PodcastData.json in Resources */,
+				0B2DFC9E25ECBEE20098EDF0 /* appicon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
