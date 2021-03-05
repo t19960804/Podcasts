@@ -85,17 +85,16 @@ class EpisodesListController: UITableViewController {
             .map{($0.userInfo?[Notification.episodeKey] as AnyObject as? EpisodeProtocol,
                   $0.userInfo?[Notification.previousEpisodeKey] as AnyObject as? EpisodeProtocol)}
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (currentEpisode, previousEpisode) in
-                guard let self = self else { return }
+            .sink { [unowned self] (currentEpisode, previousEpisode) in
                 guard let tabbarController = UIApplication.mainTabBarController else { return }
-                if let index = self.viewModel.getEpisodeIndex(episode: currentEpisode) {
-                    self.viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                if let index = viewModel.getEpisodeIndex(episode: currentEpisode) {
+                    viewModel.episodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+                    tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 }
             
                 if let index = self.viewModel.getEpisodeIndex(episode: previousEpisode) {
-                    self.viewModel.episodes[index].isPlaying = false
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    viewModel.episodes[index].isPlaying = false
+                    tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 }
             }
     }
