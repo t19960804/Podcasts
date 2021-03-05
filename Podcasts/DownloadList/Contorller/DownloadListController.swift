@@ -69,22 +69,36 @@ class DownloadListController: UITableViewController {
             }
     }
     fileprivate func sendLocalNotification(episode: EpisodeCellViewModel){
-        let content = UNMutableNotificationContent()
-        content.title = "\(episode.author ?? "unknow")-\(episode.title)"
-        content.subtitle = "下載完成"
-        content.sound = UNNotificationSound.default
-        // 設置通知的圖片
-//                let imageURL: URL = Bundle.main.url(forResource: "appicon", withExtension: "png")!
-//                let attachment = try! UNNotificationAttachment(identifier: "image", url: imageURL, options: nil)
-//                content.attachments = [attachment]
-        let data = try! JSONEncoder().encode(episode)
-        content.userInfo = [UNUserNotificationCenter.episodeDataKey : data]
-        
-        let request = UNNotificationRequest(identifier: "notification", content: content, trigger: nil)
-        
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: {error in
-            print("成功建立通知...")
-        })
+        let task = URLSession.shared.dataTask(with: episode.imageUrl!) { (imageData, _, error) in
+            if let error = error {
+                print("Err-fetch image failrd:\(error)")
+                return
+            }
+            guard let imageData = imageData else {
+                print("Err-imageData is nil")
+                return
+            }
+            guard let attachment = UNNotificationAttachment.create(data: imageData, options: nil) else {
+                print("Err-Create attachment failrd")
+                return
+            }
+            let content = UNMutableNotificationContent()
+            content.title = "\(episode.author ?? "unknow")-\(episode.title)"
+            content.subtitle = "下載完成"
+            content.sound = UNNotificationSound.default
+            // 設置通知的圖片
+            content.attachments = [attachment]
+            let data = try! JSONEncoder().encode(episode)
+            content.userInfo = [UNUserNotificationCenter.episodeDataKey : data]
+            
+            let request = UNNotificationRequest(identifier: "notification", content: content, trigger: nil)
+            
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: {error in
+                print("成功建立通知...")
+            })
+        }
+        print("Info-task about notification image resume")
+        task.resume()
     }
     fileprivate func setupProgressUpdateSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .progressUpdate)

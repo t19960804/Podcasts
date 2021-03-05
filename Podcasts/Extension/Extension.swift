@@ -112,6 +112,26 @@ extension Notification {
 extension UNUserNotificationCenter {
     static let episodeDataKey = "episodeData"
 }
+extension UNNotificationAttachment {
+    static func create(data: Data, options: [NSObject : AnyObject]?) -> UNNotificationAttachment? {
+        let folderName = UUID().uuidString
+        let folderURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(folderName, isDirectory: true)
+        do {
+            //create directory in tmp folder
+            try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
+            //write the data into the newly directory
+            let imageName = "EpisodeCover.png"
+            let imageURL = folderURL.appendingPathComponent(imageName)
+            try data.write(to: imageURL)
+            //create the UNNotificationAttachment with url
+            let attachment = try UNNotificationAttachment(identifier: "", url: imageURL, options: options)
+            return attachment
+        } catch {
+            print("Err-Create directory in tmp folder failed:\(error.localizedDescription)")
+        }
+        return nil
+    }
+}
 extension URL {
     func getTrueLocation() -> URL? {
         //每一次重新啟動App,資料夾的路徑會有所變動
