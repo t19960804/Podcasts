@@ -38,21 +38,20 @@ class DownloadListController: UITableViewController {
             .map{($0.userInfo?[Notification.episodeKey] as AnyObject as? EpisodeProtocol,
                   $0.userInfo?[Notification.previousEpisodeKey] as AnyObject as? EpisodeProtocol)}
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (currentEpisode, previousEpisode)in
-                guard let self = self else { return }
+            .sink { [unowned self] (currentEpisode, previousEpisode)in
                 guard let tabbarController = UIApplication.mainTabBarController else { return }
-                if let index = self.viewModel.getIndexOfEpisode(currentEpisode) {
-                    self.viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
+                if let index = viewModel.getIndexOfEpisode(currentEpisode) {
+                    viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
                     //reloadRows前後的row數量要相等,不相等不能reloadRows
-                    if self.tableView.numberOfRows(inSection: 0) == self.viewModel.numberOfEpisodes() {
-                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    if tableView.numberOfRows(inSection: 0) == viewModel.numberOfEpisodes() {
+                        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     }
                 }
-                if let index = self.viewModel.getIndexOfEpisode(previousEpisode) {
-                    self.viewModel.downloadedEpisodes[index].isPlaying = false
+                if let index = viewModel.getIndexOfEpisode(previousEpisode) {
+                    viewModel.downloadedEpisodes[index].isPlaying = false
                     //reloadRows前後的row數量要相等,不相等不能reloadRows
-                    if self.tableView.numberOfRows(inSection: 0) == self.viewModel.numberOfEpisodes() {
-                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    if tableView.numberOfRows(inSection: 0) == viewModel.numberOfEpisodes() {
+                        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                     }
                 }
             }
