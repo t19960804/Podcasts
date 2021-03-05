@@ -43,11 +43,17 @@ class DownloadListController: UITableViewController {
                 guard let tabbarController = UIApplication.mainTabBarController else { return }
                 if let index = self.viewModel.getIndexOfEpisode(currentEpisode) {
                     self.viewModel.downloadedEpisodes[index].isPlaying = tabbarController.episodePlayerView.podcastPlayer.isPlayingItem
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    //reloadRows前後的row數量要相等,不相等不能reloadRows
+                    if self.tableView.numberOfRows(inSection: 0) == self.viewModel.numberOfEpisodes() {
+                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
                 }
                 if let index = self.viewModel.getIndexOfEpisode(previousEpisode) {
                     self.viewModel.downloadedEpisodes[index].isPlaying = false
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    //reloadRows前後的row數量要相等,不相等不能reloadRows
+                    if self.tableView.numberOfRows(inSection: 0) == self.viewModel.numberOfEpisodes() {
+                        self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
                 }
             }
     }
