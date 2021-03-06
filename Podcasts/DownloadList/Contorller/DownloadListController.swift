@@ -15,6 +15,7 @@ class DownloadListController: UITableViewController {
     private var progressUpdateSubscriber: AnyCancellable?
     private var episodeDownloadDoneSubscriber: AnyCancellable?
     private var playerStateUpdateSubscriber: AnyCancellable?
+    private var fetchDataSubscriber: AnyCancellable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,27 +75,25 @@ class DownloadListController: UITableViewController {
             }
     }
     fileprivate func sendLocalNotification(episode: EpisodeCellViewModel){
-        let task = URLSession.shared.dataTask(with: episode.imageUrl!) { (imageData, _, error) in
-            if let error = error {
-                print("Err-fetch image failrd:\(error)")
-                return
-            }
-            guard let imageData = imageData else {
-                print("Err-imageData is nil")
-                return
-            }
-            guard let attachment = UNNotificationAttachment.create(data: imageData, options: nil) else {
-                print("Err-Create attachment failrd")
-                return
+        let publisher = NetworkService.sharedInstance.fetchData(url: episode.imageUrl!)
+        fetchDataSubscriber = publisher
+            .sink { (data) in
+            var attachments = [UNNotificationAttachment]()
+            if !data.isEmpty {
+                if let attachment = UNNotificationAttachment.create(data: data, options: nil) {
+                    attachments.append(attachment)
+                } else {
+                    print("Err-Create attachment failrd")
+                }
             }
             let content = UNMutableNotificationContent()
             content.title = "\(episode.author ?? "unknow")-\(episode.title)"
             content.subtitle = "下載完成"
             content.sound = UNNotificationSound.default
             // 設置通知的圖片
-            content.attachments = [attachment]
-            let data = try! JSONEncoder().encode(episode)
-            content.userInfo = [UNUserNotificationCenter.episodeDataKey : data]
+            content.attachments = attachments
+            let episodeData = try! JSONEncoder().encode(episode)
+            content.userInfo = [UNUserNotificationCenter.episodeDataKey : episodeData]
             
             let request = UNNotificationRequest(identifier: "notification", content: content, trigger: nil)
             
@@ -102,8 +101,6 @@ class DownloadListController: UITableViewController {
                 print("成功建立通知...")
             })
         }
-        print("Info-task about notification image resume")
-        task.resume()
     }
     fileprivate func setupProgressUpdateSubscriber(){
         let publisher = NotificationCenter.default.publisher(for: .progressUpdate)

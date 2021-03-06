@@ -34,6 +34,14 @@ class NetworkService: NSObject {
     func replaceSession(with session: URLSessionProtocol){
         self.session = session
     }
+    func fetchData(url: URL) -> AnyPublisher<Data, Never> {
+        let publisher = session.dataTaskPublisher(for: url)
+        return publisher
+            .map { $0.data }
+            .replaceError(with: Data()) //將Error替換成其他element
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
     func fetchPodcasts(searchText: String) -> AnyPublisher<SearchResult, Error> {
         if searchText.isEmpty {
             let result = SearchResult(resultCount: 0, results: [])
